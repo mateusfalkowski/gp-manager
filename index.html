@@ -232,6 +232,7 @@
 #gpm .timing-row.mine .timing-pos{color:var(--accent-2);}
 #gpm .timing-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 #gpm .timing-name{flex:1;font-family:'Rajdhani',sans-serif;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#gpm .timing-pit-badge{margin-left:5px;font-size:10px;}
 #gpm .timing-gap{font-family:'Rajdhani',sans-serif;font-size:10.5px;color:var(--text-dim);white-space:nowrap;flex-shrink:0;}
 #gpm .timing-tire{display:flex;align-items:center;gap:3px;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:10.5px;color:var(--text-dim);white-space:nowrap;flex-shrink:0;}
 #gpm .timing-tire-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.3);}
@@ -278,8 +279,6 @@
 #gpm .lr-stat{flex:1;min-width:90px;}
 #gpm .lr-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:3px;}
 #gpm .lr-stat-val{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;color:var(--text);}
-#gpm .lr-weather-btn{cursor:pointer;}
-#gpm .lr-weather-btn:hover{color:var(--accent-2);}
 #gpm .lr-standing{font-size:12.5px;color:var(--text-dim);background:var(--bg-alt);border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.6;}
 #gpm .lr-decision{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.12),var(--surface));}
 #gpm .lr-decision-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;color:var(--accent-2);}
@@ -292,9 +291,11 @@
 #gpm .lr-pit-req{font-size:12px;color:var(--text-dim);margin-top:4px;}
 #gpm .lr-pit-track{height:10px;border-radius:6px;background:var(--bg-alt);overflow:hidden;border:1px solid var(--border);}
 #gpm .lr-pit-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+#gpm .lr-pit-problem{margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(239,122,133,.14);border:1px solid rgba(239,122,133,.4);color:var(--bad,#ef7a85);font-size:12.5px;text-align:left;}
+#gpm .lr-pit-approach{color:var(--text-dim);font-size:12.5px;margin-top:4px;}
 
 /* controle de velocidade da simulação */
-#gpm .speed-ctrl{display:flex;gap:6px;margin:0 0 10px;}
+#gpm .speed-ctrl{display:flex;gap:6px;}
 #gpm .speed-btn{
   padding:6px 12px;border-radius:7px;background:var(--surface);border:1px solid var(--border);
   cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;color:var(--text-dim);
@@ -302,6 +303,13 @@
 }
 #gpm .speed-btn:hover{border-color:var(--accent);color:var(--text);}
 #gpm .speed-btn.active{background:var(--accent);border-color:var(--accent);color:#1a1200;}
+
+/* faixa de controles agrupados da corrida longa (velocidade + previsão + pit) — tudo junto no
+   topo, principalmente pra não espalhar botões pela tela toda no celular */
+#gpm .lr-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px;}
+#gpm .lr-ctrl-btn{
+  padding:6px 12px;font-size:13px;text-transform:none;letter-spacing:0;white-space:nowrap;
+}
 </style>
 
 <div id="gpm">
@@ -685,7 +693,8 @@ function wetnessDelta(cond){
 function clampWet(w){ return Math.max(0, Math.min(100, w)); }
 
 // previsão em blocos de 2 voltas: a condição do tempo evolui aos poucos e a umidade decorre dela.
-// o clima real pode seguir a previsão ou "descolar" dela a partir de algum bloco (surpresa) e seguir seu próprio caminho
+// o clima real segue a previsão na maioria das corridas — só uma parte delas tem uma "virada"
+// de verdade, pra previsão não surpreender toda hora
 function buildWeatherScript(laps){
   var segCount = Math.max(1, Math.ceil(laps/2));
 
@@ -698,12 +707,17 @@ function buildWeatherScript(laps){
     forecastWet.push(Math.round(fw));
   }
 
+  // uma única rolagem por corrida decide se vai ter surpresa — e se tiver, acontece uma vez só,
+  // num ponto do meio da corrida (não faz sentido "surpreender" faltando 1 volta)
+  var willSurprise = segCount>2 && Math.random()<0.1;
+  var surpriseSeg = willSurprise ? Math.floor(rand(1, Math.max(2,segCount-1))) : -1;
+
   var actualCond = [], actualWet = [];
   var ac = forecastCond[0], aw = forecastWet[0];
   var diverged = false;
   for(var j=0;j<segCount;j++){
     if(j>0){
-      if(!diverged && Math.random()<0.15) diverged = true;
+      if(j===surpriseSeg) diverged = true;
       ac = diverged ? nextWeatherCondition(ac) : forecastCond[j];
       aw = clampWet(aw + wetnessDelta(ac));
     }
@@ -725,10 +739,27 @@ function segmentLapLabel(i, laps){
 
 // mesma previsão mostrada antes da largada, reaproveitada nos momentos de decisão (SC/VSC/clima/pit)
 // pra dar ao jogador a mesma informação que ele tinha ao escolher o pneu inicial
+// a previsão "atualiza em tempo real" conforme a corrida acontece: voltas já rodadas e o
+// segmento logo à frente mostram o clima real (já é praticamente certo), só o resto do
+// horizonte ainda usa a previsão original — quanto menos volta falta, menos incerteza sobra
+function liveForecast(lr){
+  var w = lr.weather;
+  if(!lr.started) return {cond:w.forecastCond, wet:w.forecastWet};
+  var curSeg = Math.floor((lr.lap>0?lr.lap-1:0)/2);
+  var reliableUntil = curSeg+1; // segmento atual + o próximo já são tratados como praticamente certos
+  var cond = [], wet = [];
+  for(var i=0;i<w.segCount;i++){
+    if(i<=reliableUntil){ cond.push(w.actualCond[i]); wet.push(w.actualWet[i]); }
+    else { cond.push(w.forecastCond[i]); wet.push(w.forecastWet[i]); }
+  }
+  return {cond:cond, wet:wet};
+}
+
 function weatherTimelineHtml(lr){
-  var w = lr.weather, laps = lr.totalLaps;
-  var segHtml = w.forecastCond.map(function(c,i){
-    return '<div class="wx-seg'+(i===Math.floor((lr.lap>0?lr.lap-1:0)/2)?' wx-seg-now':'')+'"><div class="wx-seg-lap">'+segmentLapLabel(i,laps)+'</div><div class="wx-seg-icon">'+WEATHER_COND_ICON[c]+'</div><div class="wx-seg-pct">'+w.forecastWet[i]+'%</div></div>';
+  var laps = lr.totalLaps;
+  var live = liveForecast(lr);
+  var segHtml = live.cond.map(function(c,i){
+    return '<div class="wx-seg'+(i===Math.floor((lr.lap>0?lr.lap-1:0)/2)?' wx-seg-now':'')+'"><div class="wx-seg-lap">'+segmentLapLabel(i,laps)+'</div><div class="wx-seg-icon">'+WEATHER_COND_ICON[c]+'</div><div class="wx-seg-pct">'+live.wet[i]+'%</div></div>';
   }).join('');
   return '<div class="timing-title" style="padding:0 0 8px;">Previsão a cada 2 voltas</div><div class="wx-timeline">'+segHtml+'</div>';
 }
@@ -1135,9 +1166,10 @@ function initSeason(){
   var standings = [{key:'mine', label:state.teamName, mine:true, points:0}];
   for(var i=0;i<rivals.length;i+=2){
     var teamKey = 'rt_'+(i/2);
-    var teamLabel = rivals[i].team;
+    var partner = rivals[i+1];
+    var teamLabel = (partner && partner.team && partner.team!==rivals[i].team) ? rivals[i].team+' / '+partner.team : rivals[i].team;
     rivals[i].teamKey = teamKey;
-    if(rivals[i+1]){ rivals[i+1].teamKey = teamKey; }
+    if(partner) partner.teamKey = teamKey;
     standings.push({key:teamKey, label:teamLabel, mine:false, points:0});
   }
   state.season = { trackIndex:0, rivals:rivals, standings:standings, history:[] };
@@ -1216,17 +1248,54 @@ function buildRival(name, team){
   return {personId:'filler_'+name, nome:name, pais:null, team:team, vel:vel, cons:cons, agr:agr, pot:pot, confiab:confiab};
 }
 
+// procura cartas que foram companheiros de equipe de verdade (mesmo time E mesmo ano na base de
+// dados) — usado pra escalar rivais que correram juntos de verdade, quando essa informação existir
+function findRealTeammatePairs(candidates){
+  var byKey = {};
+  candidates.forEach(function(c){
+    var key = c.team+'|'+c.year;
+    (byKey[key] = byKey[key] || []).push(c);
+  });
+  var pairs = [];
+  Object.keys(byKey).forEach(function(k){
+    var group = byKey[k].slice();
+    while(group.length>=2){
+      var a = group.pop(), b = group.pop();
+      if(a.personId!==b.personId) pairs.push([a,b]);
+    }
+  });
+  return pairs;
+}
+
 // sorteia os rivais da corrida a partir do MESMO pool de pilotos que o jogador pode escolher no draft
-// (excluindo quem já está na sua equipe), com atributos de motor aleatórios já que eles não têm um motor escolhido
+// (excluindo quem já está na sua equipe), com atributos de motor aleatórios já que eles não têm um motor escolhido.
+// prioriza formar duplas de rivais que foram companheiros de equipe reais (mesmo time+ano na base de
+// dados); o resto do grid é preenchido com pilotos avulsos como antes.
 function buildRivalPool(n, excludePersonIds){
   var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludePersonIds.indexOf(c.personId)===-1; });
-  var picks = pickRandomDistinctPersons(candidates, n);
-  var rivals = picks.map(function(p){
-    return {
+  var realPairs = findRealTeammatePairs(candidates).sort(function(){ return Math.random()-0.5; });
+  var rivals = [];
+  var usedPersonIds = {};
+  realPairs.forEach(function(pair){
+    if(rivals.length+2>n) return;
+    if(usedPersonIds[pair[0].personId] || usedPersonIds[pair[1].personId]) return;
+    pair.forEach(function(p){
+      rivals.push({
+        personId:p.personId, nome:p.nome, pais:p.pais, team:p.team, year:p.year,
+        vel:p.vel, cons:p.cons, agr:p.agr,
+        pot:rand(68,97), confiab:rand(65,92), realTeammate:true
+      });
+      usedPersonIds[p.personId] = true;
+    });
+  });
+  var remainingCandidates = candidates.filter(function(c){ return !usedPersonIds[c.personId]; });
+  var picks = pickRandomDistinctPersons(remainingCandidates, n-rivals.length);
+  picks.forEach(function(p){
+    rivals.push({
       personId:p.personId, nome:p.nome, pais:p.pais, team:p.team, year:p.year,
       vel:p.vel, cons:p.cons, agr:p.agr,
       pot:rand(68,97), confiab:rand(65,92)
-    };
+    });
   });
   if(rivals.length < n){
     var usedIds = rivals.map(function(r){ return r.personId; });
@@ -1588,6 +1657,12 @@ function initLongRace(compoundId){
     d._tireCompound = pickCompoundForConditions(lr.wetnessNow);
     d._tireLaps = 0;
     d._pitLap = Math.random()<0.7 ? Math.round(rand(3, Math.max(4,lr.totalLaps-2))) : null;
+    if(d._pitLap){
+      var rivalTeamSkill = rand(45,92); // competência genérica da equipe rival nos boxes
+      var pitRoll = rollPitStop(rivalTeamSkill);
+      d._pitStopMs = pitRoll.ms;
+      d._pitStopProblem = pitRoll.problem;
+    }
   });
   var startPace = tirePaceFactor(compoundId, lr.wetnessNow, 0);
   // pequena diferença de ritmo entre os 2 pilotos da própria equipe (mesmo pneu/estratégia),
@@ -1629,13 +1704,18 @@ function appendHistoryCard(entry){
   board.insertBefore(card, board.firstChild);
 }
 
-// desgasta o pneu de cada rival em 1 volta, simulando uma parada única deles em algum ponto da corrida (só estética)
+// desgasta o pneu de cada rival em 1 volta; quando cruza a volta do pit stop dele, troca o composto
+// E aplica o custo real de tempo da parada (mesmo sorteio de sorte+competência usado pro jogador)
 function advanceRivalTiresOneLap(lr, lap){
   lr.rivalField.forEach(function(d){
     if(d.dnf && lap>=d._dnfLap) return;
     if(d._pitLap===lap){
       d._tireCompound = pickCompoundForConditions(wetnessAtSegment(lr, lap));
       d._tireLaps = 0;
+      if(d._pitStopMs){
+        d._progress -= (d._pitStopMs/1000)/LR_LAP_SECONDS;
+        if(d._liveProgress!=null) d._liveProgress = d._progress;
+      }
     } else {
       d._tireLaps++;
     }
@@ -1658,6 +1738,10 @@ function refreshLongRaceStatus(){
   var t = document.getElementById('gpm-lr-tire'); if(t) t.textContent = tireName(lr.compound);
   var tl = document.getElementById('gpm-lr-tirelaps'); if(tl) tl.textContent = lr.tireLaps;
   var ps = document.getElementById('gpm-lr-pitstops'); if(ps) ps.textContent = lr.pitStops;
+  // o popup de previsão fica aberto entre voltas — se não atualizar aqui, ele trava mostrando
+  // o clima da volta em que foi aberto mesmo enquanto o resto da tela já avançou
+  var wp = document.getElementById('gpm-lr-weather-popup');
+  if(wp) wp.innerHTML = weatherTimelineHtml(lr);
 }
 
 // aplica um evento já vencido; devolve true se ele pausa a corrida (decisão do jogador)
@@ -1878,6 +1962,11 @@ function mountLongRaceFrame(){
 
   mountLongRaceTiming();
 
+  if(lr.pitApproach){
+    runPitApproachFrame();
+    return;
+  }
+
   if(lr.pitTimer){
     var pit = pitBoxPosition(track);
     lr.mineField.forEach(function(d){
@@ -1904,14 +1993,14 @@ function mountLongRaceTiming(){
   var all = lr.rivalField.concat(lr.mineField);
   all.forEach(function(d){
     var idx = d._stableIdx;
-    var rowId = 'gpm-lr-tr-'+idx, gapId = 'gpm-lr-tg-'+idx, tireId = 'gpm-lr-tt-'+idx, posId = 'gpm-lr-tp-'+idx;
-    d._rowElId = rowId; d._gapElId = gapId; d._tireElId = tireId; d._posElId = posId;
+    var rowId = 'gpm-lr-tr-'+idx, gapId = 'gpm-lr-tg-'+idx, tireId = 'gpm-lr-tt-'+idx, posId = 'gpm-lr-tp-'+idx, pitId = 'gpm-lr-tpit-'+idx;
+    d._rowElId = rowId; d._gapElId = gapId; d._tireElId = tireId; d._posElId = posId; d._pitBadgeElId = pitId;
     var tireHtml = d.mine ? tireBadgeHtml(lr.compound, lr.tireLaps) : tireBadgeHtml(d._tireCompound, d._tireLaps);
     var row = el(
       '<div class="timing-row'+(d.mine?' mine':'')+'" id="'+rowId+'">'+
         '<div class="timing-pos" id="'+posId+'">·</div>'+
         '<div class="timing-dot" style="background:'+d._color+';"></div>'+
-        '<div class="timing-name">'+timingLabel(d)+'</div>'+
+        '<div class="timing-name">'+timingLabel(d)+'<span class="timing-pit-badge" id="'+pitId+'" style="display:none;">🔧</span></div>'+
         '<div class="timing-tire" id="'+tireId+'">'+tireHtml+'</div>'+
         '<div class="timing-gap" id="'+gapId+'">GRID</div>'+
       '</div>'
@@ -1944,6 +2033,19 @@ function updateTimingTower(lr){
     var gapEl = document.getElementById(d._gapElId);
     if(!gapEl) return;
     var myLive = d._liveProgress!=null ? d._liveProgress : (d._progress||0);
+    var pitBadgeEl = document.getElementById(d._pitBadgeElId);
+    if(pitBadgeEl){
+      var inPit = false, pitTitle = '';
+      if(d.mine){
+        inPit = !!(lr.pitApproach || lr.pitTimer);
+        pitTitle = lr.pitTimer ? 'Trocando pneus' : 'Entrando nos boxes';
+      } else if(d._pitLap!=null){
+        inPit = Math.abs(myLive - d._pitLap) < 0.35;
+        if(inPit) pitTitle = d._pitStopMs ? 'Nos boxes (~'+(d._pitStopMs/1000).toFixed(1)+'s)' : 'Nos boxes';
+      }
+      pitBadgeEl.style.display = inPit ? 'inline' : 'none';
+      if(inPit) pitBadgeEl.title = pitTitle;
+    }
     var isDnfFrozen = d.dnf && myLive >= d._dnfLap-1e-6;
     if(rowEl) rowEl.classList.toggle('dnf', !!isDnfFrozen);
     if(isDnfFrozen){ gapEl.textContent = 'ABANDONOU'; return; }
@@ -1977,13 +2079,33 @@ function runLongRaceLights(){
   step();
 }
 
+var PIT_PROBLEM_MESSAGES = [
+  'a porca de uma das rodas cruzou na hora de fechar',
+  'a chave de impacto engasgou num dos pneus',
+  'o macaco demorou pra descer',
+  'confusão na troca — um mecânico pegou o pneu errado primeiro',
+  'sinal verde atrasado, a equipe segurou o carro por precaução extra',
+  'o pneu novo não encaixou de primeira'
+];
+
+// sorteia a duração real da parada (a troca de pneu em si): sorte + competência da equipe influenciam
+// a chance de algo dar errado — acima de 3s conta como "problema" e ganha uma mensagem explicando o motivo
+function rollPitStop(teamSkill){
+  var skill = teamSkill!=null ? teamSkill : 70;
+  var problemChance = Math.max(0.06, 0.28 - skill*0.002);
+  if(Math.random() < problemChance){
+    return { ms: Math.round(rand(3100,7000)), problem:true, message: PIT_PROBLEM_MESSAGES[Math.floor(Math.random()*PIT_PROBLEM_MESSAGES.length)] };
+  }
+  return { ms: Math.round(rand(1800,2900)), problem:false, message:null };
+}
+
 function resolveDecision(pit, compoundId){
   var lr = state.longRace;
-  var d = lr.pendingDecision;
   lr.pendingDecision = null;
   if(pit){
-    var underCaution = d.type==='sc' || d.type==='vsc';
-    lr.pitTimer = { compound:compoundId, underCaution:underCaution, requiredMs: underCaution?2500:9000, elapsedMs:0, startTs:null };
+    // o carro primeiro dirige até a zona do pit (fase curta e visual) — só depois de "chegar" lá
+    // é que a troca de pneu (com duração variável) começa de verdade
+    lr.pitApproach = { compound:compoundId, elapsedMs:0, requiredMs:900, lastTs:null, startPositions:null };
     render();
   } else {
     lr.history.push({icon:'🚦', title:'Sem parada', text:'Você decidiu seguir na pista com os pneus '+tireName(lr.compound)+'.'});
@@ -1991,10 +2113,69 @@ function resolveDecision(pit, compoundId){
   }
 }
 
+// anima os carros da equipe do jogador saindo da pista e entrando na zona do pit, enquanto os
+// rivais continuam correndo normalmente (o tempo dessa aproximação também custa tempo de verdade)
+function runPitApproachFrame(){
+  var lr = state.longRace;
+  if(!lr || !lr.pitApproach) return;
+  var track = getActiveTrack();
+  var pa = lr.pitApproach;
+  if(!pa.startPositions){
+    pa.startPositions = lr.mineField.map(function(d){
+      var dist = (d._progress||0) * track.trackData.total;
+      return lrCarPosition(track.trackData, dist, d._lane||0);
+    });
+  }
+  var pit = pitBoxPosition(track);
+  var basePaceLapsPerMs = 1/(LR_LAP_SECONDS*1000);
+  function frame(ts){
+    if(!lr.pitApproach) return;
+    if(pa.lastTs==null) pa.lastTs = ts;
+    var dtReal = ts - pa.lastTs;
+    pa.lastTs = ts;
+    var speed = state.raceSpeed||1;
+    var dtUniverse = dtReal*speed;
+    pa.elapsedMs = Math.min(pa.elapsedMs + dtUniverse, pa.requiredMs);
+    var t = pa.elapsedMs / pa.requiredMs;
+    var ease = t*t*(3-2*t);
+    lr.mineField.forEach(function(d,i){
+      var sp = pa.startPositions[i];
+      var x = sp.x + (pit.x-sp.x)*ease;
+      var y = sp.y + (pit.y-sp.y)*ease;
+      var elx = document.getElementById(d._elId);
+      if(elx) elx.setAttribute('transform', 'translate('+x.toFixed(2)+','+y.toFixed(2)+')');
+    });
+    var lapsGained = dtUniverse*basePaceLapsPerMs;
+    var cautionMult = lr.safetyCar ? 0.55 : 1;
+    lr.rivalField.forEach(function(d){
+      if(d.dnf && d._progress >= d._dnfLap-1e-9){ d._liveProgress = d._progress; return; }
+      var next = d._progress + lapsGained*rivalTirePace(d, lr.wetnessNow)*cautionMult;
+      if(d.dnf && next >= d._dnfLap) next = d._dnfLap;
+      d._progress = next;
+      d._liveProgress = next;
+      var dist = next * track.trackData.total;
+      var pos = lrCarPosition(track.trackData, dist, d._lane||0);
+      var elc = document.getElementById(d._elId);
+      if(elc) elc.setAttribute('transform', 'translate('+pos.x.toFixed(2)+','+pos.y.toFixed(2)+')');
+    });
+    updateTimingTower(lr);
+    if(pa.elapsedMs < pa.requiredMs){
+      lr.raceAnimFrame = requestAnimationFrame(frame);
+    } else {
+      lr.pitApproach = null;
+      var chefeSkill = (state.chefe && state.chefe.estrategia!=null) ? state.chefe.estrategia : 70;
+      var roll = rollPitStop(chefeSkill);
+      lr.pitTimer = { compound:pa.compound, requiredMs:roll.ms, elapsedMs:0, startTs:null, problem:roll.problem, message:roll.message };
+      render();
+    }
+  }
+  lr.raceAnimFrame = requestAnimationFrame(frame);
+}
+
 // permite pedir uma parada nos boxes a qualquer momento, mesmo sem safety car/VSC/mudança de clima
 function requestVoluntaryPit(){
   var lr = state.longRace;
-  if(!lr || lr.pendingDecision || lr.pitTimer || lr.finished || !lr.started || lr.lap>=lr.totalLaps) return;
+  if(!lr || lr.pendingDecision || lr.pitTimer || lr.pitApproach || lr.finished || !lr.started || lr.lap>=lr.totalLaps) return;
   if(lr.raceAnimFrame){ cancelAnimationFrame(lr.raceAnimFrame); lr.raceAnimFrame=null; }
   var cars = lr.rivalField.concat(lr.mineField);
   cars.forEach(function(d){ if(d._liveProgress!=null){ d._progress = d._liveProgress; } });
@@ -2019,9 +2200,10 @@ function runPitTimerFrame(){
     lr.pitTimer.elapsedMs = Math.min(lr.pitTimer.elapsedMs + dtUniverse, lr.pitTimer.requiredMs);
 
     var lapsGained = dtUniverse*basePaceLapsPerMs;
+    var cautionMult = lr.safetyCar ? 0.55 : 1;
     lr.rivalField.forEach(function(d){
       if(d.dnf && d._progress >= d._dnfLap-1e-9){ d._liveProgress = d._progress; return; }
-      var next = d._progress + lapsGained*rivalTirePace(d, lr.wetnessNow);
+      var next = d._progress + lapsGained*rivalTirePace(d, lr.wetnessNow)*cautionMult;
       if(d.dnf && next >= d._dnfLap) next = d._dnfLap;
       d._progress = next;
       d._liveProgress = next;
@@ -2052,8 +2234,11 @@ function finishPitTimer(){
   lr.compound = pt.compound;
   lr.tireLaps = 0;
   lr.pitStops++;
-  lr.qualitySamples.push(pt.underCaution ? 0.97 : 0.72);
-  lr.history.push({icon:'🔧', title:'Pit stop', text:'Parada de '+(pt.requiredMs/1000).toFixed(1)+'s concluída. Você trocou para pneus '+tireName(pt.compound)+(pt.underCaution?' aproveitando a neutralização — parada barata.':' — parada de bandeira verde, mais cara.')});
+  lr.qualitySamples.push(pt.problem ? 0.55 : 0.92);
+  var secs = (pt.requiredMs/1000).toFixed(1);
+  var text = 'Parada de '+secs+'s concluída. Você trocou para pneus '+tireName(pt.compound)+'.';
+  text += pt.problem ? ' ⚠️ Problema na parada: '+pt.message+' — tempo extra perdido.' : ' Troca rápida e limpa.';
+  lr.history.push({icon: pt.problem ? '⚠️' : '🔧', title:'Pit stop', text:text});
   lr.pitTimer = null;
   render();
 }
@@ -2064,6 +2249,7 @@ function finalizeLongRace(){
   var lr = state.longRace;
   if(lr.raceAnimFrame){ cancelAnimationFrame(lr.raceAnimFrame); lr.raceAnimFrame=null; }
   lr.pitTimer = null;
+  lr.pitApproach = null;
   lr.safetyCar = null;
 
   var field = lr.mineField.concat(lr.rivalField);
@@ -2099,6 +2285,7 @@ function skipLongRace(){
   if(lr.raceAnimFrame){ cancelAnimationFrame(lr.raceAnimFrame); lr.raceAnimFrame=null; }
   lr.pendingDecision = null;
   lr.pitTimer = null;
+  lr.pitApproach = null;
   for(var l=lr.lap+1; l<=lr.totalLaps; l++){
     while(lr.eventIndex<lr.events.length && lr.events[lr.eventIndex].lap<=l){
       var ev = lr.events[lr.eventIndex]; lr.eventIndex++;
@@ -2134,10 +2321,22 @@ function renderLongRace(){
     '</div>'
   ));
 
-  wrap.appendChild(el('<div class="lr-sc-banner" id="gpm-lr-sc-banner" style="display:'+(lr.safetyCar?'block':'none')+';">'+(lr.safetyCar ? (lr.safetyCar.type==='sc' ? '🚨 SAFETY CAR NA PISTA' : '🟡 VIRTUAL SAFETY CAR NA PISTA')+' — o pelotão está se agrupando' : '')+'</div>'));
+  wrap.appendChild(el('<div class="lr-sc-banner" id="gpm-lr-sc-banner" style="display:'+(lr.safetyCar?'block':'none')+';">'+(lr.safetyCar ? (lr.safetyCar.type==='sc' ? '🚨 SAFETY CAR NA PISTA — o pelotão está se agrupando' : '🟡 VIRTUAL SAFETY CAR NA PISTA — ritmo reduzido, sem ultrapassagens') : '')+'</div>'));
 
-  wrap.appendChild(el(speedControlHtml()));
-  wireSpeedControl(wrap);
+  // controles agrupados numa faixa só (velocidade + previsão + pit voluntário), mais fácil de
+  // usar no celular do que espalhado pela tela inteira
+  var controls = el('<div class="lr-controls"></div>');
+  controls.appendChild(el(speedControlHtml()));
+  var weatherToggleBtn = el('<button type="button" class="btn ghost lr-ctrl-btn">🌦️ Previsão <span id="gpm-lr-weather-arrow">▼</span></button>');
+  controls.appendChild(weatherToggleBtn);
+  var canVoluntaryPit = lr.started && !lr.finished && !lr.pendingDecision && !lr.pitTimer && !lr.pitApproach;
+  if(canVoluntaryPit){
+    var pitBtnTop = el('<button type="button" class="btn ghost lr-ctrl-btn">🔧 Pit stop</button>');
+    pitBtnTop.addEventListener('click', function(){ requestVoluntaryPit(); });
+    controls.appendChild(pitBtnTop);
+  }
+  wrap.appendChild(controls);
+  wireSpeedControl(controls);
 
   var layout = el('<div class="race-layout"></div>');
   var trackCol = el('<div class="race-track-col"></div>');
@@ -2158,6 +2357,8 @@ function renderLongRace(){
       '<svg viewBox="0 0 520 300" preserveAspectRatio="xMidYMid meet">'+
         '<path d="'+track.trackData.d+'" fill="none" stroke="#262b36" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>'+
         '<path d="'+track.trackData.d+'" fill="none" stroke="#3a4150" stroke-width="1.5" stroke-dasharray="4 7" opacity=".6"/>'+
+        '<defs><pattern id="gpm-chk" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="3" height="3" fill="#eef0f3"/><rect x="3" width="3" height="3" fill="#20232b"/><rect y="3" width="3" height="3" fill="#20232b"/><rect x="3" y="3" width="3" height="3" fill="#eef0f3"/></pattern></defs>'+
+        startLineMarkup(track.trackData)+
         pitLaneMarkup(track)+
         '<g id="gpm-lr-cars"></g>'+
       '</svg>'+
@@ -2175,7 +2376,7 @@ function renderLongRace(){
 
   var status = el('<div class="panel lr-status"></div>');
   status.innerHTML =
-    '<div class="lr-stat"><div class="lr-stat-label">Clima</div><div class="lr-stat-val lr-weather-btn" id="gpm-lr-weather">'+weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow)+' 🔍</div></div>'+
+    '<div class="lr-stat"><div class="lr-stat-label">Clima</div><div class="lr-stat-val" id="gpm-lr-weather">'+weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow)+'</div></div>'+
     '<div class="lr-stat"><div class="lr-stat-label">Pneu atual</div><div class="lr-stat-val" id="gpm-lr-tire">'+tireName(lr.compound)+'</div></div>'+
     '<div class="lr-stat"><div class="lr-stat-label">Voltas no pneu</div><div class="lr-stat-val" id="gpm-lr-tirelaps">'+lr.tireLaps+'</div></div>'+
     '<div class="lr-stat"><div class="lr-stat-label">Pit stops</div><div class="lr-stat-val" id="gpm-lr-pitstops">'+lr.pitStops+'</div></div>';
@@ -2184,20 +2385,32 @@ function renderLongRace(){
   var weatherPopup = el('<div class="panel" id="gpm-lr-weather-popup" style="display:none;"></div>');
   weatherPopup.innerHTML = weatherTimelineHtml(lr);
   wrap.appendChild(weatherPopup);
-  status.querySelector('#gpm-lr-weather').addEventListener('click', function(){
-    weatherPopup.style.display = weatherPopup.style.display==='none' ? 'block' : 'none';
+  weatherToggleBtn.addEventListener('click', function(){
+    var open = weatherPopup.style.display==='none';
+    weatherPopup.style.display = open ? 'block' : 'none';
+    document.getElementById('gpm-lr-weather-arrow').textContent = open ? '▲' : '▼';
   });
 
-  if(lr.pitTimer){
+  if(lr.pitApproach){
+    var appPanel = el('<div class="panel lr-pit"></div>');
+    appPanel.innerHTML =
+      '<div class="lr-decision-title">🔧 Entrando nos boxes...</div>'+
+      '<div class="lr-pit-approach">O carro está chegando na zona do pit stop.</div>';
+    wrap.appendChild(appPanel);
+    var appFc = el('<div class="panel"></div>');
+    appFc.innerHTML = myStandingHtml(lr)+weatherTimelineHtml(lr);
+    wrap.appendChild(appFc);
+  } else if(lr.pitTimer){
     var pt = lr.pitTimer;
     var pitPanel = el('<div class="panel lr-pit"></div>');
     pitPanel.innerHTML =
-      '<div class="lr-decision-title">🔧 Pit stop em andamento</div>'+
+      '<div class="lr-decision-title">🔧 Troca de pneus em andamento</div>'+
       '<div class="lr-pit-timer">'+
         '<div class="lr-pit-time" id="gpm-lr-pit-elapsed">0.0s</div>'+
-        '<div class="lr-pit-req">de '+(pt.requiredMs/1000).toFixed(1)+'s necessários'+(pt.underCaution?' — parada sob neutralização (barata)':' — parada de bandeira verde (mais cara)')+'</div>'+
+        '<div class="lr-pit-req">de '+(pt.requiredMs/1000).toFixed(1)+'s necessários</div>'+
       '</div>'+
-      '<div class="lr-pit-track"><div class="lr-pit-fill" id="gpm-lr-pit-fill" style="width:0%;"></div></div>';
+      '<div class="lr-pit-track"><div class="lr-pit-fill" id="gpm-lr-pit-fill" style="width:0%;"></div></div>'+
+      (pt.problem ? '<div class="lr-pit-problem">⚠️ '+pt.message+' — a equipe está perdendo tempo extra nesta parada.</div>' : '');
     wrap.appendChild(pitPanel);
     var pitFc = el('<div class="panel"></div>');
     pitFc.innerHTML = myStandingHtml(lr)+weatherTimelineHtml(lr);
@@ -2206,7 +2419,7 @@ function renderLongRace(){
     var d = lr.pendingDecision;
     var panel = el('<div class="panel lr-decision"></div>');
     var title = d.type==='weather' ? '🌦️ O clima mudou' : d.type==='sc' ? '🚨 Safety Car!' : d.type==='voluntary' ? '🔧 Escolha o pneu' : '🟡 Virtual Safety Car';
-    var msg = d.type==='weather' ? 'A pista agora está com '+Math.round(lr.wetnessNow)+'% de umidade. Vale trocar de pneu?' : d.type==='voluntary' ? 'Parada por bandeira verde — custa mais tempo que uma parada sob safety car/VSC.' : 'Janela barata pra parar nos boxes. Vai aproveitar?';
+    var msg = d.type==='weather' ? 'A pista agora está com '+Math.round(lr.wetnessNow)+'% de umidade. Vale trocar de pneu?' : d.type==='voluntary' ? 'Escolha o composto para a parada.' : 'O ritmo de todo mundo caiu sob neutralização — ótima hora pra economizar tempo numa parada.';
     panel.innerHTML = '<div class="lr-decision-title">'+title+'</div><div class="lr-decision-msg">'+msg+'</div>'+myStandingHtml(lr)+weatherTimelineHtml(lr);
     var pitRow = el('<div class="cardgrid" style="margin-top:10px;"></div>');
     var lapsLeft = Math.max(1, lr.totalLaps - lr.lap + 1);
@@ -2218,10 +2431,6 @@ function renderLongRace(){
     stayBtn.addEventListener('click', function(){ resolveDecision(false, null); });
     panel.appendChild(stayBtn);
     wrap.appendChild(panel);
-  } else if(lr.started && !lr.finished){
-    var pitBtn = el('<button class="btn ghost" style="width:100%;margin-bottom:14px;">🔧 Trocar pneus agora</button>');
-    pitBtn.addEventListener('click', function(){ requestVoluntaryPit(); });
-    wrap.appendChild(pitBtn);
   }
 
   var histWrap = el('<details class="panel"><summary>Histórico da corrida ('+lr.history.length+')</summary></details>');
@@ -2230,7 +2439,7 @@ function renderLongRace(){
   histWrap.appendChild(board);
   wrap.appendChild(histWrap);
 
-  if(!lr.pendingDecision && !lr.pitTimer){
+  if(!lr.pendingDecision && !lr.pitTimer && !lr.pitApproach){
     var skipbar = el('<div class="skipbar"><button class="btn ghost">Pular corrida longa</button></div>');
     skipbar.querySelector('button').addEventListener('click', function(){ skipLongRace(); });
     wrap.appendChild(skipbar);
