@@ -1370,18 +1370,20 @@
           ]
         },
         {
-          "year": 2019,
+          "year": 2023,
           "team": "Red Bull Racing",
-          "teammate": "Alexander Albon",
-          "overall": 84,
-          "pace": 95,
-          "consistency": 92,
-          "aggression": 92,
+          "teammate": "Sergio Pérez",
+          "overall": 99,
+          "pace": 99,
+          "consistency": 99,
+          "aggression": 99,
           "positive_traits": [
-            "Adaptação Rápida ao Carro Novo"
+            "Velocidade Pura Dominante",
+            "Consistência de Pontuação",
+            "Zero Erros Não Forçados"
           ],
           "negative_traits": [
-            "Ritmo Abaixo da Média"
+            "Nenhum Ponto Fraco Notável"
           ]
         }
       ]
@@ -1892,7 +1894,7 @@
         {
           "year": 1985,
           "team": "Minardi",
-          "teammate": "None (Piloto Único)",
+          "teammate": "None",
           "overall": 60,
           "pace": 68,
           "consistency": 65,
@@ -2219,6 +2221,396 @@
           ],
           "negative_traits": [
             "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_31",
+      "name": "Sergio Pérez",
+      "nationality": "MEX",
+      "seasons": [
+        {
+          "year": 2020,
+          "team": "Racing Point",
+          "teammate": "Lance Stroll",
+          "overall": 86,
+          "pace": 85,
+          "consistency": 91,
+          "aggression": 78,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Red Bull Racing",
+          "teammate": "Max Verstappen",
+          "overall": 87,
+          "pace": 86,
+          "consistency": 82,
+          "aggression": 80,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita",
+            "Excelente em Pistas de Rua"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_32",
+      "name": "Nico Rosberg",
+      "nationality": "GER",
+      "seasons": [
+        {
+          "year": 2014,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 91,
+          "pace": 94,
+          "consistency": 90,
+          "aggression": 84,
+          "positive_traits": [
+            "Pole Positions Surpreendentes",
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        },
+        {
+          "year": 2016,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 95,
+          "pace": 96,
+          "consistency": 96,
+          "aggression": 88,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_33",
+      "name": "Rubens Barrichello",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 2002,
+          "team": "Ferrari",
+          "teammate": "Michael Schumacher",
+          "overall": 88,
+          "pace": 89,
+          "consistency": 90,
+          "aggression": 76,
+          "positive_traits": [
+            "Excelente em Condições Mistas",
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Ferrari",
+          "teammate": "Michael Schumacher",
+          "overall": 91,
+          "pace": 92,
+          "consistency": 93,
+          "aggression": 78,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_34",
+      "name": "Daniel Ricciardo",
+      "nationality": "AUS",
+      "seasons": [
+        {
+          "year": 2014,
+          "team": "Red Bull Racing",
+          "teammate": "Sebastian Vettel",
+          "overall": 89,
+          "pace": 91,
+          "consistency": 89,
+          "aggression": 92,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2016,
+          "team": "Red Bull Racing",
+          "teammate": "Max Verstappen",
+          "overall": 92,
+          "pace": 93,
+          "consistency": 94,
+          "aggression": 90,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_35",
+      "name": "Carlos Sainz Jr.",
+      "nationality": "ESP",
+      "seasons": [
+        {
+          "year": 2022,
+          "team": "Ferrari",
+          "teammate": "Charles Leclerc",
+          "overall": 85,
+          "pace": 88,
+          "consistency": 86,
+          "aggression": 80,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita",
+            "Leitura de Corrida da Cabine"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Ferrari",
+          "teammate": "Charles Leclerc",
+          "overall": 88,
+          "pace": 90,
+          "consistency": 91,
+          "aggression": 82,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_36",
+      "name": "Lando Norris",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "McLaren",
+          "teammate": "Daniel Ricciardo",
+          "overall": 86,
+          "pace": 89,
+          "consistency": 88,
+          "aggression": 82,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 2024,
+          "team": "McLaren",
+          "teammate": "Oscar Piastri",
+          "overall": 92,
+          "pace": 95,
+          "consistency": 91,
+          "aggression": 88,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_37",
+      "name": "Gerhard Berger",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 1989,
+          "team": "Ferrari",
+          "teammate": "Nigel Mansell",
+          "overall": 86,
+          "pace": 90,
+          "consistency": 82,
+          "aggression": 90,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1991,
+          "team": "McLaren",
+          "teammate": "Ayrton Senna",
+          "overall": 87,
+          "pace": 89,
+          "consistency": 86,
+          "aggression": 86,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo",
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_38",
+      "name": "Damon Hill",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1994,
+          "team": "Williams",
+          "teammate": "Alain Prost",
+          "overall": 89,
+          "pace": 92,
+          "consistency": 89,
+          "aggression": 84,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 1996,
+          "team": "Williams",
+          "teammate": "Jacques Villeneuve",
+          "overall": 94,
+          "pace": 95,
+          "consistency": 96,
+          "aggression": 85,
+          "positive_traits": [
+            "Pole Positions Surpreendentes",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_39",
+      "name": "Jacques Villeneuve",
+      "nationality": "CAN",
+      "seasons": [
+        {
+          "year": 1996,
+          "team": "Williams",
+          "teammate": "Damon Hill",
+          "overall": 90,
+          "pace": 93,
+          "consistency": 88,
+          "aggression": 94,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1997,
+          "team": "Williams",
+          "teammate": "Heinz-Harald Frentzen",
+          "overall": 94,
+          "pace": 96,
+          "consistency": 91,
+          "aggression": 96,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_40",
+      "name": "George Russell",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Williams",
+          "teammate": "Nicholas Latifi",
+          "overall": 82,
+          "pace": 89,
+          "consistency": 80,
+          "aggression": 84,
+          "positive_traits": [
+            "Pole Positions Surpreendentes",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2022,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 89,
+          "pace": 91,
+          "consistency": 93,
+          "aggression": 88,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
           ]
         }
       ]

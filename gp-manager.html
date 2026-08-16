@@ -1706,7 +1706,12 @@ function initLongRace(compoundId){
     d._progress = 0;
     d._tireCompound = pickCompoundForConditions(lr.wetnessNow);
     d._tireLaps = 0;
-    d._pitLap = Math.random()<0.7 ? Math.round(rand(3, Math.max(4,lr.totalLaps-2))) : null;
+    // a parada tem que fazer sentido com o pneu escolhido — perto do fim da vida útil do
+    // composto (com uma variação de estratégia), não um número solto sem relação com o pneu
+    var tireLife = tireLifeLaps(tireById(d._tireCompound));
+    var idealPitLap = Math.round(tireLife * rand(0.8, 1.15));
+    var pitChance = idealPitLap < lr.totalLaps-1 ? 0.85 : 0.25; // pneu que aguenta a prova toda: raramente para
+    d._pitLap = Math.random()<pitChance ? Math.min(lr.totalLaps-1, Math.max(2, idealPitLap)) : null;
     if(d._pitLap){
       var rivalTeamSkill = rand(45,92); // competência genérica da equipe rival nos boxes
       var pitRoll = rollPitStop(rivalTeamSkill);
@@ -2416,12 +2421,10 @@ function renderLongRace(){
   tireAlertBox.querySelector('button').addEventListener('click', function(){ dismissTireAlert(); });
   wrap.appendChild(tireAlertBox);
 
-  // controles agrupados numa faixa só (velocidade + previsão + pit voluntário), mais fácil de
+  // controles agrupados numa faixa só (velocidade + pit voluntário), mais fácil de
   // usar no celular do que espalhado pela tela inteira
   var controls = el('<div class="lr-controls"></div>');
   controls.appendChild(el(speedControlHtml()));
-  var weatherToggleBtn = el('<button type="button" class="btn ghost lr-ctrl-btn">🌦️ Previsão <span id="gpm-lr-weather-arrow">▼</span></button>');
-  controls.appendChild(weatherToggleBtn);
   var canVoluntaryPit = lr.started && !lr.finished && !lr.pendingDecision && !lr.mineField.some(function(d){ return d._pitPhase; });
   {
     var pitBtnTop = el('<button type="button" class="btn ghost lr-ctrl-btn" id="gpm-lr-pitbtn-top" style="display:'+(canVoluntaryPit?'inline-flex':'none')+';">🔧 Pit stop</button>');
@@ -2431,16 +2434,10 @@ function renderLongRace(){
   wrap.appendChild(controls);
   wireSpeedControl(controls);
 
-  // o popup de previsão aparece logo abaixo do botão que o abre, não lá embaixo da tela — assim
-  // o jogador não precisa rolar a página inteira pra ver a previsão que acabou de pedir
-  var weatherPopup = el('<div class="panel" id="gpm-lr-weather-popup" style="display:none;"></div>');
+  // previsão do tempo fica sempre visível, sem precisar abrir/fechar
+  var weatherPopup = el('<div class="panel" id="gpm-lr-weather-popup"></div>');
   weatherPopup.innerHTML = weatherTimelineHtml(lr);
   wrap.appendChild(weatherPopup);
-  weatherToggleBtn.addEventListener('click', function(){
-    var open = weatherPopup.style.display==='none';
-    weatherPopup.style.display = open ? 'block' : 'none';
-    document.getElementById('gpm-lr-weather-arrow').textContent = open ? '▲' : '▼';
-  });
 
   var layout = el('<div class="race-layout"></div>');
   var trackCol = el('<div class="race-track-col"></div>');
