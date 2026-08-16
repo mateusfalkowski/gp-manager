@@ -2103,9 +2103,9 @@ function resolveDecision(pit, compoundId){
   var lr = state.longRace;
   lr.pendingDecision = null;
   if(pit){
-    // o carro primeiro dirige até a zona do pit (fase curta e visual) — só depois de "chegar" lá
-    // é que a troca de pneu (com duração variável) começa de verdade
-    lr.pitApproach = { compound:compoundId, elapsedMs:0, requiredMs:900, lastTs:null, startPositions:null };
+    // o carro primeiro termina a volta seguindo a pista normalmente até chegar na entrada dos boxes
+    // (não corta caminho) — só depois de "chegar" lá é que a troca de pneu começa de verdade
+    lr.pitApproach = { compound:compoundId, elapsedMs:0, requiredMs:0, lastTs:null, ready:false };
     render();
   } else {
     lr.history.push({icon:'🚦', title:'Sem parada', text:'Você decidiu seguir na pista com os pneus '+tireName(lr.compound)+'.'});
@@ -2113,21 +2113,33 @@ function resolveDecision(pit, compoundId){
   }
 }
 
-// anima os carros da equipe do jogador saindo da pista e entrando na zona do pit, enquanto os
-// rivais continuam correndo normalmente (o tempo dessa aproximação também custa tempo de verdade)
+// anima os carros da equipe do jogador terminando a volta atual normalmente pela pista (sem
+// atalho) até chegar na entrada dos boxes; só nos últimos metros ele sai da linha de corrida em
+// direção à vaga do pit. Os rivais continuam correndo normalmente nesse meio tempo (custa tempo de verdade)
 function runPitApproachFrame(){
   var lr = state.longRace;
   if(!lr || !lr.pitApproach) return;
   var track = getActiveTrack();
   var pa = lr.pitApproach;
-  if(!pa.startPositions){
-    pa.startPositions = lr.mineField.map(function(d){
-      var dist = (d._progress||0) * track.trackData.total;
-      return lrCarPosition(track.trackData, dist, d._lane||0);
-    });
-  }
-  var pit = pitBoxPosition(track);
   var basePaceLapsPerMs = 1/(LR_LAP_SECONDS*1000);
+
+  if(!pa.ready){
+    var myPaceFactor = tirePaceFactor(lr.compound, lr.wetnessNow, lr.tireLaps);
+    var cautionMult0 = lr.safetyCar ? 0.55 : 1;
+    var maxNeeded = 0;
+    lr.mineField.forEach(function(d){
+      d._approachSegPace = myPaceFactor * (d._driverMult||1) * cautionMult0;
+      d._approachStart = d._progress||0;
+      d._approachTarget = Math.ceil(d._approachStart - 1e-6);
+      var distLaps = Math.max(0, d._approachTarget - d._approachStart);
+      var neededMs = distLaps/(d._approachSegPace*basePaceLapsPerMs);
+      if(neededMs>maxNeeded) maxNeeded = neededMs;
+    });
+    pa.requiredMs = Math.max(300, maxNeeded);
+    pa.ready = true;
+  }
+
+  var pit = pitBoxPosition(track);
   function frame(ts){
     if(!lr.pitApproach) return;
     if(pa.lastTs==null) pa.lastTs = ts;
@@ -2136,15 +2148,21 @@ function runPitApproachFrame(){
     var speed = state.raceSpeed||1;
     var dtUniverse = dtReal*speed;
     pa.elapsedMs = Math.min(pa.elapsedMs + dtUniverse, pa.requiredMs);
-    var t = pa.elapsedMs / pa.requiredMs;
-    var ease = t*t*(3-2*t);
-    lr.mineField.forEach(function(d,i){
-      var sp = pa.startPositions[i];
-      var x = sp.x + (pit.x-sp.x)*ease;
-      var y = sp.y + (pit.y-sp.y)*ease;
+
+    lr.mineField.forEach(function(d){
+      var liveProgress = Math.min(d._approachTarget, d._approachStart + pa.elapsedMs*basePaceLapsPerMs*d._approachSegPace);
+      d._liveProgress = liveProgress;
+      var remainLaps = d._approachTarget - liveProgress;
+      var dist = remainLaps<1e-9 ? 0 : (liveProgress%1)*track.trackData.total;
+      var pos = lrCarPosition(track.trackData, dist, d._lane||0);
+      if(remainLaps < 0.06){
+        var blend = 1 - Math.max(0,remainLaps)/0.06;
+        pos = { x: pos.x+(pit.x-pos.x)*blend, y: pos.y+(pit.y-pos.y)*blend };
+      }
       var elx = document.getElementById(d._elId);
-      if(elx) elx.setAttribute('transform', 'translate('+x.toFixed(2)+','+y.toFixed(2)+')');
+      if(elx) elx.setAttribute('transform', 'translate('+pos.x.toFixed(2)+','+pos.y.toFixed(2)+')');
     });
+
     var lapsGained = dtUniverse*basePaceLapsPerMs;
     var cautionMult = lr.safetyCar ? 0.55 : 1;
     lr.rivalField.forEach(function(d){
@@ -2162,6 +2180,7 @@ function runPitApproachFrame(){
     if(pa.elapsedMs < pa.requiredMs){
       lr.raceAnimFrame = requestAnimationFrame(frame);
     } else {
+      lr.mineField.forEach(function(d){ d._progress = d._approachTarget; d._liveProgress = d._approachTarget; });
       lr.pitApproach = null;
       var chefeSkill = (state.chefe && state.chefe.estrategia!=null) ? state.chefe.estrategia : 70;
       var roll = rollPitStop(chefeSkill);
