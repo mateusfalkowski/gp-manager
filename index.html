@@ -272,6 +272,12 @@
   color:#1a1200;background:linear-gradient(90deg,var(--accent-2),#ffe27a);border-radius:8px;
   padding:9px 10px;margin-bottom:10px;
 }
+#gpm .lr-tire-alert{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  font-size:13.5px;color:var(--text);background:rgba(239,122,133,.14);border:1px solid rgba(239,122,133,.5);
+  border-radius:8px;padding:10px 12px;margin-bottom:10px;
+}
+#gpm .lr-tire-alert button{flex-shrink:0;padding:6px 18px;}
 #gpm .wx-seg-lap{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:4px;}
 #gpm .wx-seg-icon{font-size:18px;}
 #gpm .wx-seg-pct{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;color:var(--text-dim);margin-top:2px;}
@@ -581,20 +587,25 @@ function compoundGrip(compoundId){
   return t && t.grip!=null ? t.grip : 1.0;
 }
 
-// desempenho de cada composto conforme o % de umidade da pista (0-100)
+// desempenho de cada composto conforme o % de umidade da pista (0-100) — fora da zona ideal a
+// queda é forte de propósito: pneu errado pra condição tem que doer de verdade (ex: abaixo de
+// 5% de umidade o seco tem que ser muito mais rápido que o intermediário/chuva, e vice-versa
+// quando a pista está bem molhada)
 function tireWetnessFit(compoundId, wetPct){
   if(compoundId==='inter'){
-    if(wetPct<15) return 1 - (15-wetPct)/15*0.55;
+    if(wetPct<=5) return 0.22;
+    if(wetPct<15) return 0.22 + (wetPct-5)/10*0.78;
     if(wetPct<=60) return 1;
-    return 1 - (wetPct-60)/40*0.55;
+    return Math.max(0.35, 1 - (wetPct-60)/40*0.65);
   }
   if(compoundId==='chuva'){
     if(wetPct>60) return 1;
-    return 1 - (60-wetPct)/60*0.65;
+    return Math.max(0.15, 1 - (60-wetPct)/60*0.85);
   }
   // slicks (macio/médio/duro)
-  if(wetPct<15) return 1;
-  return Math.max(0.12, 1 - (wetPct-15)/85*1.15);
+  if(wetPct<=15) return 1;
+  if(wetPct<=25) return 1 - (wetPct-15)/10*0.65;
+  return Math.max(0.12, 0.35 - (wetPct-25)/75*0.23);
 }
 
 function wetnessZone(pct){
@@ -1515,7 +1526,8 @@ function enterStrategy(){
     lap: 0, totalLaps: longLaps,
     history: [], pendingDecision: null,
     rivalsRoster: null, rivalField: null, mineField: null, finished:false,
-    events: [], eventIndex: 0, raceAnimFrame: null, started: false, timingOrder: null, safetyCar: null
+    events: [], eventIndex: 0, raceAnimFrame: null, started: false, timingOrder: null, safetyCar: null,
+    tireAlertQueue: [], activeTireAlert: null
   };
   state.screen = 'strategy';
   render();
@@ -1669,9 +1681,16 @@ function initLongRace(compoundId){
   lr.rivalField = resolveRivalsOnly(fullField.filter(function(d){ return !d.mine; }), lr.totalLaps, varBoost);
   lr.mineField = fullField.filter(function(d){ return d.mine; });
 
+  // pontua os pilotos do jogador com a MESMA fórmula usada pros rivais (computeScore, que já
+  // pesa velocidade/consistência/agressividade do piloto + potência/confiabilidade do motor +
+  // scoreMult do chefe) — sem isso, a qualidade do que você contratou no draft não influenciava
+  // quase nada o ritmo na corrida longa, só o pneu, o que deixava a IA parecer imbatível mesmo
+  // com uma equipe muito melhor contratada
+  lr.mineField.forEach(function(d){ d.score = computeScore(d); });
   var finisherScores = lr.rivalField.filter(function(d){ return !d.dnf; }).map(function(d){ return d.score; });
-  var minS = finisherScores.length ? Math.min.apply(null, finisherScores) : 0;
-  var maxS = finisherScores.length ? Math.max.apply(null, finisherScores) : 1;
+  var allScores = finisherScores.concat(lr.mineField.map(function(d){ return d.score; }));
+  var minS = allScores.length ? Math.min.apply(null, allScores) : 0;
+  var maxS = allScores.length ? Math.max.apply(null, allScores) : 1;
   var palette = ['#5aa9e6','#c792ea','#67d8b0','#f2a65a','#ef7a85','#8a94a6','#d4b483','#7fb3ff','#e8a0bf','#8fd694'];
   var laneOffsets = [-8,-5,-2,2,5,8];
   // companheiros de equipe reais (mesmo pairKey) compartilham a cor da bolinha, pra ficar visível
@@ -1696,18 +1715,15 @@ function initLongRace(compoundId){
     }
   });
   var startPace = tirePaceFactor(compoundId, lr.wetnessNow, 0);
-  // pequena diferença de ritmo entre os 2 pilotos da própria equipe (mesmo pneu/estratégia),
-  // senão os dois carros correm sempre exatamente colados um no outro
-  var mineSkills = lr.mineField.map(function(d){ return d.vel*0.5+d.cons*0.3+d.agr*0.2; });
-  var skMin = Math.min.apply(null, mineSkills), skMax = Math.max.apply(null, mineSkills);
   lr.mineField.forEach(function(d,i){
     d._mineIdx = i;
     d._lane = [-3,3][i%2];
     d._color = i===0 ? '#ff7a29' : '#ffb15c';
     d._progress = 0;
-    var skill = d.vel*0.5+d.cons*0.3+d.agr*0.2;
-    var norm = skMax>skMin ? (skill-skMin)/(skMax-skMin) : 0.5;
-    d._driverMult = 0.965 + norm*0.05; // ~0.965..1.015
+    // mesma escala 0.85x..1.15x dos rivais, comparando o score do piloto contra o campo inteiro
+    // (rivais + os 2 seus) — uma equipe bem contratada agora realmente compensa
+    var norm = (d.score-minS)/((maxS-minS)||1);
+    d._driverMult = 0.85 + Math.max(0,Math.min(1,norm))*0.30;
     d._paceFactor = startPace * d._driverMult;
     // cada piloto tem seu próprio pneu e sua própria janela de pit — um não precisa esperar o
     // outro chegar nos boxes pra trocar (independente de verdade, não só visual)
@@ -1758,16 +1774,6 @@ function advanceRivalTiresOneLap(lr, lap){
     } else {
       d._tireLaps++;
     }
-  });
-}
-
-function refreshLongRaceTireBadges(){
-  var lr = state.longRace;
-  if(!lr.timingOrder) return;
-  lr.timingOrder.forEach(function(d){
-    var elx = document.getElementById(d._tireElId);
-    if(!elx) return;
-    elx.innerHTML = tireBadgeHtml(d._tireCompound, Math.floor(d._tireLaps));
   });
 }
 
@@ -2017,17 +2023,47 @@ function advanceMineCar(d, dtUniverse, track, cautionMult){
 }
 
 // avisa o jogador quando o pneu de um piloto começa a cair de rendimento, e de novo quando já
-// está bem prejudicado — cada aviso dispara só uma vez por jogo de pneu (reseta ao trocar)
+// está bem prejudicado — cada aviso dispara só uma vez por jogo de pneu (reseta ao trocar).
+// além de ficar no histórico, entra numa fila de popup que o jogador precisa confirmar (OK),
+// senão passava despercebido dentro do histórico recolhido
 function checkTireWearWarning(d){
   var wearPct = tireWearPct(d._tireCompound, d._tireLaps);
   if((d._tireWarnStage||0) < 1 && wearPct >= 55){
     d._tireWarnStage = 1;
-    logLongRaceEvent({icon:'📉', title:'Pneu perdendo desempenho', text:shortName(d.driverName)+': o pneu '+tireName(d._tireCompound)+' já está com '+wearPct+'% de desgaste e começando a perder ritmo.'}, true);
+    var text1 = shortName(d.driverName)+': o pneu '+tireName(d._tireCompound)+' já está com '+wearPct+'% de desgaste e começando a perder ritmo.';
+    logLongRaceEvent({icon:'📉', title:'Pneu perdendo desempenho', text:text1}, true);
+    queueTireAlert(text1);
   }
   if((d._tireWarnStage||0) < 2 && wearPct >= 88){
     d._tireWarnStage = 2;
-    logLongRaceEvent({icon:'🚨', title:'Pneu bem prejudicado', text:shortName(d.driverName)+': o pneu '+tireName(d._tireCompound)+' está com '+wearPct+'% de desgaste — o desempenho já caiu bastante, considere parar nos boxes.'}, true);
+    var text2 = shortName(d.driverName)+': o pneu '+tireName(d._tireCompound)+' está com '+wearPct+'% de desgaste — o desempenho já caiu bastante, considere parar nos boxes.';
+    logLongRaceEvent({icon:'🚨', title:'Pneu bem prejudicado', text:text2}, true);
+    queueTireAlert(text2);
   }
+}
+
+function queueTireAlert(text){
+  var lr = state.longRace;
+  lr.tireAlertQueue.push(text);
+  showNextTireAlert();
+}
+
+function showNextTireAlert(){
+  var lr = state.longRace;
+  var banner = document.getElementById('gpm-lr-tire-alert');
+  if(!banner || lr.activeTireAlert || !lr.tireAlertQueue.length) return;
+  lr.activeTireAlert = lr.tireAlertQueue.shift();
+  var textEl = document.getElementById('gpm-lr-tire-alert-text');
+  if(textEl) textEl.textContent = '⚠️ '+lr.activeTireAlert;
+  banner.style.display = 'flex';
+}
+
+function dismissTireAlert(){
+  var lr = state.longRace;
+  var banner = document.getElementById('gpm-lr-tire-alert');
+  if(banner) banner.style.display = 'none';
+  lr.activeTireAlert = null;
+  showNextTireAlert();
 }
 
 // anima suavemente (requestAnimationFrame) do fim da última volta processada até a volta do próximo evento.
@@ -2112,7 +2148,6 @@ function runLongRaceSegment(){
       }
       lr.lap = targetLap;
       refreshLongRaceStatus();
-      refreshLongRaceTireBadges();
       processLongRaceEvents();
     }
   }
@@ -2214,6 +2249,8 @@ function updateTimingTower(lr){
       pitBadgeEl.style.display = inPit ? 'inline' : 'none';
       if(inPit) pitBadgeEl.title = pitTitle;
     }
+    var tireEl = document.getElementById(d._tireElId);
+    if(tireEl) tireEl.innerHTML = tireBadgeHtml(d._tireCompound, Math.floor(d._tireLaps));
     var isDnfFrozen = d.dnf && myLive >= d._dnfLap-1e-6;
     if(rowEl) rowEl.classList.toggle('dnf', !!isDnfFrozen);
     if(isDnfFrozen){ gapEl.textContent = 'ABANDONOU'; return; }
@@ -2374,6 +2411,10 @@ function renderLongRace(){
   ));
 
   wrap.appendChild(el('<div class="lr-sc-banner" id="gpm-lr-sc-banner" style="display:'+(lr.safetyCar?'block':'none')+';">'+(lr.safetyCar ? (lr.safetyCar.type==='sc' ? '🚨 SAFETY CAR NA PISTA — o pelotão está se agrupando' : '🟡 VIRTUAL SAFETY CAR NA PISTA — ritmo reduzido, sem ultrapassagens') : '')+'</div>'));
+
+  var tireAlertBox = el('<div class="lr-tire-alert" id="gpm-lr-tire-alert" style="display:'+(lr.activeTireAlert?'flex':'none')+';"><div id="gpm-lr-tire-alert-text">'+(lr.activeTireAlert?'⚠️ '+lr.activeTireAlert:'')+'</div><button type="button" class="btn">OK</button></div>');
+  tireAlertBox.querySelector('button').addEventListener('click', function(){ dismissTireAlert(); });
+  wrap.appendChild(tireAlertBox);
 
   // controles agrupados numa faixa só (velocidade + previsão + pit voluntário), mais fácil de
   // usar no celular do que espalhado pela tela inteira
