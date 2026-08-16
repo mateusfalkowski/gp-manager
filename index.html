@@ -945,7 +945,7 @@ function renderRaceStyle(){
       '<div class="card-desc">'+(state.mode==='season' ? 'Em cada corrida, escolha entre assistir a simulação ao vivo ou ver direto os melhores momentos.' : 'Assista a corrida com simulação animada na pista, luzes de largada e tudo mais.')+'</div>'+
     '</div>'
   );
-  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.screen='draft'; render(); });
+  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.screen='draft'; state.pools=generatePools(); render(); });
   grid.appendChild(rapida);
 
   var longa = el(
@@ -954,7 +954,7 @@ function renderRaceStyle(){
       '<div class="card-desc">Veja a previsão do tempo, escolha os pneus e reaja a safety cars, VSC e mudanças de clima ao vivo — suas decisões afetam o resultado.</div>'+
     '</div>'
   );
-  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.screen='draft'; render(); });
+  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.screen='draft'; state.pools=generatePools(); render(); });
   grid.appendChild(longa);
 
   wrap.appendChild(grid);
