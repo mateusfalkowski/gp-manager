@@ -1,0 +1,2507 @@
+{
+  "chefes": [
+    {
+      "id": "tp_01",
+      "name": "Sunniva Harkonen",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1982,
+          "team": "Vantage GP",
+          "overall": 86,
+          "leadership": 81,
+          "strategy": 79,
+          "development": 80,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        },
+        {
+          "year": 1984,
+          "team": "Vantage GP",
+          "overall": 90,
+          "leadership": 89,
+          "strategy": 84,
+          "development": 96,
+          "positive_traits": [
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_02",
+      "name": "Camille Whitfield",
+      "nationality": "POL",
+      "seasons": [
+        {
+          "year": 1987,
+          "team": "Lakespur GP",
+          "overall": 93,
+          "leadership": 87,
+          "strategy": 85,
+          "development": 86,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Lakespur GP",
+          "overall": 97,
+          "leadership": 99,
+          "strategy": 99,
+          "development": 99,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Atrito com Engenharia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_03",
+      "name": "Emile Conti",
+      "nationality": "MEX",
+      "seasons": [
+        {
+          "year": 1992,
+          "team": "Lakespur GP",
+          "overall": 78,
+          "leadership": 71,
+          "strategy": 80,
+          "development": 76,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Lakespur GP",
+          "overall": 74,
+          "leadership": 81,
+          "strategy": 68,
+          "development": 66,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_04",
+      "name": "Grace Vasilenko",
+      "nationality": "AUS",
+      "seasons": [
+        {
+          "year": 1996,
+          "team": "Fenwick Grand Prix",
+          "overall": 94,
+          "leadership": 95,
+          "strategy": 96,
+          "development": 97,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Fenwick Grand Prix",
+          "overall": 99,
+          "leadership": 99,
+          "strategy": 97,
+          "development": 96,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Foco Técnico Obsessivo"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_05",
+      "name": "Noel Whitfield",
+      "nationality": "PRT",
+      "seasons": [
+        {
+          "year": 2003,
+          "team": "Corvane Racing",
+          "overall": 87,
+          "leadership": 83,
+          "strategy": 87,
+          "development": 88,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Corvane Racing",
+          "overall": 97,
+          "leadership": 94,
+          "strategy": 91,
+          "development": 93,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_06",
+      "name": "Grace Bergstrom",
+      "nationality": "BEL",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "Meridian Racing",
+          "overall": 90,
+          "leadership": 93,
+          "strategy": 97,
+          "development": 93,
+          "positive_traits": [
+            "Leitura de Corrida Impecável"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Meridian Racing",
+          "overall": 88,
+          "leadership": 91,
+          "strategy": 95,
+          "development": 86,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_07",
+      "name": "Sasha Osei",
+      "nationality": "NOR",
+      "seasons": [
+        {
+          "year": 2012,
+          "team": "Silverline F1",
+          "overall": 66,
+          "leadership": 58,
+          "strategy": 61,
+          "development": 68,
+          "positive_traits": [
+            "Moral de Equipe Elevada",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Silverline F1",
+          "overall": 70,
+          "leadership": 71,
+          "strategy": 64,
+          "development": 65,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_08",
+      "name": "Grace Amaro",
+      "nationality": "SWE",
+      "seasons": [
+        {
+          "year": 2017,
+          "team": "Meridian Racing",
+          "overall": 87,
+          "leadership": 90,
+          "strategy": 85,
+          "development": 94,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        },
+        {
+          "year": 2019,
+          "team": "Meridian Racing",
+          "overall": 94,
+          "leadership": 89,
+          "strategy": 99,
+          "development": 90,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_09",
+      "name": "Dario Lindgren",
+      "nationality": "JPN",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Solstice Motorsport",
+          "overall": 77,
+          "leadership": 83,
+          "strategy": 76,
+          "development": 81,
+          "positive_traits": [
+            "Extração Máxima do Pacote Técnico",
+            "Reconstrução Rápida de Estratégia"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Solstice Motorsport",
+          "overall": 83,
+          "leadership": 81,
+          "strategy": 80,
+          "development": 78,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica"
+          ],
+          "negative_traits": [
+            "Atrito com Engenharia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_10",
+      "name": "Zofia Okafor",
+      "nationality": "SWE",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "Amberfield Motorsport",
+          "overall": 68,
+          "leadership": 61,
+          "strategy": 75,
+          "development": 63,
+          "positive_traits": [
+            "Leitura de Corrida Impecável"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Amberfield Motorsport",
+          "overall": 74,
+          "leadership": 79,
+          "strategy": 78,
+          "development": 80,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Ajuste Lento a Mudança de Regulamento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_11",
+      "name": "Otto Marek",
+      "nationality": "NOR",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Ironvale Racing",
+          "overall": 74,
+          "leadership": 80,
+          "strategy": 67,
+          "development": 77,
+          "positive_traits": [
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 1984,
+          "team": "Ironvale Racing",
+          "overall": 70,
+          "leadership": 76,
+          "strategy": 71,
+          "development": 66,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_12",
+      "name": "Nadia Kirchner",
+      "nationality": "USA",
+      "seasons": [
+        {
+          "year": 1987,
+          "team": "Prairie Wolf Racing",
+          "overall": 92,
+          "leadership": 95,
+          "strategy": 98,
+          "development": 94,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Prairie Wolf Racing",
+          "overall": 91,
+          "leadership": 84,
+          "strategy": 85,
+          "development": 92,
+          "positive_traits": [
+            "Ousadia Estratégica em Safety Car",
+            "Upgrade Decisivo em Meio de Ano"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_13",
+      "name": "Lea Fontaine",
+      "nationality": "USA",
+      "seasons": [
+        {
+          "year": 1991,
+          "team": "Vantage GP",
+          "overall": 77,
+          "leadership": 75,
+          "strategy": 80,
+          "development": 80,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Vantage GP",
+          "overall": 76,
+          "leadership": 73,
+          "strategy": 79,
+          "development": 75,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_14",
+      "name": "Ivo Aldiss",
+      "nationality": "DNK",
+      "seasons": [
+        {
+          "year": 1997,
+          "team": "Constellation F1",
+          "overall": 70,
+          "leadership": 70,
+          "strategy": 71,
+          "development": 77,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Constellation F1",
+          "overall": 76,
+          "leadership": 68,
+          "strategy": 73,
+          "development": 74,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Poucos Upgrades Agressivos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_15",
+      "name": "Renan Nakada",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 2001,
+          "team": "Aurelia Racing Team",
+          "overall": 87,
+          "leadership": 88,
+          "strategy": 84,
+          "development": 94,
+          "positive_traits": [
+            "Extração Máxima do Pacote Técnico"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Aurelia Racing Team",
+          "overall": 95,
+          "leadership": 97,
+          "strategy": 96,
+          "development": 91,
+          "positive_traits": [
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_16",
+      "name": "Ester Riva",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2007,
+          "team": "Ironvale Racing",
+          "overall": 96,
+          "leadership": 94,
+          "strategy": 97,
+          "development": 96,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Cálculo de Pit Stop Preciso"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Ironvale Racing",
+          "overall": 93,
+          "leadership": 94,
+          "strategy": 89,
+          "development": 98,
+          "positive_traits": [
+            "Leitura de Corrida Impecável",
+            "Reconstrução Rápida de Estratégia"
+          ],
+          "negative_traits": [
+            "Atrito com Engenharia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_17",
+      "name": "Milo Renwick",
+      "nationality": "ZAF",
+      "seasons": [
+        {
+          "year": 2013,
+          "team": "Ridgeback Racing",
+          "overall": 87,
+          "leadership": 82,
+          "strategy": 87,
+          "development": 88,
+          "positive_traits": [
+            "Moral de Equipe Elevada",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Ridgeback Racing",
+          "overall": 91,
+          "leadership": 83,
+          "strategy": 90,
+          "development": 97,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Upgrade Decisivo em Meio de Ano"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_18",
+      "name": "Corvin Harkonen",
+      "nationality": "MEX",
+      "seasons": [
+        {
+          "year": 2015,
+          "team": "Amberfield Motorsport",
+          "overall": 69,
+          "leadership": 75,
+          "strategy": 74,
+          "development": 67,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        },
+        {
+          "year": 2017,
+          "team": "Amberfield Motorsport",
+          "overall": 66,
+          "leadership": 59,
+          "strategy": 65,
+          "development": 61,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_19",
+      "name": "Valeria Osei",
+      "nationality": "ESP",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Thornbury Racing",
+          "overall": 88,
+          "leadership": 92,
+          "strategy": 94,
+          "development": 93,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Thornbury Racing",
+          "overall": 94,
+          "leadership": 97,
+          "strategy": 98,
+          "development": 99,
+          "positive_traits": [
+            "Extração Máxima do Pacote Técnico"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_20",
+      "name": "Freya Aldiss",
+      "nationality": "ZAF",
+      "seasons": [
+        {
+          "year": 2023,
+          "team": "Ridgeback Racing",
+          "overall": 93,
+          "leadership": 98,
+          "strategy": 89,
+          "development": 98,
+          "positive_traits": [
+            "Leitura de Corrida Impecável",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Ridgeback Racing",
+          "overall": 99,
+          "leadership": 97,
+          "strategy": 98,
+          "development": 96,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_21",
+      "name": "Declan Roldan",
+      "nationality": "NOR",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Prairie Wolf Racing",
+          "overall": 81,
+          "leadership": 88,
+          "strategy": 76,
+          "development": 86,
+          "positive_traits": [
+            "Leitura de Corrida Impecável",
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Poucos Upgrades Agressivos"
+          ]
+        },
+        {
+          "year": 1983,
+          "team": "Prairie Wolf Racing",
+          "overall": 89,
+          "leadership": 92,
+          "strategy": 86,
+          "development": 91,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_22",
+      "name": "Voss Ravensworth",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1988,
+          "team": "Vantage GP",
+          "overall": 80,
+          "leadership": 73,
+          "strategy": 82,
+          "development": 73,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Vantage GP",
+          "overall": 82,
+          "leadership": 89,
+          "strategy": 74,
+          "development": 78,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica",
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_23",
+      "name": "Carter Lindqvist",
+      "nationality": "DNK",
+      "seasons": [
+        {
+          "year": 1991,
+          "team": "Ironvale Racing",
+          "overall": 79,
+          "leadership": 74,
+          "strategy": 73,
+          "development": 72,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Ironvale Racing",
+          "overall": 86,
+          "leadership": 83,
+          "strategy": 86,
+          "development": 78,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Poucos Upgrades Agressivos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_24",
+      "name": "Ingrid Solano",
+      "nationality": "MEX",
+      "seasons": [
+        {
+          "year": 1998,
+          "team": "Fenwick Grand Prix",
+          "overall": 69,
+          "leadership": 75,
+          "strategy": 68,
+          "development": 75,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Leitura de Corrida Impecável"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Fenwick Grand Prix",
+          "overall": 65,
+          "leadership": 60,
+          "strategy": 71,
+          "development": 65,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_25",
+      "name": "Malik Steinmeier",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 2002,
+          "team": "Ferronova Racing",
+          "overall": 64,
+          "leadership": 58,
+          "strategy": 70,
+          "development": 68,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Ferronova Racing",
+          "overall": 60,
+          "leadership": 52,
+          "strategy": 61,
+          "development": 63,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_26",
+      "name": "Miguel Steinmeier",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 2005,
+          "team": "Corvane Racing",
+          "overall": 70,
+          "leadership": 67,
+          "strategy": 72,
+          "development": 74,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Corvane Racing",
+          "overall": 67,
+          "leadership": 61,
+          "strategy": 67,
+          "development": 69,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_27",
+      "name": "Ivo Ashworth",
+      "nationality": "AUS",
+      "seasons": [
+        {
+          "year": 2011,
+          "team": "Northgate Racing",
+          "overall": 65,
+          "leadership": 71,
+          "strategy": 72,
+          "development": 62,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Comunicação Direta com a Fábrica"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 2013,
+          "team": "Northgate Racing",
+          "overall": 62,
+          "leadership": 59,
+          "strategy": 62,
+          "development": 56,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_28",
+      "name": "Enzo Harkonen",
+      "nationality": "MEX",
+      "seasons": [
+        {
+          "year": 2018,
+          "team": "Blackreef Racing",
+          "overall": 75,
+          "leadership": 70,
+          "strategy": 79,
+          "development": 74,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        },
+        {
+          "year": 2019,
+          "team": "Blackreef Racing",
+          "overall": 75,
+          "leadership": 70,
+          "strategy": 67,
+          "development": 82,
+          "positive_traits": [
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_29",
+      "name": "Colm Amaro",
+      "nationality": "DNK",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Silverline F1",
+          "overall": 69,
+          "leadership": 64,
+          "strategy": 66,
+          "development": 66,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Silverline F1",
+          "overall": 65,
+          "leadership": 61,
+          "strategy": 72,
+          "development": 72,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_30",
+      "name": "Hiro Whitfield",
+      "nationality": "NOR",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "Lakespur GP",
+          "overall": 88,
+          "leadership": 82,
+          "strategy": 87,
+          "development": 90,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Lakespur GP",
+          "overall": 90,
+          "leadership": 97,
+          "strategy": 84,
+          "development": 93,
+          "positive_traits": [
+            "Moral de Equipe Elevada",
+            "Extração Máxima do Pacote Técnico"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        }
+      ]
+    }
+  ],
+  "pilotos": [
+    {
+      "id": "drv_01",
+      "name": "Bastian Fontaine",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1980,
+          "team": "Meridian Racing",
+          "overall": 83,
+          "pace": 80,
+          "consistency": 76,
+          "aggression": 63,
+          "positive_traits": [
+            "Excelente em Condições Mistas",
+            "Velocidade Pura Dominante"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        },
+        {
+          "year": 1983,
+          "team": "Meridian Racing",
+          "overall": 85,
+          "pace": 87,
+          "consistency": 75,
+          "aggression": 59,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_02",
+      "name": "Tobias Halvorsen",
+      "nationality": "DNK",
+      "seasons": [
+        {
+          "year": 1986,
+          "team": "Constellation F1",
+          "overall": 90,
+          "pace": 96,
+          "consistency": 89,
+          "aggression": 69,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Constellation F1",
+          "overall": 97,
+          "pace": 99,
+          "consistency": 88,
+          "aggression": 53,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_03",
+      "name": "Lars Riva",
+      "nationality": "ARG",
+      "seasons": [
+        {
+          "year": 1992,
+          "team": "Ferronova Racing",
+          "overall": 88,
+          "pace": 83,
+          "consistency": 95,
+          "aggression": 83,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo",
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Ferronova Racing",
+          "overall": 93,
+          "pace": 89,
+          "consistency": 99,
+          "aggression": 84,
+          "positive_traits": [
+            "Zero Acidentes na Temporada",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_04",
+      "name": "Owen Marek",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1998,
+          "team": "Lakespur GP",
+          "overall": 58,
+          "pace": 66,
+          "consistency": 52,
+          "aggression": 87,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Lakespur GP",
+          "overall": 61,
+          "pace": 69,
+          "consistency": 55,
+          "aggression": 74,
+          "positive_traits": [
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_05",
+      "name": "Emile Ashworth",
+      "nationality": "ZAF",
+      "seasons": [
+        {
+          "year": 2003,
+          "team": "Ironvale Racing",
+          "overall": 80,
+          "pace": 89,
+          "consistency": 79,
+          "aggression": 75,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Pneus Gastos Rápido Demais"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Ironvale Racing",
+          "overall": 86,
+          "pace": 92,
+          "consistency": 75,
+          "aggression": 61,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_06",
+      "name": "Camille Castellane",
+      "nationality": "PRT",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "Prairie Wolf Racing",
+          "overall": 67,
+          "pace": 61,
+          "consistency": 64,
+          "aggression": 72,
+          "positive_traits": [
+            "Ultrapassagens Decisivas",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Prairie Wolf Racing",
+          "overall": 75,
+          "pace": 77,
+          "consistency": 82,
+          "aggression": 54,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_07",
+      "name": "Theo Brenner",
+      "nationality": "ZAF",
+      "seasons": [
+        {
+          "year": 2011,
+          "team": "Fenwick Grand Prix",
+          "overall": 67,
+          "pace": 69,
+          "consistency": 71,
+          "aggression": 53,
+          "positive_traits": [
+            "Zero Erros Não Forçados",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Fenwick Grand Prix",
+          "overall": 74,
+          "pace": 83,
+          "consistency": 76,
+          "aggression": 42,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_08",
+      "name": "Marek Ferraz",
+      "nationality": "THA",
+      "seasons": [
+        {
+          "year": 2016,
+          "team": "Meridian Racing",
+          "overall": 73,
+          "pace": 76,
+          "consistency": 68,
+          "aggression": 50,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        },
+        {
+          "year": 2019,
+          "team": "Meridian Racing",
+          "overall": 84,
+          "pace": 93,
+          "consistency": 76,
+          "aggression": 62,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_09",
+      "name": "Miguel Marek",
+      "nationality": "NOR",
+      "seasons": [
+        {
+          "year": 2022,
+          "team": "Vantage GP",
+          "overall": 86,
+          "pace": 83,
+          "consistency": 80,
+          "aggression": 66,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Vantage GP",
+          "overall": 89,
+          "pace": 86,
+          "consistency": 84,
+          "aggression": 53,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_10",
+      "name": "Mika Fontaine",
+      "nationality": "BEL",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "Northgate Racing",
+          "overall": 68,
+          "pace": 63,
+          "consistency": 71,
+          "aggression": 78,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Northgate Racing",
+          "overall": 70,
+          "pace": 77,
+          "consistency": 71,
+          "aggression": 66,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_11",
+      "name": "Carter Doran",
+      "nationality": "NZL",
+      "seasons": [
+        {
+          "year": 1983,
+          "team": "Greywatch Motorsport",
+          "overall": 77,
+          "pace": 74,
+          "consistency": 85,
+          "aggression": 50,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        },
+        {
+          "year": 1984,
+          "team": "Greywatch Motorsport",
+          "overall": 85,
+          "pace": 86,
+          "consistency": 80,
+          "aggression": 45,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_12",
+      "name": "Nadia Vantomme",
+      "nationality": "SWE",
+      "seasons": [
+        {
+          "year": 1987,
+          "team": "Vantage GP",
+          "overall": 85,
+          "pace": 92,
+          "consistency": 85,
+          "aggression": 87,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Vantage GP",
+          "overall": 95,
+          "pace": 99,
+          "consistency": 91,
+          "aggression": 78,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_13",
+      "name": "Renan Kirchner",
+      "nationality": "CAN",
+      "seasons": [
+        {
+          "year": 1992,
+          "team": "Meridian Racing",
+          "overall": 76,
+          "pace": 84,
+          "consistency": 69,
+          "aggression": 37,
+          "positive_traits": [
+            "Largadas Explosivas",
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Meridian Racing",
+          "overall": 86,
+          "pace": 92,
+          "consistency": 91,
+          "aggression": 87,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_14",
+      "name": "Priya Renwick",
+      "nationality": "PRT",
+      "seasons": [
+        {
+          "year": 1996,
+          "team": "Greywatch Motorsport",
+          "overall": 63,
+          "pace": 62,
+          "consistency": 55,
+          "aggression": 57,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Greywatch Motorsport",
+          "overall": 61,
+          "pace": 58,
+          "consistency": 61,
+          "aggression": 61,
+          "positive_traits": [
+            "Excelente em Condições Mistas",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_15",
+      "name": "Carter Solano",
+      "nationality": "NZL",
+      "seasons": [
+        {
+          "year": 2001,
+          "team": "Northgate Racing",
+          "overall": 74,
+          "pace": 79,
+          "consistency": 81,
+          "aggression": 59,
+          "positive_traits": [
+            "Zero Erros Não Forçados",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2003,
+          "team": "Northgate Racing",
+          "overall": 75,
+          "pace": 78,
+          "consistency": 69,
+          "aggression": 72,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_16",
+      "name": "Alba Reinholt",
+      "nationality": "USA",
+      "seasons": [
+        {
+          "year": 2006,
+          "team": "Ferronova Racing",
+          "overall": 95,
+          "pace": 99,
+          "consistency": 99,
+          "aggression": 46,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Ferronova Racing",
+          "overall": 95,
+          "pace": 99,
+          "consistency": 89,
+          "aggression": 36,
+          "positive_traits": [
+            "Ultrapassagens Decisivas",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_17",
+      "name": "Mika Vidal",
+      "nationality": "SWE",
+      "seasons": [
+        {
+          "year": 2011,
+          "team": "Prairie Wolf Racing",
+          "overall": 79,
+          "pace": 82,
+          "consistency": 70,
+          "aggression": 70,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Prairie Wolf Racing",
+          "overall": 77,
+          "pace": 74,
+          "consistency": 67,
+          "aggression": 38,
+          "positive_traits": [
+            "Execução Técnica Precisa",
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Reação Lenta em Incidentes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_18",
+      "name": "Jonas Falken",
+      "nationality": "DNK",
+      "seasons": [
+        {
+          "year": 2017,
+          "team": "Meridian Racing",
+          "overall": 76,
+          "pace": 79,
+          "consistency": 74,
+          "aggression": 84,
+          "positive_traits": [
+            "Execução Técnica Precisa",
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2019,
+          "team": "Meridian Racing",
+          "overall": 76,
+          "pace": 84,
+          "consistency": 67,
+          "aggression": 59,
+          "positive_traits": [
+            "Zero Acidentes na Temporada",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_19",
+      "name": "Nadia Costin",
+      "nationality": "PRT",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Silverline F1",
+          "overall": 74,
+          "pace": 75,
+          "consistency": 71,
+          "aggression": 43,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Silverline F1",
+          "overall": 76,
+          "pace": 85,
+          "consistency": 78,
+          "aggression": 78,
+          "positive_traits": [
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_20",
+      "name": "Runa Conti",
+      "nationality": "NZL",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "Solstice Motorsport",
+          "overall": 77,
+          "pace": 86,
+          "consistency": 80,
+          "aggression": 72,
+          "positive_traits": [
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Solstice Motorsport",
+          "overall": 75,
+          "pace": 71,
+          "consistency": 82,
+          "aggression": 42,
+          "positive_traits": [
+            "Execução Técnica Precisa",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_21",
+      "name": "Petra Doran",
+      "nationality": "BEL",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Meridian Racing",
+          "overall": 83,
+          "pace": 82,
+          "consistency": 84,
+          "aggression": 95,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo",
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 1983,
+          "team": "Meridian Racing",
+          "overall": 91,
+          "pace": 85,
+          "consistency": 94,
+          "aggression": 94,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_22",
+      "name": "Ines Harkonen",
+      "nationality": "FIN",
+      "seasons": [
+        {
+          "year": 1985,
+          "team": "Lakespur GP",
+          "overall": 60,
+          "pace": 62,
+          "consistency": 52,
+          "aggression": 94,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 1988,
+          "team": "Lakespur GP",
+          "overall": 58,
+          "pace": 68,
+          "consistency": 65,
+          "aggression": 43,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_23",
+      "name": "Doran Baptista",
+      "nationality": "ZAF",
+      "seasons": [
+        {
+          "year": 1991,
+          "team": "Ridgeback Racing",
+          "overall": 61,
+          "pace": 55,
+          "consistency": 67,
+          "aggression": 70,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Ridgeback Racing",
+          "overall": 57,
+          "pace": 63,
+          "consistency": 55,
+          "aggression": 38,
+          "positive_traits": [
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_24",
+      "name": "Doran Whitfield",
+      "nationality": "NZL",
+      "seasons": [
+        {
+          "year": 1997,
+          "team": "Aurelia Racing Team",
+          "overall": 80,
+          "pace": 75,
+          "consistency": 70,
+          "aggression": 85,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Pneus Gastos Rápido Demais"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Aurelia Racing Team",
+          "overall": 79,
+          "pace": 89,
+          "consistency": 80,
+          "aggression": 76,
+          "positive_traits": [
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_25",
+      "name": "Yara Solano",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2002,
+          "team": "Constellation F1",
+          "overall": 76,
+          "pace": 78,
+          "consistency": 81,
+          "aggression": 46,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Constellation F1",
+          "overall": 80,
+          "pace": 77,
+          "consistency": 87,
+          "aggression": 76,
+          "positive_traits": [
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_26",
+      "name": "Aurelio Odom",
+      "nationality": "NLD",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "Fenwick Grand Prix",
+          "overall": 72,
+          "pace": 79,
+          "consistency": 71,
+          "aggression": 87,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Fenwick Grand Prix",
+          "overall": 69,
+          "pace": 76,
+          "consistency": 72,
+          "aggression": 46,
+          "positive_traits": [
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_27",
+      "name": "Renan Steinmeier",
+      "nationality": "BEL",
+      "seasons": [
+        {
+          "year": 2013,
+          "team": "Greywatch Motorsport",
+          "overall": 82,
+          "pace": 76,
+          "consistency": 82,
+          "aggression": 58,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Greywatch Motorsport",
+          "overall": 79,
+          "pace": 85,
+          "consistency": 84,
+          "aggression": 45,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_28",
+      "name": "Astrid Baptista",
+      "nationality": "ESP",
+      "seasons": [
+        {
+          "year": 2015,
+          "team": "Thornbury Racing",
+          "overall": 95,
+          "pace": 96,
+          "consistency": 99,
+          "aggression": 61,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 2018,
+          "team": "Thornbury Racing",
+          "overall": 99,
+          "pace": 99,
+          "consistency": 89,
+          "aggression": 73,
+          "positive_traits": [
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_29",
+      "name": "Grace Kirchner",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Lakespur GP",
+          "overall": 61,
+          "pace": 64,
+          "consistency": 58,
+          "aggression": 87,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida",
+            "Velocidade Pura Dominante"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Lakespur GP",
+          "overall": 60,
+          "pace": 56,
+          "consistency": 56,
+          "aggression": 36,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_30",
+      "name": "Yara Corrêa",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 2023,
+          "team": "Ferronova Racing",
+          "overall": 68,
+          "pace": 74,
+          "consistency": 76,
+          "aggression": 40,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        },
+        {
+          "year": 2025,
+          "team": "Ferronova Racing",
+          "overall": 65,
+          "pace": 64,
+          "consistency": 69,
+          "aggression": 84,
+          "positive_traits": [
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    }
+  ],
+  "motores": [
+    {
+      "id": "zenith",
+      "name": "Zenith Dynamics",
+      "seasons": [
+        {
+          "year": 1983,
+          "power": 71,
+          "reliability": 71,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 1996,
+          "power": 80,
+          "reliability": 57,
+          "positive_traits": [
+            "Confiabilidade de Ferro",
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ferronova_eng",
+      "name": "Ferronova Propulsion",
+      "seasons": [
+        {
+          "year": 1996,
+          "power": 62,
+          "reliability": 64,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 69,
+          "reliability": 69,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vantex",
+      "name": "Vantex Labs",
+      "seasons": [
+        {
+          "year": 1989,
+          "power": 69,
+          "reliability": 90,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2019,
+          "power": 76,
+          "reliability": 74,
+          "positive_traits": [
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2026,
+          "power": 83,
+          "reliability": 73,
+          "positive_traits": [
+            "Confiabilidade de Ferro"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "corvane_eng",
+      "name": "Corvane Motori",
+      "seasons": [
+        {
+          "year": 1989,
+          "power": 63,
+          "reliability": 58,
+          "positive_traits": [
+            "Confiabilidade de Ferro"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 69,
+          "reliability": 89,
+          "positive_traits": [
+            "Confiabilidade de Ferro",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        },
+        {
+          "year": 2026,
+          "power": 77,
+          "reliability": 70,
+          "positive_traits": [
+            "Eficiência de Combustível Superior",
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Peso Acima da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meridianeng",
+      "name": "Meridian Motori",
+      "seasons": [
+        {
+          "year": 1983,
+          "power": 63,
+          "reliability": 93,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Peso Acima da Média"
+          ]
+        },
+        {
+          "year": 1989,
+          "power": 72,
+          "reliability": 74,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Peso Acima da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aurion",
+      "name": "Aurion Racing Engines",
+      "seasons": [
+        {
+          "year": 2002,
+          "power": 72,
+          "reliability": 72,
+          "positive_traits": [
+            "Confiabilidade de Ferro"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2009,
+          "power": 82,
+          "reliability": 79,
+          "positive_traits": [
+            "Potência Bruta Dominante",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "halcyon_eng",
+      "name": "Halcyon Dynamics",
+      "seasons": [
+        {
+          "year": 1989,
+          "power": 60,
+          "reliability": 66,
+          "positive_traits": [
+            "Curva de Potência Suave",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 65,
+          "reliability": 95,
+          "positive_traits": [
+            "Curva de Potência Suave",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Fragilidade em Alta Rotação"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "solvex",
+      "name": "Solvex Powertrains",
+      "seasons": [
+        {
+          "year": 1996,
+          "power": 66,
+          "reliability": 73,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 72,
+          "reliability": 90,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kestrel",
+      "name": "Kestrel Engineering",
+      "seasons": [
+        {
+          "year": 1983,
+          "power": 75,
+          "reliability": 61,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Fragilidade em Alta Rotação"
+          ]
+        },
+        {
+          "year": 1996,
+          "power": 83,
+          "reliability": 77,
+          "positive_traits": [
+            "Potência Bruta Dominante",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2019,
+          "power": 93,
+          "reliability": 76,
+          "positive_traits": [
+            "Eficiência de Combustível Superior",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "blackreef_eng",
+      "name": "Blackreef Powertrains",
+      "seasons": [
+        {
+          "year": 2002,
+          "power": 61,
+          "reliability": 56,
+          "positive_traits": [
+            "Potência Bruta Dominante",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        },
+        {
+          "year": 2009,
+          "power": 69,
+          "reliability": 80,
+          "positive_traits": [
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        },
+        {
+          "year": 2019,
+          "power": 75,
+          "reliability": 59,
+          "positive_traits": [
+            "Eficiência de Combustível Superior",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    }
+  ]
+}
