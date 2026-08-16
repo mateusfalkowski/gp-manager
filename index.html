@@ -143,6 +143,7 @@
 #gpm .btn:disabled{background:var(--border);color:var(--text-dim);cursor:not-allowed;}
 #gpm .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
 #gpm .btn.ghost:hover{border-color:var(--accent);color:var(--accent);}
+#gpm .back-btn{padding:7px 12px;font-size:12.5px;text-transform:none;letter-spacing:0;margin-top:14px;}
 
 /* pre-race / results */
 #gpm .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
@@ -187,6 +188,9 @@
   padding:10px;margin-bottom:8px;
 }
 #gpm .track-wrap svg{width:100%;height:auto;display:block;}
+@media (max-width:600px){
+  #gpm .track-wrap svg{max-height:34vh;width:auto;margin:0 auto;}
+}
 #gpm .legend{display:flex;gap:16px;justify-content:center;align-items:center;font-size:11.5px;color:var(--text-dim);margin:10px 0 4px;flex-wrap:wrap;}
 #gpm .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle;}
 
@@ -274,6 +278,9 @@
 #gpm .lr-stat{flex:1;min-width:90px;}
 #gpm .lr-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:3px;}
 #gpm .lr-stat-val{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;color:var(--text);}
+#gpm .lr-weather-btn{cursor:pointer;}
+#gpm .lr-weather-btn:hover{color:var(--accent-2);}
+#gpm .lr-standing{font-size:12.5px;color:var(--text-dim);background:var(--bg-alt);border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.6;}
 #gpm .lr-decision{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.12),var(--surface));}
 #gpm .lr-decision-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;color:var(--accent-2);}
 #gpm .lr-decision-msg{font-size:13px;color:var(--text-dim);margin-top:4px;}
@@ -414,7 +421,7 @@ function buildAllCards(){
     (p.seasons||[]).forEach(function(s){
       ALL_CARDS.pilotos.push({
         id:p.id+'_'+s.year, personId:p.id, nome:p.name, pais:flagFor(p.nationality),
-        apelido:(s.team||'—')+' • '+s.year, team:s.team||'—',
+        apelido:(s.team||'—')+' • '+s.year, team:s.team||'—', year:s.year,
         vel:s.pace!=null?s.pace:s.overall, cons:s.consistency!=null?s.consistency:s.overall, agr:s.aggression!=null?s.aggression:s.overall,
         traitsPos:s.positive_traits||[], traitsNeg:s.negative_traits||[]
       });
@@ -726,6 +733,26 @@ function weatherTimelineHtml(lr){
   return '<div class="timing-title" style="padding:0 0 8px;">Previsão a cada 2 voltas</div><div class="wx-timeline">'+segHtml+'</div>';
 }
 
+// mostra onde os carros do jogador estão na hora de uma decisão (posição e gap) — sem isso, o
+// jogador escolhia pneu/pit sem noção nenhuma de contexto (líder? brigando por posição? já bem atrás?)
+function myStandingHtml(lr){
+  var all = lr.rivalField.concat(lr.mineField);
+  var ordered = all.slice().sort(function(a,b){
+    var pa = a._liveProgress!=null?a._liveProgress:(a._progress||0);
+    var pb = b._liveProgress!=null?b._liveProgress:(b._progress||0);
+    return pb-pa;
+  });
+  var leaderLive = ordered.length ? (ordered[0]._liveProgress!=null?ordered[0]._liveProgress:(ordered[0]._progress||0)) : 0;
+  var parts = lr.mineField.map(function(d){
+    var idx = ordered.indexOf(d);
+    var myLive = d._liveProgress!=null?d._liveProgress:(d._progress||0);
+    var isDnf = d.dnf && myLive >= d._dnfLap-1e-6;
+    var gapText = isDnf ? 'ABANDONOU' : (idx===0 ? 'líder' : '+'+((leaderLive-myLive)*LR_LAP_SECONDS).toFixed(1)+'s');
+    return '<b style="color:var(--accent-2);">'+shortName(d.driverName)+'</b> P'+(idx+1)+' ('+gapText+')';
+  });
+  return '<div class="lr-standing">📍 '+parts.join(' &nbsp;·&nbsp; ')+'</div>';
+}
+
 function getActiveTrack(){
   return state.season ? TRACKS[state.season.trackIndex] : state.raceTrack;
 }
@@ -929,6 +956,9 @@ function renderModeSelect(){
 
 function renderRaceStyle(){
   var wrap = el('<div></div>');
+  var back = el('<button class="btn ghost back-btn">← Voltar</button>');
+  back.addEventListener('click', function(){ state.mode=null; state.screen='mode'; render(); });
+  wrap.appendChild(back);
   wrap.appendChild(el(
     '<div class="header">'+
       '<div class="eyebrow">'+(state.mode==='season'?'🏆 Temporada':'🏁 Corrida Única')+'</div>'+
@@ -963,6 +993,12 @@ function renderRaceStyle(){
 
 function renderDraft(){
   var wrap = el('<div></div>');
+
+  if(!state.chefe && state.pilotos.length===0 && !state.motor){
+    var back = el('<button class="btn ghost back-btn">← Voltar</button>');
+    back.addEventListener('click', function(){ state.raceStyle=null; state.screen='racestyle'; render(); });
+    wrap.appendChild(back);
+  }
 
   wrap.appendChild(el(
     '<div class="header">'+
@@ -1094,8 +1130,16 @@ function renderDraft(){
 function initSeason(){
   var myPersonIds = state.pilotos.map(function(p){ return p.personId; });
   var rivals = buildRivalPool(10, myPersonIds);
+  // a equipe do jogador tem 2 pilotos com pontos somados — pra ser justo, os 10 rivais também
+  // formam 5 equipes de 2, senão a equipe do jogador sempre pontua em dobro contra pilotos sozinhos
   var standings = [{key:'mine', label:state.teamName, mine:true, points:0}];
-  rivals.forEach(function(r){ standings.push({key:r.personId, label:shortName(r.nome)+' ('+r.team+')', mine:false, points:0}); });
+  for(var i=0;i<rivals.length;i+=2){
+    var teamKey = 'rt_'+(i/2);
+    var teamLabel = rivals[i].team;
+    rivals[i].teamKey = teamKey;
+    if(rivals[i+1]){ rivals[i+1].teamKey = teamKey; }
+    standings.push({key:teamKey, label:teamLabel, mine:false, points:0});
+  }
   state.season = { trackIndex:0, rivals:rivals, standings:standings, history:[] };
 }
 
@@ -1179,7 +1223,7 @@ function buildRivalPool(n, excludePersonIds){
   var picks = pickRandomDistinctPersons(candidates, n);
   var rivals = picks.map(function(p){
     return {
-      personId:p.personId, nome:p.nome, pais:p.pais, team:p.team,
+      personId:p.personId, nome:p.nome, pais:p.pais, team:p.team, year:p.year,
       vel:p.vel, cons:p.cons, agr:p.agr,
       pot:rand(68,97), confiab:rand(65,92)
     };
@@ -1208,7 +1252,7 @@ function buildFieldBase(rivals){
   var field = [];
   state.pilotos.forEach(function(p){
     field.push({
-      nome:p.pais+' '+p.nome+' '+p.apelido, driverName:p.nome, team:state.teamName, mine:true,
+      nome:p.pais+' '+p.nome+' '+p.apelido, driverName:p.nome, year:p.year, team:state.teamName, mine:true,
       vel:p.vel, cons:p.cons, agr:p.agr,
       pot:state.motor.pot, confiab:state.motor.confiab,
       scoreMult:state.chefe.scoreMult, varMult:state.chefe.varMult
@@ -1216,7 +1260,7 @@ function buildFieldBase(rivals){
   });
   rivals.forEach(function(r){
     field.push({
-      nome:(r.pais?r.pais+' ':'')+r.nome, driverName:r.nome, team:r.team, personId:r.personId, mine:false,
+      nome:(r.pais?r.pais+' ':'')+r.nome, driverName:r.nome, year:r.year, team:r.team, personId:r.personId, teamKey:r.teamKey, mine:false,
       vel:r.vel, cons:r.cons, agr:r.agr, pot:r.pot, confiab:r.confiab,
       scoreMult:1, varMult:1
     });
@@ -1318,7 +1362,7 @@ function applyStandings(field){
   var minePts = field.filter(function(d){ return d.mine; }).reduce(function(s,d){ return s+d.pts; },0);
   mineEntry.points += minePts;
   field.filter(function(d){ return !d.mine; }).forEach(function(d){
-    var entry = state.season.standings.filter(function(s){ return s.key===d.personId; })[0];
+    var entry = state.season.standings.filter(function(s){ return s.key===d.teamKey; })[0];
     if(entry) entry.points += d.pts;
   });
   state.season.standings.sort(function(a,b){ return b.points - a.points; });
@@ -1428,9 +1472,12 @@ function tireCondition(compoundId, wetPct, tireLaps){
   var rawWear = (tireLaps*t.wear)/8; // 1.0 = 100% da vida útil nominal do composto
   var wear;
   if(rawWear<=1){
-    wear = 1 - rawWear*0.3; // degradação normal do stint: até -30% de ritmo no fim da vida útil
+    // degradação bem mais agressiva desde cedo no stint — na F1 real, um pneu já rodado (mesmo
+    // longe dos 100%) perde ritmo rápido o bastante pra um pneu novo de composto mais duro já
+    // alcançar bem antes do fim da vida útil (é a lógica por trás do "undercut" nas paradas)
+    wear = 1 - rawWear*0.42;
   } else {
-    wear = Math.max(0.15, 0.7 - (rawWear-1)*0.85); // pneu "estourado" além da vida útil: despenca rápido
+    wear = Math.max(0.10, 0.58 - (rawWear-1)*0.9); // pneu "estourado" além da vida útil: despenca rápido
   }
   return fit*wear; // 0..1 — combina o encaixe com a pista e o estado físico do pneu
 }
@@ -1439,7 +1486,7 @@ function tireCondition(compoundId, wetPct, tireLaps){
 // multiplicado pelo fator de habilidade/skill de cada piloto (_paceFactor / _driverMult)
 function tirePaceFactor(compoundId, wetPct, tireLaps){
   var cond = tireCondition(compoundId, wetPct, tireLaps);
-  return compoundGrip(compoundId) * (0.60 + cond*0.55); // 0.60 (pneu morto) .. 1.15 (novo, ótimo encaixe)
+  return compoundGrip(compoundId) * (0.5 + cond*0.65); // 0.5 (pneu morto) .. 1.15 (novo, ótimo encaixe)
 }
 
 function tireStintQuality(compoundId, wetPct, tireLaps){
@@ -1459,9 +1506,12 @@ function cautionLogEntry(type){
 }
 
 // monta a lista de eventos da corrida inteira (clima, abandonos, incidentes) já na hora de largar,
-// pra dar pra tocar a animação contínua entre um evento e outro, só pausando quando importa
+// pra dar pra tocar a animação contínua entre um evento e outro, só pausando quando importa.
+// o número de vezes que a corrida realmente para pra pedir uma decisão é limitado de propósito
+// (média de ~3 por corrida, variando entre 2 e 4) — o resto das mudanças acontece em silêncio,
+// senão a corrida longa vira uma sequência cansativa de interrupções
 function precomputeLongRaceEvents(lr){
-  var events = [];
+  var weatherEvents = [];
   var prevZone = null;
   for(var lap=1; lap<=lr.totalLaps; lap++){
     if((lap-1)%2===0){
@@ -1469,25 +1519,40 @@ function precomputeLongRaceEvents(lr){
       var wet = lr.weather.actualWet[seg];
       var cond = lr.weather.actualCond[seg];
       var zone = wetnessZone(wet);
-      events.push({lap:lap, type:'wetness', wetPct:wet, cond:cond, pause: prevZone!==null && zone!==prevZone});
+      weatherEvents.push({lap:lap, type:'wetness', wetPct:wet, cond:cond, pause: prevZone!==null && zone!==prevZone});
       prevZone = zone;
     }
   }
+
+  var cautionEvents = [];
   lr.rivalField.forEach(function(d){
     if(d.dnf){
       var roll = Math.random();
       // a maioria dos abandonos não exige neutralização — só quando o carro fica parado num lugar perigoso
       var caution = roll<0.15 ? 'sc' : (roll<0.32 ? 'vsc' : null);
-      events.push({lap:d._dnfLap, type:'dnf', driver:d, caution:caution});
+      cautionEvents.push({lap:d._dnfLap, type:'dnf', driver:d, caution:caution});
     }
   });
   for(var l=1;l<=lr.totalLaps;l++){
     // raro: a maioria das corridas passa sem nenhum incidente aleatório, mas pode acontecer mais de um em casos isolados
     if(Math.random()<0.012){
       var r2 = Math.random();
-      events.push({lap:l, type:'incident', caution: r2<0.4?'sc':'vsc'});
+      cautionEvents.push({lap:l, type:'incident', caution: r2<0.4?'sc':'vsc'});
     }
   }
+
+  // junta tudo que PODERIA parar a corrida (mudança de zona de clima + cautions) e só deixa
+  // as primeiras "targetDecisions" (em ordem de volta) realmente pausarem — o resto se aplica
+  // sem interromper (clima muda silenciosamente, abandono/incidente não gera safety car)
+  var targetDecisions = Math.max(1, Math.round(rand(2,4)));
+  var candidates = weatherEvents.filter(function(e){ return e.pause; })
+    .concat(cautionEvents.filter(function(e){ return e.caution; }))
+    .sort(function(a,b){ return a.lap-b.lap; });
+  var allowed = new Set(candidates.slice(0, targetDecisions));
+  weatherEvents.forEach(function(e){ if(e.pause && !allowed.has(e)) e.pause = false; });
+  cautionEvents.forEach(function(e){ if(e.caution && !allowed.has(e)) e.caution = null; });
+
+  var events = weatherEvents.concat(cautionEvents);
   events.sort(function(a,b){ return a.lap-b.lap; });
   lr.events = events;
   lr.eventIndex = 0;
@@ -1618,13 +1683,17 @@ function applyLongRaceEvent(ev){
     return false;
   }
   if(ev.type==='incident'){
-    logLongRaceEvent({icon:'⚠️', title:'Incidente na pista', text:'Detritos na pista provocam neutralização.'});
-    logLongRaceEvent(cautionLogEntry(ev.caution));
-    enterSafetyCar(ev.caution, ev.lap);
+    if(ev.caution){
+      logLongRaceEvent({icon:'⚠️', title:'Incidente na pista', text:'Detritos na pista provocam neutralização.'});
+      logLongRaceEvent(cautionLogEntry(ev.caution));
+      enterSafetyCar(ev.caution, ev.lap);
+    }
     return false;
   }
   if(ev.type==='sc_end'){
-    bunchField(lr);
+    // safety car de verdade agrupa o pelotão atrás do carro de segurança; VSC só reduz o ritmo
+    // geral e mantém as distâncias — ninguém pode fechar ou abrir gap livremente, mas não cola
+    if(ev.caution==='sc') bunchField(lr);
     lr.safetyCar = null;
     lr.pendingDecision = {type:ev.caution};
     return true;
@@ -1640,7 +1709,7 @@ function enterSafetyCar(caution, atLap){
   var banner = document.getElementById('gpm-lr-sc-banner');
   if(banner){
     banner.style.display = 'block';
-    banner.textContent = (caution==='sc' ? '🚨 SAFETY CAR NA PISTA' : '🟡 VIRTUAL SAFETY CAR NA PISTA') + ' — o pelotão está se agrupando';
+    banner.textContent = caution==='sc' ? '🚨 SAFETY CAR NA PISTA — o pelotão está se agrupando' : '🟡 VIRTUAL SAFETY CAR NA PISTA — ritmo reduzido, sem ultrapassagens';
   }
   var endLap = Math.min(lr.totalLaps, atLap+1);
   lr.events.push({lap:endLap, type:'sc_end', caution:caution});
@@ -1712,8 +1781,11 @@ function runLongRaceSegment(){
 
   var myQuality = tireStintQuality(lr.compound, lr.wetnessNow, lr.tireLaps);
   var myPaceFactor = tirePaceFactor(lr.compound, lr.wetnessNow, lr.tireLaps);
-  lr.mineField.forEach(function(d){ d._segPace = myPaceFactor * (d._driverMult||1); });
-  lr.rivalField.forEach(function(d){ d._segPace = rivalTirePace(d, lr.wetnessNow); });
+  // sob safety car/VSC todo mundo reduz o ritmo igual — mantém as distâncias relativas (VSC) ou
+  // deixa o pelotão se aproximar naturalmente antes do agrupamento no fim da volta (SC)
+  var cautionMult = lr.safetyCar ? 0.55 : 1;
+  lr.mineField.forEach(function(d){ d._segPace = myPaceFactor * (d._driverMult||1) * cautionMult; });
+  lr.rivalField.forEach(function(d){ d._segPace = rivalTirePace(d, lr.wetnessNow) * cautionMult; });
 
   var basePaceLapsPerMs = 1/(LR_LAP_SECONDS*1000);
   var segDuration = lapsToRun/basePaceLapsPerMs; // ms "de universo" (não de relógio real)
@@ -1839,7 +1911,7 @@ function mountLongRaceTiming(){
       '<div class="timing-row'+(d.mine?' mine':'')+'" id="'+rowId+'">'+
         '<div class="timing-pos" id="'+posId+'">·</div>'+
         '<div class="timing-dot" style="background:'+d._color+';"></div>'+
-        '<div class="timing-name">'+shortName(d.driverName)+'</div>'+
+        '<div class="timing-name">'+timingLabel(d)+'</div>'+
         '<div class="timing-tire" id="'+tireId+'">'+tireHtml+'</div>'+
         '<div class="timing-gap" id="'+gapId+'">GRID</div>'+
       '</div>'
@@ -2103,11 +2175,18 @@ function renderLongRace(){
 
   var status = el('<div class="panel lr-status"></div>');
   status.innerHTML =
-    '<div class="lr-stat"><div class="lr-stat-label">Clima</div><div class="lr-stat-val" id="gpm-lr-weather">'+weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow)+'</div></div>'+
+    '<div class="lr-stat"><div class="lr-stat-label">Clima</div><div class="lr-stat-val lr-weather-btn" id="gpm-lr-weather">'+weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow)+' 🔍</div></div>'+
     '<div class="lr-stat"><div class="lr-stat-label">Pneu atual</div><div class="lr-stat-val" id="gpm-lr-tire">'+tireName(lr.compound)+'</div></div>'+
     '<div class="lr-stat"><div class="lr-stat-label">Voltas no pneu</div><div class="lr-stat-val" id="gpm-lr-tirelaps">'+lr.tireLaps+'</div></div>'+
     '<div class="lr-stat"><div class="lr-stat-label">Pit stops</div><div class="lr-stat-val" id="gpm-lr-pitstops">'+lr.pitStops+'</div></div>';
   wrap.appendChild(status);
+
+  var weatherPopup = el('<div class="panel" id="gpm-lr-weather-popup" style="display:none;"></div>');
+  weatherPopup.innerHTML = weatherTimelineHtml(lr);
+  wrap.appendChild(weatherPopup);
+  status.querySelector('#gpm-lr-weather').addEventListener('click', function(){
+    weatherPopup.style.display = weatherPopup.style.display==='none' ? 'block' : 'none';
+  });
 
   if(lr.pitTimer){
     var pt = lr.pitTimer;
@@ -2121,14 +2200,14 @@ function renderLongRace(){
       '<div class="lr-pit-track"><div class="lr-pit-fill" id="gpm-lr-pit-fill" style="width:0%;"></div></div>';
     wrap.appendChild(pitPanel);
     var pitFc = el('<div class="panel"></div>');
-    pitFc.innerHTML = weatherTimelineHtml(lr);
+    pitFc.innerHTML = myStandingHtml(lr)+weatherTimelineHtml(lr);
     wrap.appendChild(pitFc);
   } else if(lr.pendingDecision){
     var d = lr.pendingDecision;
     var panel = el('<div class="panel lr-decision"></div>');
     var title = d.type==='weather' ? '🌦️ O clima mudou' : d.type==='sc' ? '🚨 Safety Car!' : d.type==='voluntary' ? '🔧 Escolha o pneu' : '🟡 Virtual Safety Car';
     var msg = d.type==='weather' ? 'A pista agora está com '+Math.round(lr.wetnessNow)+'% de umidade. Vale trocar de pneu?' : d.type==='voluntary' ? 'Parada por bandeira verde — custa mais tempo que uma parada sob safety car/VSC.' : 'Janela barata pra parar nos boxes. Vai aproveitar?';
-    panel.innerHTML = '<div class="lr-decision-title">'+title+'</div><div class="lr-decision-msg">'+msg+'</div>'+weatherTimelineHtml(lr);
+    panel.innerHTML = '<div class="lr-decision-title">'+title+'</div><div class="lr-decision-msg">'+msg+'</div>'+myStandingHtml(lr)+weatherTimelineHtml(lr);
     var pitRow = el('<div class="cardgrid" style="margin-top:10px;"></div>');
     var lapsLeft = Math.max(1, lr.totalLaps - lr.lap + 1);
     TIRE_COMPOUNDS.forEach(function(t){
@@ -2145,9 +2224,11 @@ function renderLongRace(){
     wrap.appendChild(pitBtn);
   }
 
-  var board = el('<div class="hl-board" id="gpm-lr-feed"></div>');
+  var histWrap = el('<details class="panel"><summary>Histórico da corrida ('+lr.history.length+')</summary></details>');
+  var board = el('<div class="hl-board" id="gpm-lr-feed" style="margin-top:10px;"></div>');
   board.innerHTML = highlightsHtml(lr.history.slice().reverse());
-  wrap.appendChild(board);
+  histWrap.appendChild(board);
+  wrap.appendChild(histWrap);
 
   if(!lr.pendingDecision && !lr.pitTimer){
     var skipbar = el('<div class="skipbar"><button class="btn ghost">Pular corrida longa</button></div>');
@@ -2236,6 +2317,12 @@ function shortName(fullName){
   return parts.length ? parts[parts.length-1] : fullName;
 }
 
+// sobrenome + a temporada específica que o piloto está representando (a mesma pessoa pode
+// aparecer com atributos diferentes em anos diferentes) — ajuda a diferenciar no tempo ao vivo
+function timingLabel(d){
+  return shortName(d.driverName) + (d.year ? ' '+d.year : '');
+}
+
 function initRaceSequence(){
   var carsGroup = document.getElementById('gpm-cars');
   var timingRowsEl = document.getElementById('gpm-timing-rows');
@@ -2278,7 +2365,7 @@ function initRaceSequence(){
       '<div class="timing-row'+(d.mine?' mine':'')+'" id="gpm-tr-'+i+'">'+
         '<div class="timing-pos">'+(i+1)+'</div>'+
         '<div class="timing-dot" style="background:'+d._color+';"></div>'+
-        '<div class="timing-name">'+shortName(d.driverName)+'</div>'+
+        '<div class="timing-name">'+timingLabel(d)+'</div>'+
         '<div class="timing-gap" id="gpm-tg-'+i+'">'+(i===0?'GRID':'—')+'</div>'+
       '</div>'
     );
