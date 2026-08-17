@@ -748,6 +748,23 @@ function segmentLapLabel(i, laps){
   return start===end ? ('V'+start) : ('V'+start+'-'+end);
 }
 
+// o clima de verdade (não só a previsão) tem que mudar aos poucos, não pular de uma vez a cada 2
+// voltas — interpola linear entre o valor "oficial" de um segmento (na volta em que ele começa)
+// e o do próximo, usando a posição contínua na corrida (lr.liveLapFloat), não o contador de
+// voltas que só avança quando o segmento termina
+function liveWetnessNow(lr){
+  var w = lr.weather;
+  var lapFloat = lr.liveLapFloat!=null ? lr.liveLapFloat : Math.max(1, lr.lap||1);
+  var segCount = w.segCount;
+  var segPos = (lapFloat-1)/2; // 0 no início do segmento 0, 1 no início do segmento 1, ...
+  segPos = Math.max(0, Math.min(segCount-1, segPos));
+  var i0 = Math.floor(segPos), i1 = Math.min(segCount-1, i0+1);
+  var frac = segPos - i0;
+  var wetPct = w.actualWet[i0] + (w.actualWet[i1]-w.actualWet[i0])*frac;
+  var cond = frac<0.5 ? w.actualCond[i0] : w.actualCond[i1];
+  return {wetPct:wetPct, cond:cond};
+}
+
 // mesma previsão mostrada antes da largada, reaproveitada nos momentos de decisão (SC/VSC/clima/pit)
 // pra dar ao jogador a mesma informação que ele tinha ao escolher o pneu inicial
 // a previsão "atualiza em tempo real" conforme a corrida acontece: voltas já rodadas e o
@@ -887,9 +904,29 @@ function pickRandomDistinctPersons(cards, n){
 function generatePools(){
   return {
     chefe: pickRandomDistinctPersons(ALL_CARDS.chefes, Math.min(3, ALL_CARDS.chefes.length)),
-    pilotos: pickRandomDistinctPersons(ALL_CARDS.pilotos, Math.min(5, ALL_CARDS.pilotos.length)),
+    piloto1: pickRandomDistinctPersons(ALL_CARDS.pilotos, Math.min(3, ALL_CARDS.pilotos.length)),
+    piloto2: [], // só é sorteado depois que o piloto 1 é escolhido, pra excluir quem já foi contratado
     motor: pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length))
   };
+}
+
+// sorteia de novo as opções da etapa atual do draft — só pode ser usado 1x em todo o draft
+// (chefe, piloto 1, piloto 2 ou motor), qualquer que seja a etapa escolhida
+function rerollCurrentDraftPool(){
+  if(state.draftRefreshUsed) return;
+  state.draftRefreshUsed = true;
+  if(state.tab==='chefe'){
+    state.pools.chefe = pickRandomDistinctPersons(ALL_CARDS.chefes, Math.min(3, ALL_CARDS.chefes.length));
+  } else if(state.tab==='piloto1'){
+    state.pools.piloto1 = pickRandomDistinctPersons(ALL_CARDS.pilotos, Math.min(3, ALL_CARDS.pilotos.length));
+  } else if(state.tab==='piloto2'){
+    var excludeIds = state.pilotos.map(function(p){ return p.personId; });
+    var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludeIds.indexOf(c.personId)===-1; });
+    state.pools.piloto2 = pickRandomDistinctPersons(candidates, Math.min(3, candidates.length));
+  } else if(state.tab==='motor'){
+    state.pools.motor = pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length));
+  }
+  render();
 }
 
 var state = {
@@ -906,7 +943,8 @@ var state = {
   revealTimer:null,
   raceAnimFrame:null,
   raceTimers:[],
-  pools:{chefe:[],pilotos:[],motor:[]},
+  pools:{chefe:[],piloto1:[],piloto2:[],motor:[]},
+  draftRefreshUsed:false,
   season:null, // {trackIndex, rivals, standings, history}
   highlights:[],
   highlightIndex:0,
@@ -1023,7 +1061,7 @@ function renderRaceStyle(){
       '<div class="card-desc">'+(state.mode==='season' ? 'Em cada corrida, escolha entre assistir a simulação ao vivo ou ver direto os melhores momentos.' : 'Assista a corrida com simulação animada na pista, luzes de largada e tudo mais.')+'</div>'+
     '</div>'
   );
-  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.screen='draft'; state.pools=generatePools(); render(); });
+  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe'; render(); });
   grid.appendChild(rapida);
 
   var longa = el(
@@ -1032,7 +1070,7 @@ function renderRaceStyle(){
       '<div class="card-desc">Veja a previsão do tempo, escolha os pneus e reaja a safety cars, VSC e mudanças de clima ao vivo — suas decisões afetam o resultado.</div>'+
     '</div>'
   );
-  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.screen='draft'; state.pools=generatePools(); render(); });
+  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe'; render(); });
   grid.appendChild(longa);
 
   wrap.appendChild(grid);
@@ -1061,8 +1099,9 @@ function renderDraft(){
   var tabs = el('<div class="tabs"></div>');
   var tabDefs = [
     {id:'chefe', label:'Chefe', count: state.chefe?'1/1':'0/1', done: !!state.chefe, unlocked:true},
-    {id:'pilotos', label:'Pilotos', count: state.pilotos.length+'/2', done: state.pilotos.length===2, unlocked: !!state.chefe},
-    {id:'motor', label:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: !!state.chefe && state.pilotos.length===2}
+    {id:'piloto1', label:'Piloto 1', count: (state.pilotos.length>=1?'1/1':'0/1'), done: state.pilotos.length>=1, unlocked: !!state.chefe},
+    {id:'piloto2', label:'Piloto 2', count: (state.pilotos.length>=2?'1/1':'0/1'), done: state.pilotos.length>=2, unlocked: state.pilotos.length>=1},
+    {id:'motor', label:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: state.pilotos.length===2}
   ];
   tabDefs.forEach(function(t){
     var b = el('<div class="tab'+(state.tab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+t.label+'<span class="count">'+t.count+'</span></div>');
@@ -1072,6 +1111,16 @@ function renderDraft(){
     tabs.appendChild(b);
   });
   wrap.appendChild(tabs);
+
+  // sorteia de novo as 3 opções da etapa atual — só pode ser usado uma vez em todo o draft,
+  // não importa em qual etapa (chefe, piloto 1, piloto 2 ou motor) o jogador decide gastar
+  var currentStepDone = (state.tab==='chefe' && !!state.chefe) || (state.tab==='piloto1' && state.pilotos.length>=1) ||
+    (state.tab==='piloto2' && state.pilotos.length>=2) || (state.tab==='motor' && !!state.motor);
+  if(!state.draftRefreshUsed && !currentStepDone){
+    var refreshBtn = el('<button class="btn ghost" style="margin-bottom:14px;">🔄 Sortear novamente (1x por draft)</button>');
+    refreshBtn.addEventListener('click', function(){ rerollCurrentDraftPool(); });
+    wrap.appendChild(refreshBtn);
+  }
 
   var grid = el('<div class="cardgrid"></div>');
 
@@ -1095,18 +1144,46 @@ function renderDraft(){
         card.addEventListener('click', function(){
           state.chefe = c;
           render();
-          setTimeout(function(){ state.tab='pilotos'; render(); }, 450);
+          setTimeout(function(){ state.tab='piloto1'; render(); }, 450);
         });
       }
       grid.appendChild(card);
     });
   }
 
-  if(state.tab==='pilotos'){
-    state.pools.pilotos.forEach(function(p){
-      var selected = state.pilotos.some(function(x){return x.id===p.id;});
-      var atMax = state.pilotos.length>=2;
-      var disabled = !selected && atMax;
+  if(state.tab==='piloto1'){
+    state.pools.piloto1.forEach(function(p){
+      var selected = state.pilotos[0] && state.pilotos[0].id===p.id;
+      var disabled = state.pilotos.length>=1 && !selected;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top">'+
+            '<div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">'+p.apelido+'</div></div>'+
+          '</div>'+
+          '<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'+
+          traitTags(p.traitsPos, p.traitsNeg)+
+          (selected?'<div class="card-desc" style="margin-top:8px;margin-bottom:0;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
+        '</div>'
+      );
+      if(!disabled && !selected){
+        card.addEventListener('click', function(){
+          state.pilotos.push(p);
+          var excludeIds = [p.personId];
+          var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludeIds.indexOf(c.personId)===-1; });
+          state.pools.piloto2 = pickRandomDistinctPersons(candidates, Math.min(3, candidates.length));
+          render();
+          setTimeout(function(){ state.tab='piloto2'; render(); }, 450);
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  if(state.tab==='piloto2'){
+    state.pools.piloto2.forEach(function(p){
+      var selected = state.pilotos[1] && state.pilotos[1].id===p.id;
+      var disabled = state.pilotos.length>=2 && !selected;
       var card = el(
         '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
           (selected?'<div class="check">&#10003;</div>':'')+
@@ -1122,9 +1199,7 @@ function renderDraft(){
         card.addEventListener('click', function(){
           state.pilotos.push(p);
           render();
-          if(state.pilotos.length===2){
-            setTimeout(function(){ state.tab='motor'; render(); }, 450);
-          }
+          setTimeout(function(){ state.tab='motor'; render(); }, 450);
         });
       }
       grid.appendChild(card);
@@ -1743,6 +1818,10 @@ function initLongRace(compoundId){
     d._tireWarnStage = 0;
     d._pitStops = 0;
     d._pitPhase = null;
+    // mesmo risco de abandono mecânico que os rivais têm, baseado na confiabilidade do motor —
+    // sem isso, uma equipe bem contratada nunca corria risco nenhum e ganhava quase sempre
+    d.dnf = Math.random() < (100-d.confiab)*0.004;
+    if(d.dnf) d._dnfLap = Math.max(1, Math.round(rand(1, Math.max(1,lr.totalLaps-2))));
   });
 
   // id estável por carro (não muda quando a ordem da tabela de tempos muda), usado pra mover
@@ -1946,6 +2025,16 @@ function advanceMineCar(d, dtUniverse, track, cautionMult){
   var basePaceLapsPerMs = 1/(LR_LAP_SECONDS*1000);
   var elx = document.getElementById(d._elId);
 
+  if(d.dnf && d._progress >= d._dnfLap-1e-9){
+    if(!d._dnfLogged){
+      d._dnfLogged = true;
+      logLongRaceEvent({icon:'💥', title:'Abandono', text:shortName(d.driverName)+': problema mecânico tirou o carro da corrida.'}, true);
+      refreshPitButtonVisibility();
+    }
+    d._liveProgress = d._progress;
+    return;
+  }
+
   if(d._pitPhase==='approach'){
     var pa = d._pitApproach;
     pa.elapsedMs = Math.min(pa.elapsedMs + dtUniverse, pa.requiredMs);
@@ -2143,6 +2232,11 @@ function runLongRaceSegment(){
     lr.liveLap = curLap; // volta realmente exibida agora — pode estar à frente do lr.lap (que só
     // avança quando o segmento atual termina de verdade), usado pra manter a previsão do tempo e
     // uma parada voluntária no meio do segmento em sincronia com o que o jogador está vendo
+    lr.liveLapFloat = Math.min(targetLap, fromLap+fracLaps+1);
+    // o clima de verdade muda aos poucos ao longo da corrida, não pula de repente a cada 2 voltas
+    var lw = liveWetnessNow(lr);
+    lr.wetnessNow = lw.wetPct;
+    lr.weatherCondNow = lw.cond;
     var lapBadge = document.getElementById('gpm-lr-lapbadge');
     if(lapBadge) lapBadge.textContent = 'Volta '+curLap+'/'+lr.totalLaps;
     refreshLongRaceStatus();
@@ -2326,7 +2420,7 @@ function resolveDecision(pit, compoundId){
   if(pit){
     // se um piloto já estiver no meio de outro pit (raro: uma decisão forçada caiu bem na hora
     // de um pit voluntário), não reinicia a aproximação dele — deixa terminar o que já começou
-    lr.mineField.forEach(function(d){ if(!d._pitPhase) startMinePitApproach(d, compoundId); });
+    lr.mineField.forEach(function(d){ if(!d._pitPhase && !d.dnf) startMinePitApproach(d, compoundId); });
     render();
   } else {
     lr.history.push({icon:'🚦', title:'Sem parada', text:'Você decidiu seguir na pista sem parar.'});
@@ -3098,6 +3192,7 @@ function resetState(){
   state.raceTrack=null;
   state.longRace=null;
   state.pools=generatePools();
+  state.draftRefreshUsed=false;
 }
 
 TRACKS.forEach(function(t){ t.trackData = buildTrackData(t.anchors); });
