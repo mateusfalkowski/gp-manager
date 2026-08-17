@@ -756,7 +756,11 @@ function segmentLapLabel(i, laps){
 function liveForecast(lr){
   var w = lr.weather;
   if(!lr.started) return {cond:w.forecastCond, wet:w.forecastWet};
-  var curSeg = Math.floor((lr.lap>0?lr.lap-1:0)/2);
+  // usa a volta realmente exibida na tela (lr.liveLap), não lr.lap — esse só avança quando o
+  // segmento atual termina de verdade, o que podia deixar a previsão até 2 voltas atrasada
+  // em relação ao que o jogador via no resto da tela
+  var displayedLap = lr.liveLap!=null ? lr.liveLap : lr.lap;
+  var curSeg = Math.floor((displayedLap>0?displayedLap-1:0)/2);
   var reliableUntil = curSeg+1; // segmento atual + o próximo já são tratados como praticamente certos
   var cond = [], wet = [];
   for(var i=0;i<w.segCount;i++){
@@ -769,8 +773,10 @@ function liveForecast(lr){
 function weatherTimelineHtml(lr){
   var laps = lr.totalLaps;
   var live = liveForecast(lr);
+  var displayedLap = lr.liveLap!=null ? lr.liveLap : lr.lap;
+  var curSegIdx = Math.floor((displayedLap>0?displayedLap-1:0)/2);
   var segHtml = live.cond.map(function(c,i){
-    return '<div class="wx-seg'+(i===Math.floor((lr.lap>0?lr.lap-1:0)/2)?' wx-seg-now':'')+'"><div class="wx-seg-lap">'+segmentLapLabel(i,laps)+'</div><div class="wx-seg-icon">'+WEATHER_COND_ICON[c]+'</div><div class="wx-seg-pct">'+live.wet[i]+'%</div></div>';
+    return '<div class="wx-seg'+(i===curSegIdx?' wx-seg-now':'')+'"><div class="wx-seg-lap">'+segmentLapLabel(i,laps)+'</div><div class="wx-seg-icon">'+WEATHER_COND_ICON[c]+'</div><div class="wx-seg-pct">'+live.wet[i]+'%</div></div>';
   }).join('');
   return '<div class="timing-title" style="padding:0 0 8px;">Previsão a cada 2 voltas</div><div class="wx-timeline">'+segHtml+'</div>';
 }
@@ -1523,7 +1529,7 @@ function enterStrategy(){
   var weather = buildWeatherScript(longLaps);
   state.longRace = {
     weather: weather, wetnessNow: weather.actualWet[0], weatherCondNow: weather.actualCond[0],
-    lap: 0, totalLaps: longLaps,
+    lap: 0, liveLap: null, totalLaps: longLaps,
     history: [], pendingDecision: null,
     rivalsRoster: null, rivalField: null, mineField: null, finished:false,
     events: [], eventIndex: 0, raceAnimFrame: null, started: false, timingOrder: null, safetyCar: null,
@@ -2133,11 +2139,13 @@ function runLongRaceSegment(){
 
     updateTimingTower(lr);
 
+    var curLap = Math.min(targetLap, fromLap+Math.floor(fracLaps)+1);
+    lr.liveLap = curLap; // volta realmente exibida agora — pode estar à frente do lr.lap (que só
+    // avança quando o segmento atual termina de verdade), usado pra manter a previsão do tempo e
+    // uma parada voluntária no meio do segmento em sincronia com o que o jogador está vendo
     var lapBadge = document.getElementById('gpm-lr-lapbadge');
-    if(lapBadge){
-      var curLap = Math.min(targetLap, fromLap+Math.floor(fracLaps)+1);
-      lapBadge.textContent = 'Volta '+curLap+'/'+lr.totalLaps;
-    }
+    if(lapBadge) lapBadge.textContent = 'Volta '+curLap+'/'+lr.totalLaps;
+    refreshLongRaceStatus();
 
     if(elapsed<segDuration){
       lr.raceAnimFrame = requestAnimationFrame(frame);
@@ -2334,6 +2342,17 @@ function requestVoluntaryPit(){
   if(lr.raceAnimFrame){ cancelAnimationFrame(lr.raceAnimFrame); lr.raceAnimFrame=null; }
   var cars = lr.rivalField.concat(lr.mineField);
   cars.forEach(function(d){ if(d._liveProgress!=null){ d._progress = d._liveProgress; } });
+  // lr.lap só avança quando o segmento atual termina de verdade — como a corrida foi
+  // interrompida no meio de um (até 2 voltas de antecedência), sem isso a volta "recuava" pro
+  // início do segmento quando a corrida retomasse depois da decisão. Alcança a volta que já
+  // estava sendo exibida, aplicando o desgaste/pit dos rivais das voltas puladas no caminho
+  if(lr.liveLap!=null){
+    var caughtUpLap = Math.min(lr.liveLap-1, lr.totalLaps);
+    if(caughtUpLap > lr.lap){
+      for(var l=lr.lap+1; l<=caughtUpLap; l++){ advanceRivalTiresOneLap(lr, l); }
+      lr.lap = caughtUpLap;
+    }
+  }
   lr.pendingDecision = {type:'voluntary'};
   render();
 }
