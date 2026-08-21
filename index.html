@@ -244,7 +244,6 @@
   border-radius:10px;padding:12px 14px;opacity:0;transform:translateY(8px);animation:hlIn .4s ease forwards;
 }
 @keyframes hlIn{to{opacity:1;transform:translateY(0);}}
-#gpm .qs-card-new{opacity:0;transform:translateY(8px);animation:hlIn .4s ease forwards;}
 #gpm .hl-icon{font-size:20px;line-height:1.2;flex-shrink:0;}
 #gpm .hl-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;color:var(--accent-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
 #gpm .hl-text{font-size:13px;color:var(--text);line-height:1.4;}
@@ -1599,9 +1598,14 @@ function startSeasonRace(watchLive){
   render();
 }
 
-/* ---------- temporada expressa: mesma temporada de 5 corridas, sem simulação ao vivo — cada
-   corrida é resolvida instantaneamente e o resultado (top 5 + posição da sua equipe, se estiver
-   fora dele) vai aparecendo abaixo, uma corrida de cada vez ---------- */
+/* ---------- temporada expressa: mesma temporada de 5 corridas, sem simulação ao vivo. cada
+   corrida é resolvida de uma vez (o RESULTADO já está decidido), mas a REVELAÇÃO na tela é
+   manual via DOM: os pilotos do top 5 (+ a posição da sua equipe, se ficar fora dele) vão
+   surgindo um de cada vez dentro de uma <details> aberta; quando termina, ela fecha sozinha
+   (sobra só a setinha nativa do <summary> pra reabrir e rever) e a próxima corrida começa.
+   Depois do primeiro render() que monta o esqueleto da tela, tudo daqui pra frente mexe direto
+   no DOM (sem chamar render() de novo) — assim um <details> que o jogador reabriu manualmente
+   não é derrubado por um re-render de uma corrida seguinte. ---------- */
 function clearQuickSeasonTimer(){
   if(state.qsTimer){ clearTimeout(state.qsTimer); state.qsTimer = null; }
 }
@@ -1615,93 +1619,145 @@ function resolveOneQuickRace(){
   seas.trackIndex++;
 }
 
-function quickRaceCardHtml(entry, idx){
-  var track = entry.track, field = entry.results;
-  var top5 = field.slice(0, 5);
-  var mineOutside = field.filter(function(d){ return d.mine && d.pos>5; });
-  var rowsHtml = top5.map(function(d){
-    var posClass = d.pos===1?'p1':d.pos===2?'p2':d.pos===3?'p3':'';
-    return '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'" style="animation:none;opacity:1;">'+
-      '<div class="pos '+posClass+'">'+d.pos+'</div>'+
-      '<div class="row-main"><div class="row-driver">'+shortName(d.driverName)+'</div><div class="row-team">'+d.team+'</div></div>'+
-      '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
-    '</div>';
-  }).join('');
-  var outsideHtml = '';
-  if(mineOutside.length){
-    outsideHtml = '<div class="footer-info" style="margin-top:8px;">'+mineOutside.map(function(d){
-      return d.dnf ? ('❌ '+shortName(d.driverName)+' abandonou') : ('📍 '+shortName(d.driverName)+': P'+d.pos);
-    }).join(' &nbsp;·&nbsp; ')+'</div>';
-  }
-  return '<div class="panel">'+
-    '<div class="lineup-role">Corrida '+(idx+1)+' de '+TRACKS.length+' — '+track.flag+' '+track.name+'</div>'+
-    '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">'+rowsHtml+'</div>'+
-    outsideHtml+
+function quickRaceRowHtml(d){
+  var posClass = d.pos===1?'p1':d.pos===2?'p2':d.pos===3?'p3':'';
+  return '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'" style="animation:none;opacity:1;">'+
+    '<div class="pos '+posClass+'">'+d.pos+'</div>'+
+    '<div class="row-main"><div class="row-driver">'+shortName(d.driverName)+'</div><div class="row-team">'+d.team+'</div></div>'+
+    '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
   '</div>';
+}
+
+// lista de "passos" de revelação de uma corrida: primeiro o top 5 (em ordem, 1º ao 5º), depois
+// a posição de qualquer piloto seu que tenha ficado fora do top 5
+function quickRaceRevealItems(entry){
+  var top5 = entry.results.slice(0, 5);
+  var mineOutside = entry.results.filter(function(d){ return d.mine && d.pos>5; });
+  return top5.map(function(d){ return quickRaceRowHtml(d); }).concat(mineOutside.map(function(d){
+    return '<div class="footer-info" style="margin-top:2px;">'+(d.dnf ? ('❌ '+shortName(d.driverName)+' abandonou') : ('📍 '+shortName(d.driverName)+': P'+d.pos))+'</div>';
+  }));
+}
+
+var QS_REVEAL_STEP_MS = 550; // intervalo entre cada piloto revelado
+var QS_COLLAPSE_PAUSE_MS = 900; // pausa depois do último piloto, antes de fechar a caixa
+
+function startNextQuickRace(){
+  var seas = state.season;
+  if(!seas || state.screen!=='quickseason') return;
+  var board = document.getElementById('gpm-qs-board');
+  if(!board) return;
+
+  if(seas.trackIndex >= TRACKS.length){ finishQuickSeasonUI(); return; }
+
+  resolveOneQuickRace();
+  var idx = seas.history.length-1;
+  var entry = seas.history[idx];
+
+  var det = el(
+    '<details class="panel" open id="gpm-qs-race-'+idx+'">'+
+      '<summary>Corrida '+(idx+1)+' de '+TRACKS.length+' — '+entry.track.flag+' '+entry.track.name+'</summary>'+
+      '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;" id="gpm-qs-rows-'+idx+'"></div>'+
+    '</details>'
+  );
+  board.appendChild(det);
+  det.scrollIntoView({behavior:'smooth', block:'center'});
+
+  revealQuickRaceStep(idx, quickRaceRevealItems(entry), 0);
+}
+
+function revealQuickRaceStep(idx, items, i){
+  if(state.screen!=='quickseason') return;
+  var rowsEl = document.getElementById('gpm-qs-rows-'+idx);
+  if(!rowsEl) return;
+  if(i < items.length){
+    rowsEl.appendChild(el(items[i]));
+    state.qsTimer = setTimeout(function(){ revealQuickRaceStep(idx, items, i+1); }, QS_REVEAL_STEP_MS);
+  } else {
+    // todos os pilotos já apareceram — espera um instante, fecha a caixa (só a setinha do
+    // summary continua clicável pra reabrir) e emenda na próxima corrida
+    state.qsTimer = setTimeout(function(){
+      var det = document.getElementById('gpm-qs-race-'+idx);
+      if(det) det.open = false;
+      startNextQuickRace();
+    }, QS_COLLAPSE_PAUSE_MS);
+  }
+}
+
+// resolve e monta instantaneamente (já com tudo revelado) o que faltar da temporada — usado só
+// pelo botão "pular tudo"
+function skipQuickSeason(){
+  clearQuickSeasonTimer();
+  var seas = state.season;
+  if(!seas) return;
+  var curIdx = seas.history.length-1;
+  if(curIdx>=0){
+    var rowsEl = document.getElementById('gpm-qs-rows-'+curIdx);
+    if(rowsEl) rowsEl.innerHTML = quickRaceRevealItems(seas.history[curIdx]).join('');
+    var curDet = document.getElementById('gpm-qs-race-'+curIdx);
+    if(curDet) curDet.open = false;
+  }
+  var board = document.getElementById('gpm-qs-board');
+  while(seas.trackIndex < TRACKS.length){
+    resolveOneQuickRace();
+    var idx = seas.history.length-1;
+    var entry = seas.history[idx];
+    if(board){
+      board.appendChild(el(
+        '<details class="panel" id="gpm-qs-race-'+idx+'">'+
+          '<summary>Corrida '+(idx+1)+' de '+TRACKS.length+' — '+entry.track.flag+' '+entry.track.name+'</summary>'+
+          '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">'+quickRaceRevealItems(entry).join('')+'</div>'+
+        '</details>'
+      ));
+    }
+  }
+  finishQuickSeasonUI();
+}
+
+function finishQuickSeasonUI(){
+  var seas = state.season;
+  var skipbar = document.getElementById('gpm-qs-skipbar');
+  if(skipbar) skipbar.style.display = 'none';
+  var actionsSlot = document.getElementById('gpm-qs-actions');
+  if(!actionsSlot) return;
+  actionsSlot.innerHTML = '';
+
+  var standWrap = el('<div class="panel"></div>');
+  standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+standingsHtml(seas.standings);
+  actionsSlot.appendChild(standWrap);
+
+  var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
+  var finish = el('<button class="btn">Ver resultado do campeonato</button>');
+  finish.addEventListener('click', function(){ clearQuickSeasonTimer(); state.screen='champion'; render(); });
+  var quit = el('<button class="btn ghost">Abandonar temporada</button>');
+  quit.addEventListener('click', function(){ clearQuickSeasonTimer(); resetState(); render(); });
+  actions.appendChild(finish);
+  actions.appendChild(quit);
+  actionsSlot.appendChild(actions);
+  actionsSlot.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 function renderQuickSeason(){
   var wrap = el('<div></div>');
-  var seas = state.season;
-  var doneAll = seas.trackIndex >= TRACKS.length;
 
   wrap.appendChild(el(
     '<div class="header">'+
-      '<div class="eyebrow">⚡ Temporada Expressa — '+Math.min(seas.trackIndex,TRACKS.length)+' de '+TRACKS.length+' corridas</div>'+
+      '<div class="eyebrow">⚡ Temporada Expressa</div>'+
       '<h1>'+state.teamName+'</h1>'+
-      '<div class="subtitle">Os resultados vão aparecendo abaixo, corrida após corrida.</div>'+
+      '<div class="subtitle">Os resultados vão aparecendo piloto por piloto. Cada corrida fecha sozinha ao terminar — clique nela pra reabrir e rever.</div>'+
     '</div>'
   ));
 
-  var board = el('<div></div>');
-  seas.history.forEach(function(entry, idx){
-    var card = el(quickRaceCardHtml(entry, idx));
-    // só o card mais recente ganha a animação de entrada + é usado como alvo do scroll — os
-    // outros já foram vistos, não faz sentido reanimar todos a cada re-render
-    if(idx === seas.history.length-1) card.classList.add('qs-card-new');
-    board.appendChild(card);
-  });
-  wrap.appendChild(board);
+  wrap.appendChild(el('<div id="gpm-qs-board"></div>'));
+  wrap.appendChild(el('<div id="gpm-qs-actions"></div>'));
 
-  if(!doneAll){
-    wrap.appendChild(el('<div class="toast">🏁 Simulando corrida '+(seas.trackIndex+1)+' de '+TRACKS.length+'...</div>'));
+  var skipbar = el('<div class="skipbar" id="gpm-qs-skipbar"><button class="btn ghost">Pular tudo</button></div>');
+  skipbar.querySelector('button').addEventListener('click', skipQuickSeason);
+  wrap.appendChild(skipbar);
 
-    var skipbar = el('<div class="skipbar"><button class="btn ghost">Pular tudo</button></div>');
-    skipbar.querySelector('button').addEventListener('click', function(){
-      clearQuickSeasonTimer();
-      while(state.season.trackIndex < TRACKS.length){ resolveOneQuickRace(); }
-      render();
-    });
-    wrap.appendChild(skipbar);
-
-    clearQuickSeasonTimer();
-    state.qsTimer = setTimeout(function(){
-      state.qsTimer = null;
-      if(state.screen!=='quickseason') return;
-      resolveOneQuickRace();
-      render();
-    }, 1400);
-  } else {
-    var standWrap = el('<div class="panel"></div>');
-    standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+standingsHtml(seas.standings);
-    wrap.appendChild(standWrap);
-
-    var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
-    var finish = el('<button class="btn">Ver resultado do campeonato</button>');
-    finish.addEventListener('click', function(){ clearQuickSeasonTimer(); state.screen='champion'; render(); });
-    var quit = el('<button class="btn ghost">Abandonar temporada</button>');
-    quit.addEventListener('click', function(){ clearQuickSeasonTimer(); resetState(); render(); });
-    actions.appendChild(finish);
-    actions.appendChild(quit);
-    wrap.appendChild(actions);
-  }
-
-  // rola até o card mais novo assim que ele entra no DOM — sem isso, um card que aparece
-  // abaixo da dobra passa despercebido e a lista inteira parece "pular pronta" de uma vez
-  setTimeout(function(){
-    var newest = document.querySelector('.qs-card-new');
-    if(newest) newest.scrollIntoView({behavior:'smooth', block:'center'});
-  }, 30);
+  // a partir daqui, tudo é manipulação direta do DOM (startNextQuickRace/revealQuickRaceStep) —
+  // este render() não é chamado de novo enquanto a tela continuar sendo a Temporada Expressa
+  clearQuickSeasonTimer();
+  setTimeout(function(){ startNextQuickRace(); }, 50);
 
   return wrap;
 }
