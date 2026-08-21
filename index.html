@@ -1093,7 +1093,14 @@ function renderDraft(){
 
   if(!state.chefe && state.pilotos.length===0 && !state.motor){
     var back = el('<button class="btn ghost back-btn">← Voltar</button>');
-    back.addEventListener('click', function(){ state.raceStyle=null; state.screen='racestyle'; render(); });
+    back.addEventListener('click', function(){
+      // a Temporada Expressa pula a tela de "estilo de corrida" ao entrar no draft — voltar
+      // por ela devolveria pra uma tela que nem faz parte desse fluxo, então volta direto pro
+      // menu de modo em vez disso
+      if(state.mode==='quickseason'){ state.mode=null; state.screen='mode'; }
+      else { state.raceStyle=null; state.screen='racestyle'; }
+      render();
+    });
     wrap.appendChild(back);
   }
 
