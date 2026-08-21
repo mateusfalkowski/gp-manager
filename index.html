@@ -1248,7 +1248,9 @@ function renderDraft(){
             '<div><div class="card-name">'+m.nome+'</div><div class="card-role">'+m.fabricante+'</div></div>'+
           '</div>'+
           (state.almanac ? '' : ('<div class="stats">'+statBar('Potência',m.pot)+statBar('Confiabilidade',m.confiab)+'</div>'))+
-          '<div class="card-desc" style="margin-top:8px;">'+m.desc+(selected?' <b style="color:var(--good);">— CONTRATADO</b>':'')+'</div>'+
+          (state.almanac
+            ? (selected?'<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">CONTRATADO</b></div>':'')
+            : ('<div class="card-desc" style="margin-top:8px;">'+m.desc+(selected?' <b style="color:var(--good);">— CONTRATADO</b>':'')+'</div>'))+
           (state.almanac ? '' : traitTags(m.traitsPos, m.traitsNeg))+
         '</div>'
       );
