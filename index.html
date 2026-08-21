@@ -244,6 +244,7 @@
   border-radius:10px;padding:12px 14px;opacity:0;transform:translateY(8px);animation:hlIn .4s ease forwards;
 }
 @keyframes hlIn{to{opacity:1;transform:translateY(0);}}
+#gpm .qs-card-new{opacity:0;transform:translateY(8px);animation:hlIn .4s ease forwards;}
 #gpm .hl-icon{font-size:20px;line-height:1.2;flex-shrink:0;}
 #gpm .hl-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;color:var(--accent-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
 #gpm .hl-text{font-size:13px;color:var(--text);line-height:1.4;}
@@ -1653,7 +1654,13 @@ function renderQuickSeason(){
   ));
 
   var board = el('<div></div>');
-  seas.history.forEach(function(entry, idx){ board.appendChild(el(quickRaceCardHtml(entry, idx))); });
+  seas.history.forEach(function(entry, idx){
+    var card = el(quickRaceCardHtml(entry, idx));
+    // só o card mais recente ganha a animação de entrada + é usado como alvo do scroll — os
+    // outros já foram vistos, não faz sentido reanimar todos a cada re-render
+    if(idx === seas.history.length-1) card.classList.add('qs-card-new');
+    board.appendChild(card);
+  });
   wrap.appendChild(board);
 
   if(!doneAll){
@@ -1673,7 +1680,7 @@ function renderQuickSeason(){
       if(state.screen!=='quickseason') return;
       resolveOneQuickRace();
       render();
-    }, 1100);
+    }, 1400);
   } else {
     var standWrap = el('<div class="panel"></div>');
     standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+standingsHtml(seas.standings);
@@ -1688,6 +1695,13 @@ function renderQuickSeason(){
     actions.appendChild(quit);
     wrap.appendChild(actions);
   }
+
+  // rola até o card mais novo assim que ele entra no DOM — sem isso, um card que aparece
+  // abaixo da dobra passa despercebido e a lista inteira parece "pular pronta" de uma vez
+  setTimeout(function(){
+    var newest = document.querySelector('.qs-card-new');
+    if(newest) newest.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 30);
 
   return wrap;
 }
