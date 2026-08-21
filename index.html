@@ -951,7 +951,8 @@ var state = {
   raceTrack:null,
   longRace:null,
   raceSpeed:1, // 1x/2x/4x — controla a velocidade de reprodução das simulações ao vivo
-  qsTimer:null // timer do cascateamento de resultados da Temporada Expressa
+  qsTimer:null, // timer do cascateamento de resultados da Temporada Expressa
+  almanac:false // modo Almanaque: draft sem mostrar atributos/traços — escolha pelo conhecimento do jogador
 };
 
 function speedControlHtml(){
@@ -1026,7 +1027,7 @@ function renderModeSelect(){
       '<div class="card-desc">Monte sua equipe e dispute uma corrida com simulação animada na pista, luzes de largada e tudo mais.</div>'+
     '</div>'
   );
-  single.addEventListener('click', function(){ state.mode='single'; state.screen='racestyle'; render(); });
+  single.addEventListener('click', function(){ state.mode='single'; state.almanac=false; state.screen='racestyle'; render(); });
   grid.appendChild(single);
 
   var season = el(
@@ -1035,7 +1036,7 @@ function renderModeSelect(){
       '<div class="card-desc">Monte sua equipe uma vez e dispute o campeonato em '+TRACKS.length+' Grandes Prêmios ('+TRACKS.map(function(t){return t.flag;}).join(' ')+'). Cada corrida mostra os melhores momentos — largada, estratégia, abandonos, volta mais rápida e pódio — em vez da simulação completa, pra manter o ritmo.</div>'+
     '</div>'
   );
-  season.addEventListener('click', function(){ state.mode='season'; state.screen='racestyle'; render(); });
+  season.addEventListener('click', function(){ state.mode='season'; state.almanac=false; state.screen='racestyle'; render(); });
   grid.appendChild(season);
 
   var quick = el(
@@ -1044,8 +1045,17 @@ function renderModeSelect(){
       '<div class="card-desc">As mesmas 5 corridas da Temporada, mas sem simulação ao vivo — o resultado de cada corrida vai aparecendo abaixo, uma de cada vez, mostrando o top 5 (e a posição da sua equipe, se ela ficar fora dele).</div>'+
     '</div>'
   );
-  quick.addEventListener('click', function(){ state.mode='quickseason'; state.raceStyle=null; state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe'; render(); });
+  quick.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe'; render(); });
   grid.appendChild(quick);
+
+  var almanac = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">📖 Temporada Almanaque</div><div class="card-role">Stats ocultos · 5 corridas</div></div></div>'+
+      '<div class="card-desc">A mesma Temporada Expressa, mas no draft você não vê os atributos nem os traços de quem está contratando — só nome, equipe e ano. Os números continuam existindo e valendo pra corrida, você só escolhe no escuro, confiando no que sabe sobre cada um.</div>'+
+    '</div>'
+  );
+  almanac.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe'; render(); });
+  grid.appendChild(almanac);
 
   wrap.appendChild(grid);
   return wrap;
@@ -1108,7 +1118,9 @@ function renderDraft(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>Monte sua equipe</h1>'+
-      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos e 1 motor. É tudo sorte — cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b></div>'+
+      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos e 1 motor. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b>'+
+        (state.almanac ? ' <b style="color:var(--accent-2);">Modo Almanaque:</b> os atributos e traços estão ocultos — escolha só pelo nome, equipe e ano.' : '')+
+      '</div>'+
       '<input class="teamname" placeholder="Nome da sua equipe" value="'+state.teamName+'" />'+
     '</div>'
   ));
@@ -1153,9 +1165,9 @@ function renderDraft(){
           '<div class="card-top">'+
             '<div><div class="card-name">'+c.pais+' '+c.nome+'</div><div class="card-role">'+c.apelido+'</div></div>'+
           '</div>'+
-          '<div class="stats">'+statBar('Liderança',c.lideranca)+statBar('Estratégia',c.estrategia)+statBar('Desenvolvimento',c.desenvolvimento)+'</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Liderança',c.lideranca)+statBar('Estratégia',c.estrategia)+statBar('Desenvolvimento',c.desenvolvimento)+'</div>'))+
           (selected?'<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
-          traitTags(c.traitsPos, c.traitsNeg)+
+          (state.almanac ? '' : traitTags(c.traitsPos, c.traitsNeg))+
         '</div>'
       );
       if(!disabled && !selected){
@@ -1179,8 +1191,8 @@ function renderDraft(){
           '<div class="card-top">'+
             '<div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">'+p.apelido+'</div></div>'+
           '</div>'+
-          '<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'+
-          traitTags(p.traitsPos, p.traitsNeg)+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'))+
+          (state.almanac ? '' : traitTags(p.traitsPos, p.traitsNeg))+
           (selected?'<div class="card-desc" style="margin-top:8px;margin-bottom:0;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
         '</div>'
       );
@@ -1208,8 +1220,8 @@ function renderDraft(){
           '<div class="card-top">'+
             '<div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">'+p.apelido+'</div></div>'+
           '</div>'+
-          '<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'+
-          traitTags(p.traitsPos, p.traitsNeg)+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'))+
+          (state.almanac ? '' : traitTags(p.traitsPos, p.traitsNeg))+
           (selected?'<div class="card-desc" style="margin-top:8px;margin-bottom:0;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
         '</div>'
       );
@@ -1235,9 +1247,9 @@ function renderDraft(){
           '<div class="card-top">'+
             '<div><div class="card-name">'+m.nome+'</div><div class="card-role">'+m.fabricante+'</div></div>'+
           '</div>'+
-          '<div class="stats">'+statBar('Potência',m.pot)+statBar('Confiabilidade',m.confiab)+'</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Potência',m.pot)+statBar('Confiabilidade',m.confiab)+'</div>'))+
           '<div class="card-desc" style="margin-top:8px;">'+m.desc+(selected?' <b style="color:var(--good);">— CONTRATADO</b>':'')+'</div>'+
-          traitTags(m.traitsPos, m.traitsNeg)+
+          (state.almanac ? '' : traitTags(m.traitsPos, m.traitsNeg))+
         '</div>'
       );
       if(!disabled && !selected){
@@ -1265,7 +1277,7 @@ function renderDraft(){
 
   var footer = el(
     '<div class="footerbar">'+
-      '<div class="footer-info">🎲 Tudo na sorte — a qualidade de cada contratado varia por temporada.</div>'+
+      '<div class="footer-info">'+(state.almanac ? '📖 Os números existem e valem pra corrida — você só não vê.' : '🎲 Tudo na sorte — a qualidade de cada contratado varia por temporada.')+'</div>'+
     '</div>'
   );
   wrap.appendChild(footer);
@@ -3366,6 +3378,7 @@ function resetState(){
   clearQuickSeasonTimer();
   state.screen='mode';
   state.mode=null;
+  state.almanac=false;
   state.raceStyle=null;
   state.tab='chefe';
   state.teamName='';
