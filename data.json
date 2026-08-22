@@ -1,0 +1,2959 @@
+{
+  "chefes": [
+    {
+      "id": "tp_01",
+      "name": "Frank Williams",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1982,
+          "team": "Williams",
+          "overall": 86,
+          "leadership": 88,
+          "strategy": 84,
+          "development": 86,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        },
+        {
+          "year": 1984,
+          "team": "Williams",
+          "overall": 90,
+          "leadership": 91,
+          "strategy": 86,
+          "development": 94,
+          "positive_traits": [
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_02",
+      "name": "Ron Dennis",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1987,
+          "team": "McLaren",
+          "overall": 93,
+          "leadership": 94,
+          "strategy": 92,
+          "development": 94,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "McLaren",
+          "overall": 97,
+          "leadership": 99,
+          "strategy": 97,
+          "development": 98,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Atrito com Engenharia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_03",
+      "name": "Cesare Fiorio",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1992,
+          "team": "Ferrari",
+          "overall": 78,
+          "leadership": 76,
+          "strategy": 81,
+          "development": 77,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Ligier",
+          "overall": 74,
+          "leadership": 75,
+          "strategy": 74,
+          "development": 72,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_04",
+      "name": "Jean Todt",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 1996,
+          "team": "Ferrari",
+          "overall": 94,
+          "leadership": 96,
+          "strategy": 93,
+          "development": 94,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Ferrari",
+          "overall": 99,
+          "leadership": 99,
+          "strategy": 98,
+          "development": 99,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Foco Técnico Obsessivo"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_05",
+      "name": "Flavio Briatore",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 2003,
+          "team": "Renault",
+          "overall": 87,
+          "leadership": 89,
+          "strategy": 87,
+          "development": 86,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Renault",
+          "overall": 97,
+          "leadership": 96,
+          "strategy": 95,
+          "development": 96,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_06",
+      "name": "Ross Brawn",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "Honda",
+          "overall": 90,
+          "leadership": 92,
+          "strategy": 96,
+          "development": 92,
+          "positive_traits": [
+            "Leitura de Corrida Impecável"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Brawn GP",
+          "overall": 98,
+          "leadership": 97,
+          "strategy": 99,
+          "development": 97,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_07",
+      "name": "Tony Fernandes",
+      "nationality": "MYS",
+      "seasons": [
+        {
+          "year": 2012,
+          "team": "Caterham",
+          "overall": 66,
+          "leadership": 64,
+          "strategy": 65,
+          "development": 68,
+          "positive_traits": [
+            "Moral de Equipe Elevada",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Caterham",
+          "overall": 70,
+          "leadership": 70,
+          "strategy": 68,
+          "development": 69,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_08",
+      "name": "Toto Wolff",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 2017,
+          "team": "Mercedes",
+          "overall": 95,
+          "leadership": 96,
+          "strategy": 93,
+          "development": 96,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        },
+        {
+          "year": 2019,
+          "team": "Mercedes",
+          "overall": 98,
+          "leadership": 99,
+          "strategy": 98,
+          "development": 98,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_09",
+      "name": "Franz Tost",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "AlphaTauri",
+          "overall": 77,
+          "leadership": 82,
+          "strategy": 75,
+          "development": 79,
+          "positive_traits": [
+            "Extração Máxima do Pacote Técnico",
+            "Reconstrução Rápida de Estratégia"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "AlphaTauri",
+          "overall": 83,
+          "leadership": 85,
+          "strategy": 82,
+          "development": 83,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica"
+          ],
+          "negative_traits": [
+            "Atrito com Engenharia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_10",
+      "name": "Alessandro Alunni Bravi",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "Kick Sauber",
+          "overall": 68,
+          "leadership": 66,
+          "strategy": 68,
+          "development": 69,
+          "positive_traits": [
+            "Leitura de Corrida Impecável"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Audi F1 Team",
+          "overall": 74,
+          "leadership": 77,
+          "strategy": 76,
+          "development": 79,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Ajuste Lento a Mudança de Regulamento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_11",
+      "name": "Ken Tyrrell",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Tyrrell",
+          "overall": 74,
+          "leadership": 82,
+          "strategy": 74,
+          "development": 73,
+          "positive_traits": [
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 1984,
+          "team": "Tyrrell",
+          "overall": 70,
+          "leadership": 80,
+          "strategy": 72,
+          "development": 68,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_12",
+      "name": "Peter Warr",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1987,
+          "team": "Lotus",
+          "overall": 92,
+          "leadership": 90,
+          "strategy": 92,
+          "development": 91,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Rotatividade Alta de Pessoal"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Lotus",
+          "overall": 91,
+          "leadership": 88,
+          "strategy": 89,
+          "development": 90,
+          "positive_traits": [
+            "Ousadia Estratégica em Safety Car",
+            "Upgrade Decisivo em Meio de Ano"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_13",
+      "name": "Eddie Jordan",
+      "nationality": "IRL",
+      "seasons": [
+        {
+          "year": 1991,
+          "team": "Jordan",
+          "overall": 77,
+          "leadership": 82,
+          "strategy": 78,
+          "development": 79,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Tensão com a Equipe Técnica"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Jordan",
+          "overall": 76,
+          "leadership": 80,
+          "strategy": 77,
+          "development": 76,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_14",
+      "name": "Giancarlo Minardi",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1997,
+          "team": "Minardi",
+          "overall": 70,
+          "leadership": 79,
+          "strategy": 72,
+          "development": 70,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Minardi",
+          "overall": 76,
+          "leadership": 83,
+          "strategy": 75,
+          "development": 73,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Poucos Upgrades Agressivos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_15",
+      "name": "Alain Prost",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 2001,
+          "team": "Prost Grand Prix",
+          "overall": 87,
+          "leadership": 84,
+          "strategy": 88,
+          "development": 85,
+          "positive_traits": [
+            "Extração Máxima do Pacote Técnico"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Renault",
+          "overall": 95,
+          "leadership": 95,
+          "strategy": 95,
+          "development": 94,
+          "positive_traits": [
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_16",
+      "name": "Christian Horner",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2007,
+          "team": "Red Bull Racing",
+          "overall": 96,
+          "leadership": 95,
+          "strategy": 96,
+          "development": 96,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Cálculo de Pit Stop Preciso"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Red Bull Racing",
+          "overall": 93,
+          "leadership": 94,
+          "strategy": 95,
+          "development": 97,
+          "positive_traits": [
+            "Leitura de Corrida Impecável",
+            "Reconstrução Rápida de Estratégia"
+          ],
+          "negative_traits": [
+            "Atrito com Engenharia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_17",
+      "name": "Martin Whitmarsh",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2013,
+          "team": "McLaren",
+          "overall": 87,
+          "leadership": 86,
+          "strategy": 86,
+          "development": 87,
+          "positive_traits": [
+            "Moral de Equipe Elevada",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "McLaren",
+          "overall": 91,
+          "leadership": 89,
+          "strategy": 90,
+          "development": 92,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Upgrade Decisivo em Meio de Ano"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_18",
+      "name": "Monisha Kaltenborn",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 2015,
+          "team": "Sauber",
+          "overall": 69,
+          "leadership": 70,
+          "strategy": 72,
+          "development": 71,
+          "positive_traits": [
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        },
+        {
+          "year": 2017,
+          "team": "Sauber",
+          "overall": 66,
+          "leadership": 66,
+          "strategy": 68,
+          "development": 67,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_19",
+      "name": "Frédéric Vasseur",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Alfa Romeo",
+          "overall": 88,
+          "leadership": 91,
+          "strategy": 87,
+          "development": 89,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Ferrari",
+          "overall": 94,
+          "leadership": 95,
+          "strategy": 94,
+          "development": 95,
+          "positive_traits": [
+            "Extração Máxima do Pacote Técnico"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_20",
+      "name": "Andrea Stella",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 2023,
+          "team": "McLaren",
+          "overall": 93,
+          "leadership": 96,
+          "strategy": 92,
+          "development": 98,
+          "positive_traits": [
+            "Leitura de Corrida Impecável",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "McLaren",
+          "overall": 99,
+          "leadership": 98,
+          "strategy": 97,
+          "development": 99,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Gestão de Crise Exemplar"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_21",
+      "name": "Bernie Ecclestone",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Brabham",
+          "overall": 81,
+          "leadership": 89,
+          "strategy": 84,
+          "development": 85,
+          "positive_traits": [
+            "Leitura de Corrida Impecável",
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Poucos Upgrades Agressivos"
+          ]
+        },
+        {
+          "year": 1983,
+          "team": "Brabham",
+          "overall": 89,
+          "leadership": 95,
+          "strategy": 90,
+          "development": 91,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_22",
+      "name": "Harvey Postlethwaite",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1988,
+          "team": "Ferrari",
+          "overall": 80,
+          "leadership": 79,
+          "strategy": 80,
+          "development": 84,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Tyrrell",
+          "overall": 82,
+          "leadership": 83,
+          "strategy": 82,
+          "development": 86,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica",
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_23",
+      "name": "Gerard Larrousse",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 1991,
+          "team": "Larrousse",
+          "overall": 79,
+          "leadership": 78,
+          "strategy": 77,
+          "development": 76,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Excesso de Cautela em Chuva"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Larrousse",
+          "overall": 86,
+          "leadership": 84,
+          "strategy": 82,
+          "development": 80,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Poucos Upgrades Agressivos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_24",
+      "name": "Craig Pollock",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1998,
+          "team": "BAR",
+          "overall": 69,
+          "leadership": 72,
+          "strategy": 69,
+          "development": 71,
+          "positive_traits": [
+            "Ambiente Estável sob Pressão",
+            "Leitura de Corrida Impecável"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "BAR",
+          "overall": 65,
+          "leadership": 65,
+          "strategy": 66,
+          "development": 68,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Foco Excessivo em Potência Pura"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_25",
+      "name": "David Richards",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2002,
+          "team": "BAR",
+          "overall": 64,
+          "leadership": 72,
+          "strategy": 68,
+          "development": 70,
+          "positive_traits": [
+            "Moral de Equipe Elevada"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "BAR",
+          "overall": 60,
+          "leadership": 82,
+          "strategy": 81,
+          "development": 85,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Comunicação Rígida com Pilotos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_26",
+      "name": "Mario Theissen",
+      "nationality": "GER",
+      "seasons": [
+        {
+          "year": 2005,
+          "team": "Williams BMW",
+          "overall": 70,
+          "leadership": 77,
+          "strategy": 75,
+          "development": 79,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "BMW Sauber",
+          "overall": 67,
+          "leadership": 76,
+          "strategy": 74,
+          "development": 76,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_27",
+      "name": "Colin Kolles",
+      "nationality": "ROU",
+      "seasons": [
+        {
+          "year": 2011,
+          "team": "HRT",
+          "overall": 65,
+          "leadership": 66,
+          "strategy": 67,
+          "development": 64,
+          "positive_traits": [
+            "Foco Técnico Obsessivo",
+            "Comunicação Direta com a Fábrica"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 2013,
+          "team": "HRT",
+          "overall": 62,
+          "leadership": 63,
+          "strategy": 63,
+          "development": 60,
+          "positive_traits": [
+            "Cálculo de Pit Stop Preciso",
+            "Recrutamento de Talentos Jovens"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_28",
+      "name": "Guenther Steiner",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 2018,
+          "team": "Haas",
+          "overall": 75,
+          "leadership": 82,
+          "strategy": 79,
+          "development": 78,
+          "positive_traits": [
+            "Comunicação Direta com a Fábrica",
+            "Negociação de Patrocínio Hábil"
+          ],
+          "negative_traits": [
+            "Dificuldade de Retenção de Patrocinador"
+          ]
+        },
+        {
+          "year": 2019,
+          "team": "Haas",
+          "overall": 75,
+          "leadership": 80,
+          "strategy": 74,
+          "development": 77,
+          "positive_traits": [
+            "Consistência ao Longo do Ano"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_29",
+      "name": "Otmar Szafnauer",
+      "nationality": "USA",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Aston Martin",
+          "overall": 69,
+          "leadership": 76,
+          "strategy": 78,
+          "development": 77,
+          "positive_traits": [
+            "Recrutamento de Talentos Jovens",
+            "Ousadia Estratégica em Safety Car"
+          ],
+          "negative_traits": [
+            "Favoritismo a um dos Pilotos"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Alpine",
+          "overall": 65,
+          "leadership": 72,
+          "strategy": 73,
+          "development": 74,
+          "positive_traits": [
+            "Sinergia com Fornecedor"
+          ],
+          "negative_traits": [
+            "Resistência a Mudar de Estratégia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tp_30",
+      "name": "James Vowles",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "Williams",
+          "overall": 88,
+          "leadership": 91,
+          "strategy": 93,
+          "development": 89,
+          "positive_traits": [
+            "Upgrade Decisivo em Meio de Ano"
+          ],
+          "negative_traits": [
+            "Ritmo de Desenvolvimento Lento"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Williams",
+          "overall": 90,
+          "leadership": 94,
+          "strategy": 95,
+          "development": 92,
+          "positive_traits": [
+            "Moral de Equipe Elevada",
+            "Extração Máxima do Pacote Técnico"
+          ],
+          "negative_traits": [
+            "Orçamento Enxuto"
+          ]
+        }
+      ]
+    }
+  ],
+  "pilotos": [
+    {
+      "id": "drv_01",
+      "name": "Nelson Piquet",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 1980,
+          "team": "Brabham",
+          "teammate": "Ricardo Zunino",
+          "overall": 83,
+          "pace": 88,
+          "consistency": 85,
+          "aggression": 80,
+          "positive_traits": [
+            "Excelente em Condições Mistas",
+            "Velocidade Pura Dominante"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        },
+        {
+          "year": 1983,
+          "team": "Brabham",
+          "teammate": "Riccardo Patrese",
+          "overall": 85,
+          "pace": 94,
+          "consistency": 91,
+          "aggression": 82,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_02",
+      "name": "Ayrton Senna",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 1986,
+          "team": "Lotus",
+          "teammate": "Johnny Dumfries",
+          "overall": 90,
+          "pace": 96,
+          "consistency": 89,
+          "aggression": 94,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "McLaren",
+          "teammate": "Alain Prost",
+          "overall": 97,
+          "pace": 99,
+          "consistency": 95,
+          "aggression": 98,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_03",
+      "name": "Alain Prost",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 1992,
+          "team": "Williams",
+          "teammate": "Nigel Mansell",
+          "overall": 88,
+          "pace": 92,
+          "consistency": 96,
+          "aggression": 72,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo",
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Williams",
+          "teammate": "Damon Hill",
+          "overall": 93,
+          "pace": 95,
+          "consistency": 98,
+          "aggression": 70,
+          "positive_traits": [
+            "Zero Acidentes na Temporada",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_04",
+      "name": "Toranosuke Takagi",
+      "nationality": "JPN",
+      "seasons": [
+        {
+          "year": 1998,
+          "team": "Tyrrell",
+          "teammate": "Ricardo Rosset",
+          "overall": 58,
+          "pace": 66,
+          "consistency": 58,
+          "aggression": 75,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Arrows",
+          "teammate": "Pedro de la Rosa",
+          "overall": 61,
+          "pace": 69,
+          "consistency": 60,
+          "aggression": 72,
+          "positive_traits": [
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_05",
+      "name": "Fernando Alonso",
+      "nationality": "ESP",
+      "seasons": [
+        {
+          "year": 2003,
+          "team": "Renault",
+          "teammate": "Jarno Trulli",
+          "overall": 80,
+          "pace": 89,
+          "consistency": 85,
+          "aggression": 88,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Pneus Gastos Rápido Demais"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Renault",
+          "teammate": "Jarno Trulli",
+          "overall": 86,
+          "pace": 92,
+          "consistency": 91,
+          "aggression": 90,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_06",
+      "name": "Nelson Piquet Jr.",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "Renault",
+          "teammate": "Fernando Alonso",
+          "overall": 67,
+          "pace": 72,
+          "consistency": 68,
+          "aggression": 74,
+          "positive_traits": [
+            "Ultrapassagens Decisivas",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Renault",
+          "teammate": "Fernando Alonso",
+          "overall": 75,
+          "pace": 75,
+          "consistency": 70,
+          "aggression": 72,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_07",
+      "name": "Pastor Maldonado",
+      "nationality": "VEN",
+      "seasons": [
+        {
+          "year": 2011,
+          "team": "Williams",
+          "teammate": "Rubens Barrichello",
+          "overall": 67,
+          "pace": 80,
+          "consistency": 62,
+          "aggression": 95,
+          "positive_traits": [
+            "Zero Erros Não Forçados",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Lotus",
+          "teammate": "Romain Grosjean",
+          "overall": 74,
+          "pace": 82,
+          "consistency": 64,
+          "aggression": 96,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_08",
+      "name": "Max Verstappen",
+      "nationality": "NED",
+      "seasons": [
+        {
+          "year": 2016,
+          "team": "Red Bull Racing",
+          "teammate": "Daniel Ricciardo",
+          "overall": 73,
+          "pace": 88,
+          "consistency": 82,
+          "aggression": 96,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Red Bull Racing",
+          "teammate": "Sergio Pérez",
+          "overall": 99,
+          "pace": 99,
+          "consistency": 99,
+          "aggression": 99,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Consistência de Pontuação",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Nenhum Ponto Fraco Notável"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_09",
+      "name": "Charles Leclerc",
+      "nationality": "MON",
+      "seasons": [
+        {
+          "year": 2022,
+          "team": "Ferrari",
+          "teammate": "Carlos Sainz Jr.",
+          "overall": 86,
+          "pace": 94,
+          "consistency": 87,
+          "aggression": 84,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Ferrari",
+          "teammate": "Carlos Sainz Jr.",
+          "overall": 89,
+          "pace": 95,
+          "consistency": 89,
+          "aggression": 85,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_10",
+      "name": "Logan Sargeant",
+      "nationality": "USA",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "Williams",
+          "teammate": "Alexander Albon",
+          "overall": 68,
+          "pace": 72,
+          "consistency": 68,
+          "aggression": 70,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "Williams",
+          "teammate": "Carlos Sainz Jr.",
+          "overall": 70,
+          "pace": 75,
+          "consistency": 72,
+          "aggression": 70,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_11",
+      "name": "Michele Alboreto",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1983,
+          "team": "Tyrrell",
+          "teammate": "Danny Sullivan",
+          "overall": 77,
+          "pace": 83,
+          "consistency": 84,
+          "aggression": 75,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        },
+        {
+          "year": 1984,
+          "team": "Ferrari",
+          "teammate": "René Arnoux",
+          "overall": 85,
+          "pace": 88,
+          "consistency": 87,
+          "aggression": 78,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_12",
+      "name": "Nigel Mansell",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1987,
+          "team": "Williams",
+          "teammate": "Nelson Piquet",
+          "overall": 85,
+          "pace": 94,
+          "consistency": 86,
+          "aggression": 96,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1989,
+          "team": "Ferrari",
+          "teammate": "Gerhard Berger",
+          "overall": 95,
+          "pace": 96,
+          "consistency": 88,
+          "aggression": 97,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_13",
+      "name": "Jean Alesi",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 1992,
+          "team": "Ferrari",
+          "teammate": "Ivan Capelli",
+          "overall": 76,
+          "pace": 86,
+          "consistency": 76,
+          "aggression": 92,
+          "positive_traits": [
+            "Largadas Explosivas",
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Ferrari",
+          "teammate": "Gerhard Berger",
+          "overall": 86,
+          "pace": 90,
+          "consistency": 84,
+          "aggression": 94,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_14",
+      "name": "Pedro Diniz",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 1996,
+          "team": "Ligier",
+          "teammate": "Olivier Panis",
+          "overall": 63,
+          "pace": 68,
+          "consistency": 69,
+          "aggression": 65,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Sauber",
+          "teammate": "Jean Alesi",
+          "overall": 61,
+          "pace": 72,
+          "consistency": 74,
+          "aggression": 66,
+          "positive_traits": [
+            "Excelente em Condições Mistas",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_15",
+      "name": "Nick Heidfeld",
+      "nationality": "GER",
+      "seasons": [
+        {
+          "year": 2001,
+          "team": "Sauber",
+          "teammate": "Kimi Räikkönen",
+          "overall": 74,
+          "pace": 81,
+          "consistency": 88,
+          "aggression": 72,
+          "positive_traits": [
+            "Zero Erros Não Forçados",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2003,
+          "team": "Sauber",
+          "teammate": "Heinz-Harald Frentzen",
+          "overall": 75,
+          "pace": 82,
+          "consistency": 89,
+          "aggression": 70,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_16",
+      "name": "Michael Schumacher",
+      "nationality": "GER",
+      "seasons": [
+        {
+          "year": 2006,
+          "team": "Ferrari",
+          "teammate": "Felipe Massa",
+          "overall": 95,
+          "pace": 98,
+          "consistency": 98,
+          "aggression": 92,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "Ferrari",
+          "teammate": "Kimi Räikkönen",
+          "overall": 95,
+          "pace": 94,
+          "consistency": 94,
+          "aggression": 88,
+          "positive_traits": [
+            "Ultrapassagens Decisivas",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_17",
+      "name": "Kamui Kobayashi",
+      "nationality": "JPN",
+      "seasons": [
+        {
+          "year": 2011,
+          "team": "Sauber",
+          "teammate": "Sergio Pérez",
+          "overall": 79,
+          "pace": 84,
+          "consistency": 76,
+          "aggression": 94,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Caterham",
+          "teammate": "Marcus Ericsson",
+          "overall": 77,
+          "pace": 79,
+          "consistency": 76,
+          "aggression": 88,
+          "positive_traits": [
+            "Execução Técnica Precisa",
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Reação Lenta em Incidentes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_18",
+      "name": "Valtteri Bottas",
+      "nationality": "FIN",
+      "seasons": [
+        {
+          "year": 2017,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 76,
+          "pace": 88,
+          "consistency": 87,
+          "aggression": 70,
+          "positive_traits": [
+            "Execução Técnica Precisa",
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2019,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 76,
+          "pace": 91,
+          "consistency": 88,
+          "aggression": 72,
+          "positive_traits": [
+            "Zero Acidentes na Temporada",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_19",
+      "name": "Pierre Gasly",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "AlphaTauri",
+          "teammate": "Yuki Tsunoda",
+          "overall": 74,
+          "pace": 86,
+          "consistency": 84,
+          "aggression": 82,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Alpine",
+          "teammate": "Esteban Ocon",
+          "overall": 76,
+          "pace": 85,
+          "consistency": 82,
+          "aggression": 80,
+          "positive_traits": [
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_20",
+      "name": "Oscar Piastri",
+      "nationality": "AUS",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "McLaren",
+          "teammate": "Lando Norris",
+          "overall": 77,
+          "pace": 91,
+          "consistency": 88,
+          "aggression": 83,
+          "positive_traits": [
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2026,
+          "team": "McLaren",
+          "teammate": "Lando Norris",
+          "overall": 75,
+          "pace": 94,
+          "consistency": 92,
+          "aggression": 86,
+          "positive_traits": [
+            "Execução Técnica Precisa",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_21",
+      "name": "Keke Rosberg",
+      "nationality": "FIN",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Fittipaldi",
+          "teammate": "Chico Serra",
+          "overall": 83,
+          "pace": 86,
+          "consistency": 79,
+          "aggression": 94,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo",
+            "Estratégia de Combustível Perfeita"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 1983,
+          "team": "Williams",
+          "teammate": "Jacques Laffite",
+          "overall": 91,
+          "pace": 92,
+          "consistency": 87,
+          "aggression": 95,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_22",
+      "name": "Pierluigi Martini",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1985,
+          "team": "Minardi",
+          "teammate": "None",
+          "overall": 60,
+          "pace": 68,
+          "consistency": 65,
+          "aggression": 70,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 1988,
+          "team": "Minardi",
+          "teammate": "Luis Pérez-Sala",
+          "overall": 58,
+          "pace": 74,
+          "consistency": 75,
+          "aggression": 72,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_23",
+      "name": "Andrea de Cesaris",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1991,
+          "team": "Jordan",
+          "teammate": "Bertrand Gachot",
+          "overall": 61,
+          "pace": 80,
+          "consistency": 60,
+          "aggression": 98,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        },
+        {
+          "year": 1994,
+          "team": "Sauber",
+          "teammate": "Heinz-Harald Frentzen",
+          "overall": 57,
+          "pace": 76,
+          "consistency": 63,
+          "aggression": 94,
+          "positive_traits": [
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_24",
+      "name": "Giancarlo Fisichella",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1997,
+          "team": "Jordan",
+          "teammate": "Ralf Schumacher",
+          "overall": 80,
+          "pace": 84,
+          "consistency": 81,
+          "aggression": 78,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Pneus Gastos Rápido Demais"
+          ]
+        },
+        {
+          "year": 1999,
+          "team": "Benetton",
+          "teammate": "Alexander Wurz",
+          "overall": 79,
+          "pace": 86,
+          "consistency": 83,
+          "aggression": 76,
+          "positive_traits": [
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_25",
+      "name": "Jenson Button",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2002,
+          "team": "Renault",
+          "teammate": "Jarno Trulli",
+          "overall": 76,
+          "pace": 83,
+          "consistency": 86,
+          "aggression": 70,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "BAR",
+          "teammate": "Takuma Sato",
+          "overall": 80,
+          "pace": 91,
+          "consistency": 92,
+          "aggression": 74,
+          "positive_traits": [
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_26",
+      "name": "Robert Kubica",
+      "nationality": "POL",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "BMW Sauber",
+          "teammate": "Nick Heidfeld",
+          "overall": 72,
+          "pace": 94,
+          "consistency": 93,
+          "aggression": 87,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2009,
+          "team": "BMW Sauber",
+          "teammate": "Nick Heidfeld",
+          "overall": 69,
+          "pace": 88,
+          "consistency": 85,
+          "aggression": 82,
+          "positive_traits": [
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_27",
+      "name": "Kimi Räikkönen",
+      "nationality": "FIN",
+      "seasons": [
+        {
+          "year": 2013,
+          "team": "Lotus",
+          "teammate": "Romain Grosjean",
+          "overall": 82,
+          "pace": 92,
+          "consistency": 94,
+          "aggression": 80,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2014,
+          "team": "Ferrari",
+          "teammate": "Fernando Alonso",
+          "overall": 79,
+          "pace": 84,
+          "consistency": 86,
+          "aggression": 78,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_28",
+      "name": "Lewis Hamilton",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2015,
+          "team": "Mercedes",
+          "teammate": "Nico Rosberg",
+          "overall": 95,
+          "pace": 98,
+          "consistency": 98,
+          "aggression": 90,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 2018,
+          "team": "Mercedes",
+          "teammate": "Valtteri Bottas",
+          "overall": 99,
+          "pace": 99,
+          "consistency": 99,
+          "aggression": 88,
+          "positive_traits": [
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_29",
+      "name": "Nicholas Latifi",
+      "nationality": "CAN",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Williams",
+          "teammate": "George Russell",
+          "overall": 61,
+          "pace": 67,
+          "consistency": 64,
+          "aggression": 65,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida",
+            "Velocidade Pura Dominante"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Williams",
+          "teammate": "Alexander Albon",
+          "overall": 60,
+          "pace": 66,
+          "consistency": 62,
+          "aggression": 64,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_30",
+      "name": "Felipe Drugovich",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 2023,
+          "team": "Aston Martin",
+          "teammate": "Fernando Alonso",
+          "overall": 68,
+          "pace": 79,
+          "consistency": 81,
+          "aggression": 72,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        },
+        {
+          "year": 2025,
+          "team": "Aston Martin",
+          "teammate": "Lance Stroll",
+          "overall": 65,
+          "pace": 81,
+          "consistency": 83,
+          "aggression": 74,
+          "positive_traits": [
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_31",
+      "name": "Sergio Pérez",
+      "nationality": "MEX",
+      "seasons": [
+        {
+          "year": 2020,
+          "team": "Racing Point",
+          "teammate": "Lance Stroll",
+          "overall": 86,
+          "pace": 85,
+          "consistency": 91,
+          "aggression": 78,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Red Bull Racing",
+          "teammate": "Max Verstappen",
+          "overall": 87,
+          "pace": 86,
+          "consistency": 82,
+          "aggression": 80,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita",
+            "Excelente em Pistas de Rua"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_32",
+      "name": "Nico Rosberg",
+      "nationality": "GER",
+      "seasons": [
+        {
+          "year": 2014,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 91,
+          "pace": 94,
+          "consistency": 90,
+          "aggression": 84,
+          "positive_traits": [
+            "Pole Positions Surpreendentes",
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        },
+        {
+          "year": 2016,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 95,
+          "pace": 96,
+          "consistency": 96,
+          "aggression": 88,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_33",
+      "name": "Rubens Barrichello",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 2002,
+          "team": "Ferrari",
+          "teammate": "Michael Schumacher",
+          "overall": 88,
+          "pace": 89,
+          "consistency": 90,
+          "aggression": 76,
+          "positive_traits": [
+            "Excelente em Condições Mistas",
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        },
+        {
+          "year": 2004,
+          "team": "Ferrari",
+          "teammate": "Michael Schumacher",
+          "overall": 91,
+          "pace": 92,
+          "consistency": 93,
+          "aggression": 78,
+          "positive_traits": [
+            "Gestão de Pneus Impecável",
+            "Adaptação Rápida ao Carro Novo"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_34",
+      "name": "Daniel Ricciardo",
+      "nationality": "AUS",
+      "seasons": [
+        {
+          "year": 2014,
+          "team": "Red Bull Racing",
+          "teammate": "Sebastian Vettel",
+          "overall": 89,
+          "pace": 91,
+          "consistency": 89,
+          "aggression": 92,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2016,
+          "team": "Red Bull Racing",
+          "teammate": "Max Verstappen",
+          "overall": 92,
+          "pace": 93,
+          "consistency": 94,
+          "aggression": 90,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_35",
+      "name": "Carlos Sainz Jr.",
+      "nationality": "ESP",
+      "seasons": [
+        {
+          "year": 2022,
+          "team": "Ferrari",
+          "teammate": "Charles Leclerc",
+          "overall": 85,
+          "pace": 88,
+          "consistency": 86,
+          "aggression": 80,
+          "positive_traits": [
+            "Estratégia de Combustível Perfeita",
+            "Leitura de Corrida da Cabine"
+          ],
+          "negative_traits": [
+            "Dificuldade em Pista Molhada"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Ferrari",
+          "teammate": "Charles Leclerc",
+          "overall": 88,
+          "pace": 90,
+          "consistency": 91,
+          "aggression": 82,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda",
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_36",
+      "name": "Lando Norris",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "McLaren",
+          "teammate": "Daniel Ricciardo",
+          "overall": 86,
+          "pace": 89,
+          "consistency": 88,
+          "aggression": 82,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 2024,
+          "team": "McLaren",
+          "teammate": "Oscar Piastri",
+          "overall": 92,
+          "pace": 95,
+          "consistency": 91,
+          "aggression": 88,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_37",
+      "name": "Gerhard Berger",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 1989,
+          "team": "Ferrari",
+          "teammate": "Nigel Mansell",
+          "overall": 86,
+          "pace": 90,
+          "consistency": 82,
+          "aggression": 90,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1991,
+          "team": "McLaren",
+          "teammate": "Ayrton Senna",
+          "overall": 87,
+          "pace": 89,
+          "consistency": 86,
+          "aggression": 86,
+          "positive_traits": [
+            "Adaptação Rápida ao Carro Novo",
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_38",
+      "name": "Damon Hill",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1994,
+          "team": "Williams",
+          "teammate": "Alain Prost",
+          "overall": 89,
+          "pace": 92,
+          "consistency": 89,
+          "aggression": 84,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        },
+        {
+          "year": 1996,
+          "team": "Williams",
+          "teammate": "Jacques Villeneuve",
+          "overall": 94,
+          "pace": 95,
+          "consistency": 96,
+          "aggression": 85,
+          "positive_traits": [
+            "Pole Positions Surpreendentes",
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_39",
+      "name": "Jacques Villeneuve",
+      "nationality": "CAN",
+      "seasons": [
+        {
+          "year": 1996,
+          "team": "Williams",
+          "teammate": "Damon Hill",
+          "overall": 90,
+          "pace": 93,
+          "consistency": 88,
+          "aggression": 94,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida",
+            "Ultrapassagens Decisivas"
+          ],
+          "negative_traits": [
+            "Desgaste de Freios Elevado"
+          ]
+        },
+        {
+          "year": 1997,
+          "team": "Williams",
+          "teammate": "Heinz-Harald Frentzen",
+          "overall": 94,
+          "pace": 96,
+          "consistency": 91,
+          "aggression": 96,
+          "positive_traits": [
+            "Velocidade Pura Dominante",
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_40",
+      "name": "George Russell",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2021,
+          "team": "Williams",
+          "teammate": "Nicholas Latifi",
+          "overall": 82,
+          "pace": 89,
+          "consistency": 80,
+          "aggression": 84,
+          "positive_traits": [
+            "Pole Positions Surpreendentes",
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        },
+        {
+          "year": 2022,
+          "team": "Mercedes",
+          "teammate": "Lewis Hamilton",
+          "overall": 89,
+          "pace": 91,
+          "consistency": 93,
+          "aggression": 88,
+          "positive_traits": [
+            "Consistência de Pontuação",
+            "Zero Acidentes na Temporada"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    }
+  ],
+  "motores": [
+    {
+      "id": "zenith",
+      "name": "TAG Porsche",
+      "seasons": [
+        {
+          "year": 1983,
+          "power": 78,
+          "reliability": 75,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 1996,
+          "power": 85,
+          "reliability": 68,
+          "positive_traits": [
+            "Confiabilidade de Ferro",
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ferronova_eng",
+      "name": "Ferrari Motori",
+      "seasons": [
+        {
+          "year": 1996,
+          "power": 88,
+          "reliability": 70,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 78,
+          "reliability": 82,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vantex",
+      "name": "Honda Racing Engines",
+      "seasons": [
+        {
+          "year": 1989,
+          "power": 96,
+          "reliability": 94,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2019,
+          "power": 89,
+          "reliability": 86,
+          "positive_traits": [
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2026,
+          "power": 94,
+          "reliability": 92,
+          "positive_traits": [
+            "Confiabilidade de Ferro"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "corvane_eng",
+      "name": "Renault Sport",
+      "seasons": [
+        {
+          "year": 1989,
+          "power": 86,
+          "reliability": 80,
+          "positive_traits": [
+            "Confiabilidade de Ferro"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 76,
+          "reliability": 72,
+          "positive_traits": [
+            "Confiabilidade de Ferro",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        },
+        {
+          "year": 2026,
+          "power": 84,
+          "reliability": 82,
+          "positive_traits": [
+            "Eficiência de Combustível Superior",
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Peso Acima da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meridianeng",
+      "name": "BMW Motorsport",
+      "seasons": [
+        {
+          "year": 1983,
+          "power": 98,
+          "reliability": 76,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Peso Acima da Média"
+          ]
+        },
+        {
+          "year": 1989,
+          "power": 82,
+          "reliability": 84,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Peso Acima da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aurion",
+      "name": "Cosworth Engineering",
+      "seasons": [
+        {
+          "year": 2002,
+          "power": 80,
+          "reliability": 84,
+          "positive_traits": [
+            "Confiabilidade de Ferro"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2009,
+          "power": 82,
+          "reliability": 88,
+          "positive_traits": [
+            "Potência Bruta Dominante",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "halcyon_eng",
+      "name": "Judd Power",
+      "seasons": [
+        {
+          "year": 1989,
+          "power": 75,
+          "reliability": 78,
+          "positive_traits": [
+            "Curva de Potência Suave",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 70,
+          "reliability": 82,
+          "positive_traits": [
+            "Curva de Potência Suave",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Fragilidade em Alta Rotação"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "solvex",
+      "name": "Petronas (Sauber)",
+      "seasons": [
+        {
+          "year": 1996,
+          "power": 79,
+          "reliability": 81,
+          "positive_traits": [
+            "Resposta Instantânea do Acelerador",
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        },
+        {
+          "year": 2014,
+          "power": 82,
+          "reliability": 85,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Superaquecimento em Pista Quente"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kestrel",
+      "name": "Mercedes-AMG High Performance",
+      "seasons": [
+        {
+          "year": 1983,
+          "power": 82,
+          "reliability": 75,
+          "positive_traits": [
+            "Eficiência de Combustível Superior"
+          ],
+          "negative_traits": [
+            "Fragilidade em Alta Rotação"
+          ]
+        },
+        {
+          "year": 1996,
+          "power": 92,
+          "reliability": 82,
+          "positive_traits": [
+            "Potência Bruta Dominante",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Desenvolvimento Caro"
+          ]
+        },
+        {
+          "year": 2019,
+          "power": 99,
+          "reliability": 96,
+          "positive_traits": [
+            "Eficiência de Combustível Superior",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "blackreef_eng",
+      "name": "Toyota Motorsport",
+      "seasons": [
+        {
+          "year": 2002,
+          "power": 84,
+          "reliability": 72,
+          "positive_traits": [
+            "Potência Bruta Dominante",
+            "Curva de Potência Suave"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        },
+        {
+          "year": 2009,
+          "power": 90,
+          "reliability": 88,
+          "positive_traits": [
+            "Potência Bruta Dominante"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        },
+        {
+          "year": 2019,
+          "power": 88,
+          "reliability": 85,
+          "positive_traits": [
+            "Eficiência de Combustível Superior",
+            "Resposta Instantânea do Acelerador"
+          ],
+          "negative_traits": [
+            "Consumo de Combustível Elevado"
+          ]
+        }
+      ]
+    }
+  ]
+}

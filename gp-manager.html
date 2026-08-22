@@ -1,0 +1,3597 @@
+<!doctype html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>GP Manager</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#12141a;
+  --bg-alt:#181b22;
+  --surface:#1e222b;
+  --surface-hover:#262b36;
+  --border:#2b303c;
+  --text:#eef0f3;
+  --text-dim:#8f97a3;
+  --accent:#ff7a29;
+  --accent-2:#ffd23f;
+  --danger:#e6435a;
+  --good:#3ddc84;
+}
+*{box-sizing:border-box;}
+#gpm .card,#gpm .btn,#gpm .tab,#gpm .season-btn,#gpm .speed-btn{touch-action:manipulation;}
+#gpm{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:0;
+  margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+#gpm .wrap{max-width:820px;margin:0 auto;padding:18px 16px 60px;}
+#gpm h1,#gpm h2,#gpm h3,#gpm .num{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.02em;}
+#gpm .flagstrip{
+  height:8px;width:100%;
+  background-image:repeating-conic-gradient(#20232b 0% 25%, #383e4a 0% 50%);
+  background-size:16px 16px;
+  opacity:.6;
+}
+#gpm .header{padding:20px 0 14px;}
+#gpm .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent);font-weight:700;}
+#gpm h1{font-size:30px;margin:4px 0 2px;line-height:1.05;}
+#gpm .subtitle{color:var(--text-dim);font-size:13.5px;margin-bottom:14px;}
+#gpm input.teamname{
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  font-family:'Rajdhani',sans-serif;font-weight:600;font-size:17px;
+  padding:9px 12px;border-radius:8px;width:100%;max-width:340px;outline:none;
+}
+#gpm input.teamname:focus{border-color:var(--accent);}
+
+/* budget gauge */
+#gpm .gauge-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:14px 16px;margin:16px 0 18px;
+}
+#gpm .gauge-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+#gpm .gauge-label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--text-dim);}
+#gpm .gauge-value{font-size:22px;}
+#gpm .gauge-value .rem{color:var(--accent-2);}
+#gpm .gauge-value .over{color:var(--danger);}
+#gpm .gauge-track{
+  height:10px;border-radius:6px;background:var(--bg-alt);overflow:hidden;position:relative;border:1px solid var(--border);
+}
+#gpm .gauge-fill{
+  height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  transition:width .35s ease;
+}
+#gpm .gauge-fill.over{background:linear-gradient(90deg,var(--danger),#ff8a9c);}
+
+/* tabs */
+#gpm .tabs{display:flex;gap:6px;margin-bottom:14px;}
+#gpm .tab{
+  flex:1;text-align:center;padding:10px 6px;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);cursor:pointer;
+  font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14.5px;color:var(--text-dim);
+  transition:all .15s ease;user-select:none;
+}
+#gpm .tab .count{display:block;font-size:11px;font-weight:500;margin-top:2px;color:var(--text-dim);}
+#gpm .tab.active{background:var(--accent);border-color:var(--accent);color:#1a1200;}
+#gpm .tab.active .count{color:#1a1200cc;}
+#gpm .tab.done:not(.active){border-color:var(--good);color:var(--good);}
+#gpm .tab.locked{opacity:.35;cursor:not-allowed;}
+
+/* cards */
+#gpm .cardgrid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px;}
+#gpm .card{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:13px 14px;cursor:pointer;transition:all .15s ease;position:relative;
+}
+#gpm .card:hover:not(.disabled){border-color:var(--accent);background:var(--surface-hover);}
+#gpm .card.selected{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.12),var(--surface));box-shadow:0 0 0 1px var(--accent) inset;}
+#gpm .card.disabled{opacity:.4;cursor:not-allowed;}
+#gpm .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+#gpm .card-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:17px;line-height:1.15;}
+#gpm .card-role{font-size:12px;color:var(--accent-2);font-weight:600;}
+#gpm .card-price{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;color:var(--accent-2);white-space:nowrap;}
+#gpm .card-desc{font-size:12px;color:var(--text-dim);margin-bottom:8px;line-height:1.4;}
+#gpm .stats{display:flex;gap:12px;flex-wrap:wrap;}
+#gpm .stat{flex:1;min-width:60px;}
+#gpm .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:3px;}
+#gpm .stat-num{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:20px;line-height:1;}
+#gpm .stat-num.stat-elite{color:#1fa863;}
+#gpm .stat-num.stat-hi{color:var(--good);}
+#gpm .stat-num.stat-mid{color:var(--accent-2);}
+#gpm .stat-num.stat-lo{color:var(--danger);}
+#gpm .check{
+  position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);color:#1a1200;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;
+}
+#gpm .trait-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+#gpm .trait-tag{
+  font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:20px;white-space:nowrap;
+}
+#gpm .trait-pos{background:rgba(61,220,132,.14);color:var(--good);}
+#gpm .trait-neg{background:rgba(230,67,90,.14);color:var(--danger);}
+
+/* season selector */
+#gpm .season-box{margin-bottom:14px;}
+#gpm .season-label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--text-dim);margin-bottom:6px;}
+#gpm .season-btns{display:flex;gap:8px;}
+#gpm .season-btn{
+  flex:1;text-align:center;padding:9px 6px;border-radius:8px;background:var(--surface);
+  border:1px solid var(--border);cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;
+  font-size:15px;color:var(--text-dim);transition:all .15s ease;
+}
+#gpm .season-btn.active{background:var(--accent-2);border-color:var(--accent-2);color:#241a00;}
+
+/* footer bar */
+#gpm .footerbar{
+  position:sticky;bottom:0;background:var(--bg-alt);border-top:1px solid var(--border);
+  padding:12px 16px;margin:0 -16px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+#gpm .footer-info{font-size:12px;color:var(--text-dim);line-height:1.4;}
+#gpm .footer-info b{color:var(--text);}
+#gpm .btn{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:.03em;
+  padding:11px 20px;border-radius:8px;border:none;cursor:pointer;text-transform:uppercase;
+  background:var(--accent);color:#1a1200;transition:all .15s ease;white-space:nowrap;
+}
+#gpm .btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+#gpm .btn:disabled{background:var(--border);color:var(--text-dim);cursor:not-allowed;}
+#gpm .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+#gpm .btn.ghost:hover{border-color:var(--accent);color:var(--accent);}
+#gpm .back-btn{padding:7px 12px;font-size:12.5px;text-transform:none;letter-spacing:0;margin-top:14px;}
+
+/* pre-race / results */
+#gpm .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
+#gpm .lineup-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+#gpm .lineup-row:last-child{border-bottom:none;}
+#gpm .lineup-role{font-size:11px;text-transform:uppercase;color:var(--text-dim);letter-spacing:.1em;}
+#gpm .lineup-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;}
+#gpm .center-cta{display:flex;justify-content:center;margin-top:10px;}
+
+#gpm .board{display:flex;flex-direction:column-reverse;gap:6px;}
+#gpm .row{
+  display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:9px 12px;opacity:0;transform:translateX(-14px);
+  animation:slideIn .45s ease forwards;
+}
+@keyframes slideIn{to{opacity:1;transform:translateX(0);}}
+#gpm .row.mine{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.14),var(--surface));}
+#gpm .row.dnf{opacity:.55!important;animation:none;}
+#gpm .pos{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:19px;width:30px;color:var(--text-dim);}
+#gpm .row.mine .pos{color:var(--accent-2);}
+#gpm .row .p1{color:#ffd23f;}
+#gpm .row .p2{color:#cfd4dc;}
+#gpm .row .p3{color:#d68a4c;}
+#gpm .row-main{flex:1;min-width:0;}
+#gpm .row-driver{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14.5px;}
+#gpm .row-team{font-size:11px;color:var(--text-dim);}
+#gpm .row-gap{font-family:'Rajdhani',sans-serif;font-size:12.5px;color:var(--text-dim);white-space:nowrap;}
+#gpm .row-pts{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;color:var(--good);width:26px;text-align:right;}
+
+#gpm .hero-result{text-align:center;padding:10px 0 4px;}
+#gpm .hero-result .num{font-size:44px;color:var(--accent-2);}
+#gpm .hero-result .lbl{color:var(--text-dim);font-size:13px;}
+
+#gpm .skipbar{display:flex;justify-content:center;margin-top:14px;}
+#gpm .toast{
+  font-size:12px;color:var(--text-dim);text-align:center;margin-top:8px;min-height:16px;
+}
+
+/* race track */
+#gpm .track-wrap{
+  background:var(--surface);border:1px solid var(--border);border-radius:0 0 12px 12px;
+  padding:10px;margin-bottom:8px;
+}
+#gpm .track-wrap svg{width:100%;height:auto;display:block;}
+@media (max-width:600px){
+  #gpm .track-wrap svg{max-height:34vh;width:auto;margin:0 auto;}
+}
+#gpm .legend{display:flex;gap:16px;justify-content:center;align-items:center;font-size:11.5px;color:var(--text-dim);margin:10px 0 4px;flex-wrap:wrap;}
+#gpm .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+
+/* starting lights */
+#gpm .lights-gantry{
+  display:flex;gap:8px;justify-content:center;align-items:center;
+  background:#1a1d24;border:1px solid var(--border);border-bottom:none;
+  border-radius:12px 12px 0 0;padding:12px 10px;
+}
+#gpm .light{
+  width:24px;height:24px;border-radius:50%;background:#3a1216;border:2px solid #4a1a20;
+  transition:background .12s ease, box-shadow .12s ease;
+}
+#gpm .light.on{background:#ff2d3a;border-color:#ff5c66;box-shadow:0 0 16px 5px rgba(255,45,58,.75);}
+#gpm .grid-status{
+  text-align:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;
+  color:var(--accent-2);padding:2px 0 8px;min-height:20px;
+}
+
+/* layout: track + timing tower side by side */
+#gpm .race-layout{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;}
+#gpm .race-track-col{flex:1 1 300px;min-width:260px;}
+#gpm .race-timing-col{flex:1 1 200px;min-width:190px;max-width:100%;}
+#gpm .timing-tower{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:8px;display:flex;flex-direction:column;gap:4px;
+}
+#gpm .timing-title{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text-dim);padding:4px 6px 6px;
+}
+#gpm .timing-row{
+  display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:6px;
+  background:var(--bg-alt);font-size:11.5px;
+}
+#gpm .timing-row.mine{border:1px solid var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.18),var(--bg-alt));}
+#gpm .timing-row.dnf{opacity:.4;}
+#gpm .timing-pos{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12.5px;width:16px;color:var(--text-dim);flex-shrink:0;}
+#gpm .timing-row.mine .timing-pos{color:var(--accent-2);}
+#gpm .timing-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+#gpm .timing-name{flex:1;font-family:'Rajdhani',sans-serif;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#gpm .timing-pit-badge{margin-left:5px;font-size:10px;}
+#gpm .timing-gap{font-family:'Rajdhani',sans-serif;font-size:10.5px;color:var(--text-dim);white-space:nowrap;flex-shrink:0;}
+#gpm .timing-tire{display:flex;align-items:center;gap:3px;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:10.5px;color:var(--text-dim);white-space:nowrap;flex-shrink:0;}
+#gpm .timing-tire-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.3);}
+
+/* highlights (temporada) */
+#gpm .hl-board{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
+#gpm .hl-card{
+  display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;opacity:0;transform:translateY(8px);animation:hlIn .4s ease forwards;
+}
+@keyframes hlIn{to{opacity:1;transform:translateY(0);}}
+#gpm .hl-icon{font-size:20px;line-height:1.2;flex-shrink:0;}
+#gpm .hl-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;color:var(--accent-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+#gpm .hl-text{font-size:13px;color:var(--text);line-height:1.4;}
+#gpm details.panel summary{
+  cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;
+  color:var(--accent-2);list-style:revert;user-select:none;
+}
+#gpm details.panel summary:hover{color:var(--accent);}
+#gpm details.panel[open] summary{margin-bottom:4px;}
+
+/* classificação do campeonato */
+#gpm .stand-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+#gpm .stand-row:last-child{border-bottom:none;}
+#gpm .stand-row.mine{color:var(--accent-2);}
+#gpm .stand-row.mine .stand-label{font-weight:700;}
+#gpm .stand-row.rival{color:var(--danger);}
+#gpm .stand-row.rival .stand-label{font-weight:700;}
+#gpm .stand-pos{width:22px;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-weight:700;flex-shrink:0;}
+#gpm .stand-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#gpm .stand-pts{font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--good);white-space:nowrap;}
+
+/* corrida longa */
+#gpm .wx-timeline{display:flex;gap:6px;flex-wrap:wrap;}
+#gpm .wx-seg{flex:1;min-width:54px;text-align:center;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px;padding:8px 4px;}
+#gpm .wx-seg-now{border-color:var(--accent-2);background:linear-gradient(135deg,rgba(255,210,63,.14),var(--bg-alt));}
+#gpm .lr-sc-banner{
+  text-align:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.03em;
+  color:#1a1200;background:linear-gradient(90deg,var(--accent-2),#ffe27a);border-radius:8px;
+  padding:9px 10px;margin-bottom:10px;
+}
+#gpm .lr-tire-alert{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  font-size:13.5px;color:var(--text);background:rgba(239,122,133,.14);border:1px solid rgba(239,122,133,.5);
+  border-radius:8px;padding:10px 12px;margin-bottom:10px;
+}
+#gpm .lr-tire-alert button{flex-shrink:0;padding:6px 18px;}
+#gpm .wx-seg-lap{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:4px;}
+#gpm .wx-seg-icon{font-size:18px;}
+#gpm .wx-seg-pct{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;color:var(--text-dim);margin-top:2px;}
+#gpm .lr-status{display:flex;gap:10px;flex-wrap:wrap;padding:14px 16px;}
+#gpm .lr-stat{flex:1;min-width:90px;}
+#gpm .lr-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:3px;}
+#gpm .lr-stat-val{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;color:var(--text);}
+#gpm .lr-standing{font-size:12.5px;color:var(--text-dim);background:var(--bg-alt);border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.6;}
+#gpm .lr-decision{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.12),var(--surface));}
+#gpm .lr-decision-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;color:var(--accent-2);}
+#gpm .lr-decision-msg{font-size:13px;color:var(--text-dim);margin-top:4px;}
+#gpm .lr-decision .cardgrid{margin-bottom:0;}
+#gpm .lr-decision .card{cursor:pointer;}
+#gpm .lr-pit{text-align:center;border-color:var(--accent-2);background:linear-gradient(135deg,rgba(255,210,63,.10),var(--surface));}
+#gpm .lr-pit-timer{margin:12px 0 10px;}
+#gpm .lr-pit-time{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:40px;color:var(--accent-2);line-height:1;}
+#gpm .lr-pit-req{font-size:12px;color:var(--text-dim);margin-top:4px;}
+#gpm .lr-pit-track{height:10px;border-radius:6px;background:var(--bg-alt);overflow:hidden;border:1px solid var(--border);}
+#gpm .lr-pit-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+#gpm .lr-pit-problem{margin-top:10px;padding:8px 10px;border-radius:8px;background:rgba(239,122,133,.14);border:1px solid rgba(239,122,133,.4);color:var(--bad,#ef7a85);font-size:12.5px;text-align:left;}
+#gpm .lr-pit-approach{color:var(--text-dim);font-size:12.5px;margin-top:4px;}
+
+/* controle de velocidade da simulação */
+#gpm .speed-ctrl{display:flex;gap:6px;}
+#gpm .speed-btn{
+  padding:6px 12px;border-radius:7px;background:var(--surface);border:1px solid var(--border);
+  cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;color:var(--text-dim);
+  transition:all .15s ease;user-select:none;
+}
+#gpm .speed-btn:hover{border-color:var(--accent);color:var(--text);}
+#gpm .speed-btn.active{background:var(--accent);border-color:var(--accent);color:#1a1200;}
+
+/* faixa de controles agrupados da corrida longa (velocidade + previsão + pit) — tudo junto no
+   topo, principalmente pra não espalhar botões pela tela toda no celular */
+#gpm .lr-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px;}
+#gpm .lr-ctrl-btn{
+  padding:6px 12px;font-size:13px;text-transform:none;letter-spacing:0;white-space:nowrap;
+}
+</style>
+
+<div id="gpm">
+  <div class="flagstrip"></div>
+  <div class="wrap" id="gpm-root"></div>
+</div>
+
+<script>
+(function(){
+
+/* ---------- dados padrão (fallback), no MESMO formato esperado do data.json ---------- */
+var DEFAULT_DATA = {
+  chefes: [
+    {id:'castellani', name:'Marco Castellani', nationality:'ITA', seasons:[
+      {year:2024, team:'Ironvale Racing', overall:78, leadership:80, strategy:75, development:76, positive_traits:['Cálculo de Pit Stop Preciso','Sangue-Frio em Bandeira Vermelha'], negative_traits:['Comunicação Rígida com Pilotos']},
+      {year:2025, team:'Meridian Racing', overall:88, leadership:86, strategy:90, development:85, positive_traits:['Leitura de Corrida Impecável','Reconstrução Rápida de Estratégia'], negative_traits:['Excesso de Cautela em Chuva']},
+      {year:2026, team:'Meridian Racing', overall:82, leadership:83, strategy:80, development:81, positive_traits:['Consistência ao Longo do Ano'], negative_traits:['Resistência a Mudar de Estratégia','Atrito com Engenharia']}
+    ]},
+    {id:'duarte', name:'Helena Duarte', nationality:'PRT', seasons:[
+      {year:2024, team:'Northgate Racing', overall:74, leadership:80, strategy:68, development:70, positive_traits:['Moral de Equipe Elevada'], negative_traits:['Estratégia Conservadora Demais']},
+      {year:2025, team:'Northgate Racing', overall:85, leadership:92, strategy:80, development:82, positive_traits:['Gestão de Crise Exemplar','Piloto Nº2 Motivado'], negative_traits:['Ritmo de Desenvolvimento Lento']},
+      {year:2026, team:'Vantage GP', overall:80, leadership:88, strategy:76, development:78, positive_traits:['Ambiente Estável sob Pressão'], negative_traits:['Poucos Upgrades Agressivos']}
+    ]},
+    {id:'watanabe', name:'Kenji Watanabe', nationality:'JPN', seasons:[
+      {year:2024, team:'Solstice Motorsport', overall:81, leadership:78, strategy:82, development:88, positive_traits:['Extração Máxima do Motor','Sinergia com Fornecedor'], negative_traits:['Comunicação Reservada']},
+      {year:2025, team:'Solstice Motorsport', overall:90, leadership:85, strategy:91, development:95, positive_traits:['Upgrade Decisivo em Meio de Ano'], negative_traits:['Foco Excessivo em Potência Pura']},
+      {year:2026, team:'Constellation F1', overall:86, leadership:84, strategy:87, development:89, positive_traits:['Confiabilidade Sólida'], negative_traits:['Ajuste Lento a Mudança de Regulamento']}
+    ]},
+    {id:'alves', name:'Rico Alves', nationality:'BRA', seasons:[
+      {year:2024, team:'Prairie Wolf Racing', overall:70, leadership:75, strategy:66, development:65, positive_traits:['Décadas de Experiência de Pista'], negative_traits:['Orçamento Enxuto']},
+      {year:2025, team:'Prairie Wolf Racing', overall:76, leadership:80, strategy:72, development:70, positive_traits:['Resultado Sólido e Sem Sustos'], negative_traits:['Poucas Atualizações no Carro']},
+      {year:2026, team:'Blackreef Racing', overall:73, leadership:77, strategy:70, development:68, positive_traits:['Equipe Unida e Experiente'], negative_traits:['Ritmo Abaixo do Meio de Pelotão']}
+    ]},
+    {id:'renzi', name:'Sofia Renzi', nationality:'ITA', seasons:[
+      {year:2024, team:'Vantage GP', overall:79, leadership:74, strategy:80, development:83, positive_traits:['Ousadia Estratégica em Safety Car'], negative_traits:['Risco Alto em Pit Stops Duplos']},
+      {year:2025, team:'Vantage GP', overall:91, leadership:88, strategy:93, development:92, positive_traits:['Temporada de Avanço Notável','Aposta Agressiva Compensou'], negative_traits:['Atrito Entre os Dois Pilotos']},
+      {year:2026, team:'Constellation F1', overall:85, leadership:83, strategy:86, development:84, positive_traits:['Consolidação no Meio de Grid'], negative_traits:['Excesso de Risco em Qualifying']}
+    ]}
+  ],
+  pilotos: [
+    {id:'bruno', name:'Bruno Andrade "Relâmpago"', nationality:'BRA', seasons:[
+      {year:2024, team:'Ironvale Racing', overall:80, pace:88, consistency:64, aggression:90, positive_traits:['Largadas Explosivas'], negative_traits:['Erros sob Pressão']},
+      {year:2025, team:'Ironvale Racing', overall:87, pace:92, consistency:72, aggression:88, positive_traits:['Ultrapassagens Decisivas','Ritmo de Classificação Forte'], negative_traits:['Pneus Gastos Rápido Demais']},
+      {year:2026, team:'Meridian Racing', overall:83, pace:90, consistency:70, aggression:85, positive_traits:['Adaptação Rápida ao Carro Novo'], negative_traits:['Inconsistência em Corridas Longas']}
+    ]},
+    {id:'ana', name:'Ana Kowalski "A Cirurgiã"', nationality:'POL', seasons:[
+      {year:2024, team:'Northgate Racing', overall:82, pace:82, consistency:88, aggression:60, positive_traits:['Gestão de Pneus Impecável'], negative_traits:['Falta de Ousadia em Ultrapassagens']},
+      {year:2025, team:'Northgate Racing', overall:90, pace:87, consistency:93, aggression:66, positive_traits:['Zero Erros Não Forçados','Ritmo de Corrida Constante'], negative_traits:['Qualifying Abaixo do Potencial']},
+      {year:2026, team:'Solstice Motorsport', overall:86, pace:85, consistency:90, aggression:63, positive_traits:['Consistência de Pontos'], negative_traits:['Dificuldade em Pista Molhada']}
+    ]},
+    {id:'diego', name:'Diego Fernandez "O Regular"', nationality:'ARG', seasons:[
+      {year:2024, team:'Prairie Wolf Racing', overall:74, pace:76, consistency:74, aggression:68, positive_traits:['Confiável nos Pontos'], negative_traits:['Teto de Performance Baixo']},
+      {year:2025, team:'Prairie Wolf Racing', overall:78, pace:79, consistency:78, aggression:72, positive_traits:['Evolução Constante'], negative_traits:['Sem Resultados de Destaque']},
+      {year:2026, team:'Blackreef Racing', overall:76, pace:77, consistency:76, aggression:70, positive_traits:['Estabilidade de Meio de Grid'], negative_traits:['Falta de Ritmo em Qualifying']}
+    ]},
+    {id:'yuki', name:'Yuki Tanaka "Precisão"', nationality:'JPN', seasons:[
+      {year:2024, team:'Solstice Motorsport', overall:83, pace:83, consistency:85, aggression:58, positive_traits:['Execução Técnica Precisa'], negative_traits:['Reação Lenta em Incidentes']},
+      {year:2025, team:'Solstice Motorsport', overall:88, pace:86, consistency:90, aggression:62, positive_traits:['Estratégia de Combustível Perfeita'], negative_traits:['Poucas Ultrapassagens Ousadas']},
+      {year:2026, team:'Constellation F1', overall:85, pace:84, consistency:87, aggression:60, positive_traits:['Ritmo Consistente de Corrida'], negative_traits:['Dificuldade em Largadas']}
+    ]},
+    {id:'lucas', name:'Lucas Meireles "O Novato"', nationality:'BRA', seasons:[
+      {year:2024, team:'Northgate Racing', overall:62, pace:68, consistency:58, aggression:74, positive_traits:['Talento Bruto Evidente'], negative_traits:['Erros de Novato']},
+      {year:2025, team:'Northgate Racing', overall:72, pace:76, consistency:68, aggression:78, positive_traits:['Curva de Aprendizado Rápida'], negative_traits:['Ainda Inconsistente sob Pressão']},
+      {year:2026, team:'Vantage GP', overall:79, pace:82, consistency:74, aggression:80, positive_traits:['Salto de Performance Notável'], negative_traits:['Excesso de Confiança em Disputas']}
+    ]},
+    {id:'elena', name:'Elena Popov "Fúria do Leste"', nationality:'BGR', seasons:[
+      {year:2024, team:'Blackreef Racing', overall:81, pace:87, consistency:76, aggression:85, positive_traits:['Ritmo de Volta Rápida Consistente'], negative_traits:['Penalidades por Contato']},
+      {year:2025, team:'Blackreef Racing', overall:89, pace:91, consistency:82, aggression:88, positive_traits:['Pole Positions Surpreendentes'], negative_traits:['Choques com Companheiro de Equipe']},
+      {year:2026, team:'Prairie Wolf Racing', overall:85, pace:88, consistency:80, aggression:83, positive_traits:['Ritmo de Corrida Impressionante'], negative_traits:['Gestão de Pneus a Melhorar']}
+    ]},
+    {id:'tomas', name:'Tomás Herrera "O Cauteloso"', nationality:'ESP', seasons:[
+      {year:2024, team:'Vantage GP', overall:73, pace:72, consistency:80, aggression:52, positive_traits:['Zero Acidentes na Temporada'], negative_traits:['Ritmo Abaixo da Média']},
+      {year:2025, team:'Vantage GP', overall:77, pace:75, consistency:83, aggression:56, positive_traits:['Excelente em Condições Mistas'], negative_traits:['Falta de Agressividade em Disputas']},
+      {year:2026, team:'Meridian Racing', overall:75, pace:74, consistency:81, aggression:54, positive_traits:['Confiabilidade de Pontuação'], negative_traits:['Poucas Ultrapassagens']}
+    ]},
+    {id:'marcus', name:'Marcus King "O Rei"', nationality:'GBR', seasons:[
+      {year:2024, team:'Constellation F1', overall:88, pace:93, consistency:78, aggression:89, positive_traits:['Velocidade Pura Dominante'], negative_traits:['Desgaste de Freios Elevado']},
+      {year:2025, team:'Constellation F1', overall:94, pace:96, consistency:82, aggression:92, positive_traits:['Temporada de Referência','Recordes de Volta Rápida'], negative_traits:['Tensão com a Equipe Técnica']},
+      {year:2026, team:'Ironvale Racing', overall:90, pace:94, consistency:80, aggression:90, positive_traits:['Ainda o Mais Rápido em Ritmo Puro'], negative_traits:['Adaptação ao Novo Motor']}
+    ]}
+  ]
+};
+
+var RAW_DATA = DEFAULT_DATA; // sobrescrito por data.json se o fetch funcionar
+var ALL_CARDS = {chefes:[], pilotos:[], motores:[]};
+
+function flagFor(nat){
+  var map = {AUT:'🇦🇹',GBR:'🇬🇧',ITA:'🇮🇹',JPN:'🇯🇵',BRA:'🇧🇷',ARG:'🇦🇷',ESP:'🇪🇸',BGR:'🇧🇬',BUL:'🇧🇬',POL:'🇵🇱',PRT:'🇵🇹',FRA:'🇫🇷',DEU:'🇩🇪',USA:'🇺🇸',AUS:'🇦🇺',CAN:'🇨🇦',NLD:'🇳🇱',MEX:'🇲🇽',THA:'🇹🇭',FIN:'🇫🇮',MON:'🇲🇨',BEL:'🇧🇪'};
+  return map[(nat||'').toUpperCase()] || '🏁';
+}
+
+// achata "personagem + cada temporada dele" em cartas individuais, prontas pro sorteio do draft
+function buildAllCards(){
+  ALL_CARDS.chefes = [];
+  (RAW_DATA.chefes||[]).forEach(function(c){
+    (c.seasons||[]).forEach(function(s){
+      var devBase = (s.overall*0.6 + (s.development!=null?s.development:s.overall)*0.4);
+      var scoreMult = 0.90 + (devBase/100)*0.20;
+      var consBase = ((s.leadership!=null?s.leadership:s.overall) + (s.strategy!=null?s.strategy:s.overall))/2;
+      var varMult = 1.30 - (consBase/100)*0.60;
+      var traits = (s.positive_traits||[]).concat(s.negative_traits||[]);
+      ALL_CARDS.chefes.push({
+        id:c.id+'_'+s.year, personId:c.id, nome:c.name, pais:flagFor(c.nationality),
+        apelido:(s.team||'—')+' • '+s.year,
+        scoreMult:scoreMult, varMult:varMult,
+        lideranca:s.leadership!=null?s.leadership:s.overall,
+        estrategia:s.strategy!=null?s.strategy:s.overall,
+        desenvolvimento:s.development!=null?s.development:s.overall,
+        desc: traits.join(' · '),
+        traitsPos:s.positive_traits||[], traitsNeg:s.negative_traits||[]
+      });
+    });
+  });
+
+  ALL_CARDS.pilotos = [];
+  (RAW_DATA.pilotos||[]).forEach(function(p){
+    (p.seasons||[]).forEach(function(s){
+      ALL_CARDS.pilotos.push({
+        id:p.id+'_'+s.year, personId:p.id, nome:p.name, pais:flagFor(p.nationality),
+        apelido:(s.team||'—')+' • '+s.year, team:s.team||'—', year:s.year, teammate:s.teammate||null,
+        vel:s.pace!=null?s.pace:s.overall, cons:s.consistency!=null?s.consistency:s.overall, agr:s.aggression!=null?s.aggression:s.overall,
+        traitsPos:s.positive_traits||[], traitsNeg:s.negative_traits||[]
+      });
+    });
+  });
+
+  ALL_CARDS.motores = [];
+  if(RAW_DATA.motores && RAW_DATA.motores.length){
+    RAW_DATA.motores.forEach(function(m){
+      (m.seasons||[]).forEach(function(s){
+        ALL_CARDS.motores.push({
+          id:m.id+'_'+s.year, personId:m.id, nome:m.name, fabricante:'Era '+s.year,
+          pot:s.power, confiab:s.reliability,
+          desc: (s.positive_traits||[]).concat(s.negative_traits||[]).join(' · '),
+          traitsPos:s.positive_traits||[], traitsNeg:s.negative_traits||[]
+        });
+      });
+    });
+  } else {
+    ALL_CARDS.motores = MOTORES.slice(); // fallback: fabricantes reais de 2026
+  }
+}
+
+function traitTags(pos, neg){
+  var html = '';
+  (pos||[]).forEach(function(t){ html += '<span class="trait-tag trait-pos">▲ '+t+'</span>'; });
+  (neg||[]).forEach(function(t){ html += '<span class="trait-tag trait-neg">▼ '+t+'</span>'; });
+  return html ? '<div class="trait-row">'+html+'</div>' : '';
+}
+
+function loadExternalData(){
+  fetch('./data.json', {cache:'no-store'}).then(function(res){
+    if(!res.ok) throw new Error('sem data.json');
+    return res.json();
+  }).then(function(json){
+    if(json && Array.isArray(json.chefes) && Array.isArray(json.pilotos)){
+      RAW_DATA = json;
+      buildAllCards();
+      // só reaplica automaticamente se o jogador ainda não começou a escolher nada
+      if(state.screen==='draft' && !state.chefe && state.pilotos.length===0 && !state.motor){
+        state.pools = generatePools();
+        render();
+      }
+    }
+  }).catch(function(){
+    // sem data.json (ou erro de CORS ao abrir como arquivo local) — mantém o roster padrão embutido
+  });
+}
+
+var MOTORES = [
+  {id:'ferrari', nome:'Ferrari', fabricante:'Scuderia Ferrari HP', pot:93, confiab:88, desc:'Motor tradicional da F1 — também abastece Haas e Cadillac em 2026.'},
+  {id:'mercedes', nome:'Mercedes', fabricante:'Mercedes-AMG High Performance Powertrains', pot:94, confiab:90, desc:'Fornece a equipe própria, além de McLaren, Williams e Alpine em 2026.'},
+  {id:'honda', nome:'Honda', fabricante:'Honda Racing Corporation', pot:90, confiab:84, desc:'Projeto agora 100% interno da Honda, exclusivo da Aston Martin em 2026.'},
+  {id:'rbpt-ford', nome:'Red Bull Powertrains–Ford', fabricante:'Red Bull Ford Powertrains', pot:88, confiab:72, desc:'Divisão própria da Red Bull em parceria com a Ford — motor 100% interno estreando em 2026.'},
+  {id:'audi', nome:'Audi', fabricante:'Audi Formula Racing', pot:82, confiab:68, desc:'Estreante em 2026 após assumir a base da Sauber — ainda construindo histórico na F1.'}
+];
+
+// reserva genérica: só usada pra completar o grid se o banco de pilotos não tiver gente suficiente
+var FILLER_NOMES = [
+  ['Théo Marchand','McLaren'],['Ines Halvorsen','Mercedes'],
+  ['Dario Conti','Red Bull'],['Émile Castellane','Ferrari'],
+  ['Freya Lindqvist','Williams'],['Noel Ashworth','Racing Bulls'],
+  ['Sebastián Roldán','Aston Martin'],['Mika Reinholt','Haas'],
+  ['Léa Fontaine','Audi'],['Owen Blackwood','Alpine'],
+  ['Carter Whitfield','Cadillac']
+];
+
+/* ---------- temporada: 5 corridas em 5 países, cada uma com um traçado próprio ---------- */
+var TRACKS = [
+  {id:'bra', flag:'🇧🇷', country:'Brasil', name:'GP do Brasil', laps:7, longLaps:20, flavor:'chuva imprevisível e ultrapassagens na reta oposta',
+    anchors:[
+      [90,220],[260,220],
+      [320,205],[350,170],
+      [330,120],[280,80],
+      [300,50],[380,45],[440,55],
+      [470,90],[465,140],
+      [420,150],
+      [400,190],
+      [330,255],[280,280],[230,255],
+      [185,280],[145,255],[105,235]
+    ]},
+  {id:'ita', flag:'🇮🇹', country:'Itália', name:'GP da Itália', laps:8, longLaps:22, flavor:'retas longas e disputas de esteira',
+    anchors:[
+      [80,230],[290,232],
+      [330,228],[350,210],[365,225],
+      [400,222],[440,190],[460,140],
+      [445,95],[410,85],
+      [375,95],[350,80],
+      [290,75],[200,72],[110,75],
+      [80,90],[95,110],[75,125],[90,145],
+      [65,170],[55,200]
+    ]},
+  {id:'mco', flag:'🇲🇨', country:'Mônaco', name:'GP de Mônaco', laps:6, longLaps:18, flavor:'pista estreita, onde a estratégia de box vale ouro',
+    anchors:[
+      [90,230],[220,230],
+      [260,210],[290,160],
+      [270,100],[190,55],
+      [130,45],
+      [95,100],
+      [150,70],[230,45],[290,55],[350,90],[430,90],
+      [460,125],
+      [430,150],[400,165],
+      [355,150],
+      [330,180],[355,200],[315,195],[340,220],
+      [275,230],
+      [240,250],[255,275],[210,260],
+      [165,245],[125,235]
+    ]},
+  {id:'jpn', flag:'🇯🇵', country:'Japão', name:'GP do Japão', laps:7, longLaps:20, flavor:'curvas técnicas que exigem precisão total',
+    anchors:[
+      [280,150],
+      [240,120],[260,90],[220,80],[180,95],[200,120],[160,110],
+      [130,90],[100,60],
+      [70,90],[85,120],[70,150],
+      [100,180],[90,210],
+      [130,220],[160,195],
+      [280,150],
+      [340,100],[450,90],[470,105],
+      [450,190],[400,215],[340,200],
+      [300,180]
+    ]},
+  {id:'gbr', flag:'🇬🇧', country:'Reino Unido', name:'GP da Grã-Bretanha', laps:7, longLaps:20, flavor:'curvas rápidas em sequência e clima instável',
+    anchors:[
+      [100,150],
+      [140,120],[180,100],
+      [215,75],[250,95],[285,70],[320,85],
+      [345,65],[455,72],
+      [470,110],[460,150],
+      [420,170],[430,195],[400,180],
+      [350,210],
+      [300,225],[250,220],
+      [210,235],[170,220],[190,200],[150,210],
+      [120,190],[100,170]
+    ]},
+  {id:'usa', flag:'🇺🇸', country:'Estados Unidos', name:'GP dos Estados Unidos', laps:8, longLaps:22, flavor:'uma sequência de esses técnicos seguida de retas longas',
+    anchors:[
+      [90,240],[280,240],
+      [320,215],[300,180],
+      [330,150],[300,120],
+      [330,90],[380,60],
+      [440,80],[460,130],
+      [430,170],[450,205],
+      [400,235],[320,255],
+      [220,258],[140,250],[100,248]
+    ]},
+  {id:'aus', flag:'🇦🇺', country:'Austrália', name:'GP da Austrália', laps:8, longLaps:22, flavor:'um traçado fluido à beira do lago, com uma chicane apertada no meio',
+    anchors:[
+      [100,150],[130,110],[170,90],
+      [220,100],[210,130],[250,120],
+      [280,90],[330,70],[390,80],
+      [430,110],[450,150],[430,190],
+      [390,210],[420,230],[380,255],
+      [300,260],[230,250],[170,255],
+      [120,230],[90,190]
+    ]},
+  {id:'can', flag:'🇨🇦', country:'Canadá', name:'GP do Canadá', laps:7, longLaps:21, flavor:'retas compridas terminando em freadas fortes e uma chicane final decisiva',
+    anchors:[
+      [90,150],[90,100],[130,70],
+      [190,65],[250,75],[300,60],
+      [370,65],[430,90],[460,130],
+      [440,170],[400,160],[420,200],
+      [380,225],[320,240],[350,260],
+      [280,270],[200,265],[140,240],[100,200]
+    ]}
+];
+
+var SEASON_LENGTH = 5; // quantas corridas toda temporada tem, não importa quantas pistas existam no total pra escolher
+
+// dificuldade dos rivais: multiplica o score final calculado pra todo mundo que não é seu — o
+// mesmo gancho que o chefe usa (scoreMult em computeScore), só que aplicado no grid inteiro
+var RIVAL_DIFFICULTY = {
+  facil:   {label:'Fácil',   mult:0.90, desc:'Rivais mais fracos — bom pra aprender o jogo ou só curtir a simulação.'},
+  normal:  {label:'Normal',  mult:1.00, desc:'Grid equilibrado, do jeito que o jogo sempre foi.'},
+  dificil: {label:'Difícil', mult:1.12, desc:'Rivais mais fortes — precisa de sorte E de uma boa equipe pra brigar na frente.'}
+};
+
+/* ---------- corrida longa: pneus e clima ---------- */
+var TIRE_COMPOUNDS = [
+  {id:'macio', nome:'Macio', wear:1.6, grip:1.03, blurb:'O composto mais rápido com pista seca (abaixo de 15% de umidade), mas desgasta rápido.'},
+  {id:'medio', nome:'Médio', wear:1.0, grip:1.0, blurb:'Equilíbrio entre ritmo e durabilidade — pede pista seca (abaixo de 15%).'},
+  {id:'duro', nome:'Duro', wear:0.6, grip:0.975, blurb:'O mais durável, mas o mais lento dos três — pede pista seca (abaixo de 15%).'},
+  {id:'inter', nome:'Intermediário', wear:1.0, grip:1.0, blurb:'O mais rápido com a pista entre 15% e 60% de umidade.'},
+  {id:'chuva', nome:'Chuva', wear:0.8, grip:1.0, blurb:'O mais rápido com a pista acima de 60% de umidade — muito lento na seca.'}
+];
+
+// diferença de ritmo puro entre os compostos: macio > médio > duro (o resto do desempenho vem do encaixe com a pista/desgaste)
+function compoundGrip(compoundId){
+  var t = tireById(compoundId);
+  return t && t.grip!=null ? t.grip : 1.0;
+}
+
+// desempenho de cada composto conforme o % de umidade da pista (0-100) — fora da zona ideal a
+// queda é forte de propósito: pneu errado pra condição tem que doer de verdade (ex: abaixo de
+// 5% de umidade o seco tem que ser muito mais rápido que o intermediário/chuva, e vice-versa
+// quando a pista está bem molhada)
+function tireWetnessFit(compoundId, wetPct){
+  if(compoundId==='inter'){
+    if(wetPct<=5) return 0.22;
+    if(wetPct<15) return 0.22 + (wetPct-5)/10*0.78;
+    if(wetPct<=60) return 1;
+    return Math.max(0.35, 1 - (wetPct-60)/40*0.65);
+  }
+  if(compoundId==='chuva'){
+    if(wetPct>60) return 1;
+    return Math.max(0.15, 1 - (60-wetPct)/60*0.85);
+  }
+  // slicks (macio/médio/duro)
+  if(wetPct<=15) return 1;
+  if(wetPct<=25) return 1 - (wetPct-15)/10*0.65;
+  return Math.max(0.12, 0.35 - (wetPct-25)/75*0.23);
+}
+
+function wetnessZone(pct){
+  return pct<15 ? 'seca' : (pct<=60 ? 'umida' : 'molhada');
+}
+
+var WEATHER_COND_ICON = {seco:'☀️', nublado:'🌥️', chuva:'🌧️'};
+var WEATHER_COND_LABEL = {seco:'Seco', nublado:'Nublado', chuva:'Chuva'};
+
+function weatherStatusLabel(cond, wetPct){
+  return WEATHER_COND_ICON[cond]+' '+WEATHER_COND_LABEL[cond]+' — pista '+Math.round(wetPct)+'% molhada';
+}
+
+function tireById(id){
+  return TIRE_COMPOUNDS.filter(function(t){ return t.id===id; })[0];
+}
+
+function tireLifeLaps(t){
+  return Math.max(2, Math.round(8/t.wear));
+}
+
+function tireWearPct(compoundId, tireLaps){
+  var t = tireById(compoundId);
+  return Math.min(100, Math.round((tireLaps*t.wear/8)*100));
+}
+
+var TIRE_META = {
+  macio: {short:'M', color:'#e6435a'},
+  medio: {short:'M', color:'#ffd23f'},
+  duro: {short:'D', color:'#eef0f3'},
+  inter: {short:'I', color:'#3ddc84'},
+  chuva: {short:'C', color:'#5aa9e6'}
+};
+
+function tireBadgeHtml(compoundId, tireLaps){
+  var meta = TIRE_META[compoundId];
+  var wear = tireWearPct(compoundId, tireLaps);
+  return '<span class="timing-tire-dot" style="background:'+meta.color+';"></span>'+meta.short+' '+wear+'%';
+}
+
+// pneu plausível pra um rival de acordo com a condição de pista no momento (só estética — não afeta o resultado dele)
+function pickCompoundForConditions(wetPct){
+  if(wetPct>60) return 'chuva';
+  if(wetPct>=15) return 'inter';
+  var r = Math.random();
+  return r<0.4 ? 'macio' : (r<0.8 ? 'medio' : 'duro');
+}
+
+function wetnessAtSegment(lr, lap){
+  var seg = Math.min(lr.weather.segCount-1, Math.floor((lap-1)/2));
+  return lr.weather.actualWet[seg];
+}
+
+function buildTireCard(t, lapsToCompare, onClick){
+  var life = tireLifeLaps(t);
+  var lastsWhole = life >= lapsToCompare;
+  var badgeClass = lastsWhole ? 'trait-pos' : 'trait-neg';
+  var badgeText = lastsWhole
+    ? (lapsToCompare===1 ? '▲ Aguenta a última volta' : '▲ Aguenta as '+lapsToCompare+' voltas')
+    : (life===1 ? '▼ Dura ~1 volta — provável pit stop antes do fim' : '▼ Dura ~'+life+' voltas — provável pit stop antes do fim');
+  var card = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">'+t.nome+'</div></div></div>'+
+      '<div class="card-desc">'+t.blurb+'</div>'+
+      '<div class="trait-row"><span class="trait-tag '+badgeClass+'">'+badgeText+'</span></div>'+
+    '</div>'
+  );
+  card.addEventListener('click', onClick);
+  return card;
+}
+
+function rollInitialCondition(){
+  var r = Math.random();
+  return r<0.5 ? 'seco' : (r<0.8 ? 'nublado' : 'chuva');
+}
+
+function initialWetnessFor(cond){
+  if(cond==='chuva') return rand(25,55);
+  if(cond==='nublado') return rand(5,25);
+  return rand(0,12);
+}
+
+function nextWeatherCondition(c){
+  if(c==='seco') return Math.random()<0.65 ? 'seco' : (Math.random()<0.5 ? 'nublado' : 'chuva');
+  if(c==='chuva') return Math.random()<0.55 ? 'chuva' : (Math.random()<0.5 ? 'nublado' : 'seco');
+  return Math.random()<0.4 ? 'nublado' : (Math.random()<0.5 ? 'seco' : 'chuva');
+}
+
+// a umidade da pista é consequência da condição: chuva molha, sol seca, nublado seca devagar
+function wetnessDelta(cond){
+  if(cond==='chuva') return rand(10,26);
+  if(cond==='seco') return -rand(8,20);
+  return -rand(1,8);
+}
+
+function clampWet(w){ return Math.max(0, Math.min(100, w)); }
+
+// previsão em blocos de 2 voltas: a condição do tempo evolui aos poucos e a umidade decorre dela.
+// o clima real segue a previsão na maioria das corridas — só uma parte delas tem uma "virada"
+// de verdade, pra previsão não surpreender toda hora
+function buildWeatherScript(laps){
+  var segCount = Math.max(1, Math.ceil(laps/2));
+
+  var forecastCond = [], forecastWet = [];
+  var fc = rollInitialCondition();
+  var fw = initialWetnessFor(fc);
+  for(var i=0;i<segCount;i++){
+    if(i>0){ fc = nextWeatherCondition(fc); fw = clampWet(fw + wetnessDelta(fc)); }
+    forecastCond.push(fc);
+    forecastWet.push(Math.round(fw));
+  }
+
+  // uma única rolagem por corrida decide se vai ter surpresa — e se tiver, acontece uma vez só,
+  // num ponto do meio da corrida (não faz sentido "surpreender" faltando 1 volta)
+  var willSurprise = segCount>2 && Math.random()<0.1;
+  var surpriseSeg = willSurprise ? Math.floor(rand(1, Math.max(2,segCount-1))) : -1;
+
+  var actualCond = [], actualWet = [];
+  var ac = forecastCond[0], aw = forecastWet[0];
+  var diverged = false;
+  for(var j=0;j<segCount;j++){
+    if(j>0){
+      if(j===surpriseSeg) diverged = true;
+      ac = diverged ? nextWeatherCondition(ac) : forecastCond[j];
+      aw = clampWet(aw + wetnessDelta(ac));
+    }
+    actualCond.push(ac);
+    actualWet.push(Math.round(aw));
+  }
+
+  return { segCount:segCount, forecastCond:forecastCond, forecastWet:forecastWet, actualCond:actualCond, actualWet:actualWet };
+}
+
+function trackConditionLabel(wetPct){
+  return wetPct<15 ? 'seca' : 'molhada';
+}
+
+function segmentLapLabel(i, laps){
+  var start = i*2+1, end = Math.min(laps, i*2+2);
+  return start===end ? ('V'+start) : ('V'+start+'-'+end);
+}
+
+// o clima de verdade (não só a previsão) tem que mudar aos poucos, não pular de uma vez a cada 2
+// voltas — interpola linear entre o valor "oficial" de um segmento (na volta em que ele começa)
+// e o do próximo, usando a posição contínua na corrida (lr.liveLapFloat), não o contador de
+// voltas que só avança quando o segmento termina
+function liveWetnessNow(lr){
+  var w = lr.weather;
+  var lapFloat = lr.liveLapFloat!=null ? lr.liveLapFloat : Math.max(1, lr.lap||1);
+  var segCount = w.segCount;
+  var segPos = (lapFloat-1)/2; // 0 no início do segmento 0, 1 no início do segmento 1, ...
+  segPos = Math.max(0, Math.min(segCount-1, segPos));
+  var i0 = Math.floor(segPos), i1 = Math.min(segCount-1, i0+1);
+  var frac = segPos - i0;
+  var wetPct = w.actualWet[i0] + (w.actualWet[i1]-w.actualWet[i0])*frac;
+  var cond = frac<0.5 ? w.actualCond[i0] : w.actualCond[i1];
+  return {wetPct:wetPct, cond:cond};
+}
+
+// mesma previsão mostrada antes da largada, reaproveitada nos momentos de decisão (SC/VSC/clima/pit)
+// pra dar ao jogador a mesma informação que ele tinha ao escolher o pneu inicial
+// a previsão "atualiza em tempo real" conforme a corrida acontece: voltas já rodadas e o
+// segmento logo à frente mostram o clima real (já é praticamente certo), só o resto do
+// horizonte ainda usa a previsão original — quanto menos volta falta, menos incerteza sobra
+function liveForecast(lr){
+  var w = lr.weather;
+  if(!lr.started) return {cond:w.forecastCond, wet:w.forecastWet};
+  // usa a volta realmente exibida na tela (lr.liveLap), não lr.lap — esse só avança quando o
+  // segmento atual termina de verdade, o que podia deixar a previsão até 2 voltas atrasada
+  // em relação ao que o jogador via no resto da tela
+  var displayedLap = lr.liveLap!=null ? lr.liveLap : lr.lap;
+  var curSeg = Math.floor((displayedLap>0?displayedLap-1:0)/2);
+  var reliableUntil = curSeg+1; // segmento atual + o próximo já são tratados como praticamente certos
+  var cond = [], wet = [];
+  for(var i=0;i<w.segCount;i++){
+    if(i<=reliableUntil){ cond.push(w.actualCond[i]); wet.push(w.actualWet[i]); }
+    else { cond.push(w.forecastCond[i]); wet.push(w.forecastWet[i]); }
+  }
+  return {cond:cond, wet:wet};
+}
+
+function weatherTimelineHtml(lr){
+  var laps = lr.totalLaps;
+  var live = liveForecast(lr);
+  var displayedLap = lr.liveLap!=null ? lr.liveLap : lr.lap;
+  var curSegIdx = Math.floor((displayedLap>0?displayedLap-1:0)/2);
+  var segHtml = live.cond.map(function(c,i){
+    return '<div class="wx-seg'+(i===curSegIdx?' wx-seg-now':'')+'"><div class="wx-seg-lap">'+segmentLapLabel(i,laps)+'</div><div class="wx-seg-icon">'+WEATHER_COND_ICON[c]+'</div><div class="wx-seg-pct">'+live.wet[i]+'%</div></div>';
+  }).join('');
+  return '<div class="timing-title" style="padding:0 0 8px;">Previsão a cada 2 voltas</div><div class="wx-timeline">'+segHtml+'</div>';
+}
+
+// mostra onde os carros do jogador estão na hora de uma decisão (posição e gap) — sem isso, o
+// jogador escolhia pneu/pit sem noção nenhuma de contexto (líder? brigando por posição? já bem atrás?)
+function myStandingHtml(lr){
+  var all = lr.rivalField.concat(lr.mineField);
+  var ordered = all.slice().sort(function(a,b){
+    var pa = a._liveProgress!=null?a._liveProgress:(a._progress||0);
+    var pb = b._liveProgress!=null?b._liveProgress:(b._progress||0);
+    return pb-pa;
+  });
+  var leaderLive = ordered.length ? (ordered[0]._liveProgress!=null?ordered[0]._liveProgress:(ordered[0]._progress||0)) : 0;
+  var parts = lr.mineField.map(function(d){
+    var idx = ordered.indexOf(d);
+    var myLive = d._liveProgress!=null?d._liveProgress:(d._progress||0);
+    var isDnf = d.dnf && myLive >= d._dnfLap-1e-6;
+    var gapText = isDnf ? 'ABANDONOU' : (idx===0 ? 'líder' : '+'+((leaderLive-myLive)*LR_LAP_SECONDS).toFixed(1)+'s');
+    return '<b style="color:var(--accent-2);">'+shortName(d.driverName)+'</b> P'+(idx+1)+' ('+gapText+')';
+  });
+  return '<div class="lr-standing">📍 '+parts.join(' &nbsp;·&nbsp; ')+'</div>';
+}
+
+function getActiveTrack(){
+  return state.season ? state.season.tracks[state.season.trackIndex] : state.raceTrack;
+}
+
+function catmullRom(p0,p1,p2,p3,t){
+  var t2=t*t, t3=t2*t;
+  return {
+    x: 0.5*((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+    y: 0.5*((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)
+  };
+}
+
+function buildClosedSpline(anchors, samplesPerSeg){
+  var n = anchors.length, pts = [];
+  for(var i=0;i<n;i++){
+    var p0 = anchors[(i-1+n)%n], p1 = anchors[i], p2 = anchors[(i+1)%n], p3 = anchors[(i+2)%n];
+    for(var s=0;s<samplesPerSeg;s++){
+      pts.push(catmullRom(p0,p1,p2,p3, s/samplesPerSeg));
+    }
+  }
+  return pts;
+}
+
+function buildTrackData(anchors){
+  var pts = buildClosedSpline(anchors, 14);
+  var ptsExt = pts.concat([pts[0]]);
+  var cum = [0];
+  for(var i=1;i<ptsExt.length;i++){
+    var a=ptsExt[i-1], b=ptsExt[i];
+    var dx=b.x-a.x, dy=b.y-a.y;
+    cum.push(cum[i-1]+Math.sqrt(dx*dx+dy*dy));
+  }
+  var total = cum[cum.length-1];
+  var d = 'M'+pts.map(function(p){return p.x.toFixed(1)+','+p.y.toFixed(1);}).join(' L')+' Z';
+  return { pts:pts, ptsExt:ptsExt, cum:cum, total:total, d:d };
+}
+
+function trackPointAt(trackData, dist){
+  var d = ((dist % trackData.total)+trackData.total) % trackData.total;
+  var lo=0, hi=trackData.cum.length-1;
+  while(lo<hi-1){
+    var mid=(lo+hi)>>1;
+    if(trackData.cum[mid]<=d) lo=mid; else hi=mid;
+  }
+  var segLen = (trackData.cum[hi]-trackData.cum[lo]) || 1;
+  var frac = (d-trackData.cum[lo])/segLen;
+  var a=trackData.ptsExt[lo], b=trackData.ptsExt[hi];
+  return { x: a.x+(b.x-a.x)*frac, y: a.y+(b.y-a.y)*frac };
+}
+
+function startLineMarkup(trackData){
+  var pt = trackData.pt0 || trackPointAt(trackData, 0);
+  var pt2 = trackPointAt(trackData, 2);
+  var dx=pt2.x-pt.x, dy=pt2.y-pt.y;
+  var mag=Math.sqrt(dx*dx+dy*dy)||1;
+  var nx=-dy/mag, ny=dx/mag;
+  var half=11;
+  var x1=pt.x+nx*half, y1=pt.y+ny*half;
+  var x2=pt.x-nx*half, y2=pt.y-ny*half;
+  return '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="url(#gpm-chk)" stroke-width="7"/>';
+}
+
+/* ---------- pools aleatórias (opções mudam a cada rodada) ---------- */
+function pickRandom(arr, n){
+  var copy = arr.slice();
+  for(var i=copy.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp = copy[i]; copy[i]=copy[j]; copy[j]=tmp;
+  }
+  return copy.slice(0, Math.min(n, copy.length));
+}
+
+// sorteia cartas garantindo no máximo 1 carta por pessoa/fabricante (evita a mesma pessoa aparecer 2x no mesmo pool)
+function pickRandomDistinctPersons(cards, n){
+  var byPerson = {};
+  cards.forEach(function(c){
+    var key = c.personId || c.id;
+    (byPerson[key] = byPerson[key] || []).push(c);
+  });
+  var groups = pickRandom(Object.keys(byPerson).map(function(k){ return byPerson[k]; }), n);
+  return groups.map(function(g){ return g[Math.floor(Math.random()*g.length)]; });
+}
+
+function generatePools(){
+  return {
+    chefe: pickRandomDistinctPersons(ALL_CARDS.chefes, Math.min(3, ALL_CARDS.chefes.length)),
+    piloto1: pickRandomDistinctPersons(ALL_CARDS.pilotos, Math.min(3, ALL_CARDS.pilotos.length)),
+    piloto2: [], // só é sorteado depois que o piloto 1 é escolhido, pra excluir quem já foi contratado
+    motor: pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length))
+  };
+}
+
+// sorteia de novo as opções da etapa atual do draft — só pode ser usado 1x em todo o draft
+// (chefe, piloto 1, piloto 2 ou motor), qualquer que seja a etapa escolhida
+function rerollCurrentDraftPool(){
+  if(state.draftRefreshUsed) return;
+  state.draftRefreshUsed = true;
+  if(state.tab==='chefe'){
+    state.pools.chefe = pickRandomDistinctPersons(ALL_CARDS.chefes, Math.min(3, ALL_CARDS.chefes.length));
+  } else if(state.tab==='piloto1'){
+    state.pools.piloto1 = pickRandomDistinctPersons(ALL_CARDS.pilotos, Math.min(3, ALL_CARDS.pilotos.length));
+  } else if(state.tab==='piloto2'){
+    var excludeIds = state.pilotos.map(function(p){ return p.personId; });
+    var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludeIds.indexOf(c.personId)===-1; });
+    state.pools.piloto2 = pickRandomDistinctPersons(candidates, Math.min(3, candidates.length));
+  } else if(state.tab==='motor'){
+    state.pools.motor = pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length));
+  }
+  render();
+}
+
+var state = {
+  screen:'mode', // mode | draft | prerace | race | highlights | reveal | results | champion | quickseason
+  mode:null, // 'single' | 'season' | 'quickseason'
+  raceStyle:null, // 'rapida' | 'longa'
+  tab:'chefe',
+  teamName:'',
+  chefe:null,
+  pilotos:[],
+  motor:null,
+  results:null,
+  revealIndex:-1,
+  revealTimer:null,
+  raceAnimFrame:null,
+  raceTimers:[],
+  pools:{chefe:[],piloto1:[],piloto2:[],motor:[]},
+  draftRefreshUsed:false,
+  season:null, // {trackIndex, rivals, standings, history}
+  highlights:[],
+  highlightIndex:0,
+  raceTrack:null,
+  longRace:null,
+  raceSpeed:1, // 1x/2x/4x — controla a velocidade de reprodução das simulações ao vivo
+  qsTimer:null, // timer do cascateamento de resultados da Temporada Expressa
+  almanac:false, // modo Almanaque: draft sem mostrar atributos/traços — escolha pelo conhecimento do jogador
+  rivalDifficulty:'normal', // 'facil' | 'normal' | 'dificil' — ajusta o teto de força do grid rival
+  pickedTrackIds:null // ids das 5 pistas escolhidas pra temporada (null = ainda não escolheu)
+};
+
+function speedControlHtml(){
+  return '<div class="speed-ctrl">'+
+    [1,2,4].map(function(s){ return '<button type="button" class="speed-btn'+(state.raceSpeed===s?' active':'')+'" data-speed="'+s+'">'+s+'x</button>'; }).join('')+
+  '</div>';
+}
+
+function wireSpeedControl(container){
+  var btns = container.querySelectorAll('.speed-btn');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      state.raceSpeed = parseInt(b.getAttribute('data-speed'),10);
+      btns.forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+    });
+  });
+}
+
+function el(html){
+  var d=document.createElement('div');
+  d.innerHTML=html.trim();
+  return d.firstChild;
+}
+
+function statBar(label,val){
+  var v = Math.round(val);
+  var tier = v>=90?'elite':v>=80?'hi':v>=70?'mid':'lo';
+  return '<div class="stat"><div class="stat-label">'+label+'</div><div class="stat-num stat-'+tier+'">'+v+'</div></div>';
+}
+
+var _lastRenderAt = 0;
+function render(){
+  // no celular, trocar o conteúdo da tela durante o próprio evento de toque às vezes dispara um
+  // segundo "clique fantasma" no elemento que aparece embaixo do dedo — isso ignora esse eco e
+  // evita pular direto de uma tela pra duas telas à frente com um único toque
+  var now = Date.now();
+  if(now - _lastRenderAt < 150) return;
+  _lastRenderAt = now;
+  var root = document.getElementById('gpm-root');
+  root.innerHTML='';
+  if(state.screen==='mode') root.appendChild(renderModeSelect());
+  else if(state.screen==='racestyle') root.appendChild(renderRaceStyle());
+  else if(state.screen==='raceoptions') root.appendChild(renderRaceOptions());
+  else if(state.screen==='draft') root.appendChild(renderDraft());
+  else if(state.screen==='prerace') root.appendChild(renderPrerace());
+  else if(state.screen==='strategy') root.appendChild(renderStrategy());
+  else if(state.screen==='longrace') root.appendChild(renderLongRace());
+  else if(state.screen==='race') root.appendChild(renderRace());
+  else if(state.screen==='highlights') root.appendChild(renderHighlights());
+  else if(state.screen==='reveal') root.appendChild(renderReveal());
+  else if(state.screen==='results') root.appendChild(renderResults());
+  else if(state.screen==='champion') root.appendChild(renderChampion());
+  else if(state.screen==='recap') root.appendChild(renderRecap());
+  else if(state.screen==='quickseason') root.appendChild(renderQuickSeason());
+}
+
+function renderModeSelect(){
+  var wrap = el('<div></div>');
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Grand Prix Manager</div>'+
+      '<h1>Como você quer jogar?</h1>'+
+      '<div class="subtitle">Escolha entre uma corrida única com simulação ao vivo, ou uma temporada completa em busca do título.</div>'+
+    '</div>'
+  ));
+
+  var grid = el('<div class="cardgrid"></div>');
+
+  var single = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">🏁 Corrida Única</div><div class="card-role">Modo rápido</div></div></div>'+
+      '<div class="card-desc">Monte sua equipe e dispute uma corrida com simulação animada na pista, luzes de largada e tudo mais.</div>'+
+    '</div>'
+  );
+  single.addEventListener('click', function(){ state.mode='single'; state.almanac=false; state.screen='racestyle'; render(); });
+  grid.appendChild(single);
+
+  var season = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">🏆 Temporada</div><div class="card-role">5 corridas · 5 países</div></div></div>'+
+      '<div class="card-desc">Monte sua equipe uma vez e dispute o campeonato em '+SEASON_LENGTH+' Grandes Prêmios — você escolhe quais, entre '+TRACKS.length+' pistas disponíveis. Cada corrida mostra os melhores momentos — largada, estratégia, abandonos, volta mais rápida e pódio — em vez da simulação completa, pra manter o ritmo.</div>'+
+    '</div>'
+  );
+  season.addEventListener('click', function(){ state.mode='season'; state.almanac=false; state.screen='racestyle'; render(); });
+  grid.appendChild(season);
+
+  var quick = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">⚡ Temporada Expressa</div><div class="card-role">Modo rápido · 5 corridas</div></div></div>'+
+      '<div class="card-desc">As mesmas 5 corridas da Temporada, mas sem simulação ao vivo — o resultado de cada corrida vai aparecendo abaixo, uma de cada vez, mostrando o top 5 (e a posição da sua equipe, se ela ficar fora dele).</div>'+
+    '</div>'
+  );
+  quick.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.screen='raceoptions'; render(); });
+  grid.appendChild(quick);
+
+  var almanac = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">📖 Temporada Almanaque</div><div class="card-role">Stats ocultos · 5 corridas</div></div></div>'+
+      '<div class="card-desc">A mesma Temporada Expressa, mas no draft você não vê os atributos nem os traços de quem está contratando — só nome, equipe e ano. Os números continuam existindo e valendo pra corrida, você só escolhe no escuro, confiando no que sabe sobre cada um.</div>'+
+    '</div>'
+  );
+  almanac.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.screen='raceoptions'; render(); });
+  grid.appendChild(almanac);
+
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function renderRaceStyle(){
+  var wrap = el('<div></div>');
+  var back = el('<button class="btn ghost back-btn">← Voltar</button>');
+  back.addEventListener('click', function(){ state.mode=null; state.screen='mode'; render(); });
+  wrap.appendChild(back);
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">'+(state.mode==='season'?'🏆 Temporada':'🏁 Corrida Única')+'</div>'+
+      '<h1>Como você quer correr?</h1>'+
+      '<div class="subtitle">'+(state.mode==='season' ? 'Essa escolha vale para todas as corridas da temporada.' : 'Escolha o estilo desta corrida.')+'</div>'+
+    '</div>'
+  ));
+
+  var grid = el('<div class="cardgrid"></div>');
+
+  var rapida = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">🏁 Corrida Rápida</div><div class="card-role">Modo direto</div></div></div>'+
+      '<div class="card-desc">'+(state.mode==='season' ? 'Em cada corrida, escolha entre assistir a simulação ao vivo ou ver direto os melhores momentos.' : 'Assista a corrida com simulação animada na pista, luzes de largada e tudo mais.')+'</div>'+
+    '</div>'
+  );
+  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.screen='raceoptions'; render(); });
+  grid.appendChild(rapida);
+
+  var longa = el(
+    '<div class="card">'+
+      '<div class="card-top"><div><div class="card-name">🌦️ Corrida Longa</div><div class="card-role">Modo estratégia</div></div></div>'+
+      '<div class="card-desc">Veja a previsão do tempo, escolha os pneus e reaja a safety cars, VSC e mudanças de clima ao vivo — suas decisões afetam o resultado.</div>'+
+    '</div>'
+  );
+  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.screen='raceoptions'; render(); });
+  grid.appendChild(longa);
+
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+// dificuldade + (pra modos de temporada) escolha de pistas — fica entre a escolha de modo/estilo
+// e o draft, então toda entrada no draft passa por aqui
+function needsTrackPick(){
+  return state.mode==='season' || state.mode==='quickseason';
+}
+
+function renderRaceOptions(){
+  var wrap = el('<div></div>');
+  var back = el('<button class="btn ghost back-btn">← Voltar</button>');
+  back.addEventListener('click', function(){
+    if(state.mode==='quickseason'){ state.mode=null; state.screen='mode'; }
+    else { state.raceStyle=null; state.screen='racestyle'; }
+    render();
+  });
+  wrap.appendChild(back);
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Grand Prix Manager</div>'+
+      '<h1>Opções da corrida</h1>'+
+      '<div class="subtitle">Ajuste a dificuldade dos rivais'+(needsTrackPick() ? ' e escolha as pistas da temporada' : '')+' antes de montar sua equipe.</div>'+
+    '</div>'
+  ));
+
+  var diffBox = el('<div class="season-box"></div>');
+  diffBox.innerHTML = '<div class="season-label">Dificuldade dos rivais</div>';
+  var diffBtns = el('<div class="season-btns"></div>');
+  ['facil','normal','dificil'].forEach(function(key){
+    var d = RIVAL_DIFFICULTY[key];
+    var b = el('<div class="season-btn'+(state.rivalDifficulty===key?' active':'')+'">'+d.label+'</div>');
+    b.addEventListener('click', function(){ state.rivalDifficulty = key; render(); });
+    diffBtns.appendChild(b);
+  });
+  diffBox.appendChild(diffBtns);
+  wrap.appendChild(diffBox);
+  wrap.appendChild(el('<div class="footer-info" style="margin:-6px 0 16px;">'+RIVAL_DIFFICULTY[state.rivalDifficulty].desc+'</div>'));
+
+  var canContinue = true;
+  if(needsTrackPick()){
+    // só preenche com o padrão na primeira vez que a tela abre (pickedTrackIds ainda null) — se o
+    // jogador desmarcar tudo de propósito pra remontar a lista do zero, isso não pode ser
+    // confundido com "ainda não escolheu" e resetar pro padrão de novo no meio do caminho
+    if(!state.pickedTrackIds){
+      state.pickedTrackIds = TRACKS.slice(0, SEASON_LENGTH).map(function(t){ return t.id; });
+    }
+    wrap.appendChild(el('<div class="season-label" style="margin-bottom:8px;">Pistas da temporada ('+state.pickedTrackIds.length+'/'+SEASON_LENGTH+')</div>'));
+
+    var randomBtn = el('<button class="btn ghost" style="margin-bottom:12px;">🎲 Sortear '+SEASON_LENGTH+' pistas</button>');
+    randomBtn.addEventListener('click', function(){ state.pickedTrackIds = pickRandom(TRACKS, SEASON_LENGTH).map(function(t){ return t.id; }); render(); });
+    wrap.appendChild(randomBtn);
+
+    var grid = el('<div class="cardgrid"></div>');
+    TRACKS.forEach(function(t){
+      var selected = state.pickedTrackIds.indexOf(t.id)>=0;
+      var disabled = !selected && state.pickedTrackIds.length>=SEASON_LENGTH;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top"><div><div class="card-name">'+t.flag+' '+t.name+'</div><div class="card-role">'+t.country+'</div></div></div>'+
+          '<div class="card-desc">Pista conhecida por '+t.flavor+'.</div>'+
+        '</div>'
+      );
+      card.addEventListener('click', function(){
+        var idx = state.pickedTrackIds.indexOf(t.id);
+        if(idx>=0) state.pickedTrackIds.splice(idx,1);
+        else if(state.pickedTrackIds.length<SEASON_LENGTH) state.pickedTrackIds.push(t.id);
+        render();
+      });
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+
+    canContinue = state.pickedTrackIds.length===SEASON_LENGTH;
+  }
+
+  var footer = el(
+    '<div class="footerbar">'+
+      '<div class="footer-info">'+(canContinue ? 'Tudo pronto — pode montar sua equipe.' : 'Escolha exatamente '+SEASON_LENGTH+' pistas pra continuar.')+'</div>'+
+    '</div>'
+  );
+  var goBtn = el('<button class="btn"'+(canContinue?'':' disabled')+'>Continuar</button>');
+  goBtn.addEventListener('click', function(){
+    if(!canContinue) return;
+    state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe';
+    render();
+  });
+  footer.appendChild(goBtn);
+  wrap.appendChild(footer);
+
+  return wrap;
+}
+
+function renderDraft(){
+  var wrap = el('<div></div>');
+
+  if(!state.chefe && state.pilotos.length===0 && !state.motor){
+    var back = el('<button class="btn ghost back-btn">← Voltar</button>');
+    back.addEventListener('click', function(){ state.screen='raceoptions'; render(); });
+    wrap.appendChild(back);
+  }
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Grand Prix Manager</div>'+
+      '<h1>Monte sua equipe</h1>'+
+      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos e 1 motor. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b>'+
+        (state.almanac ? ' <b style="color:var(--accent-2);">Modo Almanaque:</b> os atributos e traços estão ocultos — escolha só pelo nome, equipe e ano.' : '')+
+      '</div>'+
+      '<input class="teamname" placeholder="Nome da sua equipe" value="'+state.teamName+'" />'+
+    '</div>'
+  ));
+  wrap.querySelector('input.teamname').addEventListener('input', function(e){ state.teamName = e.target.value; });
+
+  var tabs = el('<div class="tabs"></div>');
+  var tabDefs = [
+    {id:'chefe', label:'Chefe', count: state.chefe?'1/1':'0/1', done: !!state.chefe, unlocked:true},
+    {id:'piloto1', label:'Piloto 1', count: (state.pilotos.length>=1?'1/1':'0/1'), done: state.pilotos.length>=1, unlocked: !!state.chefe},
+    {id:'piloto2', label:'Piloto 2', count: (state.pilotos.length>=2?'1/1':'0/1'), done: state.pilotos.length>=2, unlocked: state.pilotos.length>=1},
+    {id:'motor', label:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: state.pilotos.length===2}
+  ];
+  tabDefs.forEach(function(t){
+    var b = el('<div class="tab'+(state.tab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+t.label+'<span class="count">'+t.count+'</span></div>');
+    if(t.unlocked){
+      b.addEventListener('click', function(){ state.tab=t.id; render(); });
+    }
+    tabs.appendChild(b);
+  });
+  wrap.appendChild(tabs);
+
+  // sorteia de novo as 3 opções da etapa atual — só pode ser usado uma vez em todo o draft,
+  // não importa em qual etapa (chefe, piloto 1, piloto 2 ou motor) o jogador decide gastar
+  var currentStepDone = (state.tab==='chefe' && !!state.chefe) || (state.tab==='piloto1' && state.pilotos.length>=1) ||
+    (state.tab==='piloto2' && state.pilotos.length>=2) || (state.tab==='motor' && !!state.motor);
+  if(!state.draftRefreshUsed && !currentStepDone){
+    var refreshBtn = el('<button class="btn ghost" style="margin-bottom:14px;">🔄 Sortear novamente (1x por draft)</button>');
+    refreshBtn.addEventListener('click', function(){ rerollCurrentDraftPool(); });
+    wrap.appendChild(refreshBtn);
+  }
+
+  var grid = el('<div class="cardgrid"></div>');
+
+  if(state.tab==='chefe'){
+    state.pools.chefe.forEach(function(c){
+      var selected = state.chefe && state.chefe.id===c.id;
+      var locked = !!state.chefe;
+      var disabled = locked && !selected;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top">'+
+            '<div><div class="card-name">'+c.pais+' '+c.nome+'</div><div class="card-role">'+c.apelido+'</div></div>'+
+          '</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Liderança',c.lideranca)+statBar('Estratégia',c.estrategia)+statBar('Desenvolvimento',c.desenvolvimento)+'</div>'))+
+          (selected?'<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
+          (state.almanac ? '' : traitTags(c.traitsPos, c.traitsNeg))+
+        '</div>'
+      );
+      if(!disabled && !selected){
+        card.addEventListener('click', function(){
+          state.chefe = c;
+          render();
+          setTimeout(function(){ state.tab='piloto1'; render(); }, 450);
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  if(state.tab==='piloto1'){
+    state.pools.piloto1.forEach(function(p){
+      var selected = state.pilotos[0] && state.pilotos[0].id===p.id;
+      var disabled = state.pilotos.length>=1 && !selected;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top">'+
+            '<div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">'+p.apelido+'</div></div>'+
+          '</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'))+
+          (state.almanac ? '' : traitTags(p.traitsPos, p.traitsNeg))+
+          (selected?'<div class="card-desc" style="margin-top:8px;margin-bottom:0;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
+        '</div>'
+      );
+      if(!disabled && !selected){
+        card.addEventListener('click', function(){
+          state.pilotos.push(p);
+          var excludeIds = [p.personId];
+          var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludeIds.indexOf(c.personId)===-1; });
+          state.pools.piloto2 = pickRandomDistinctPersons(candidates, Math.min(3, candidates.length));
+          render();
+          setTimeout(function(){ state.tab='piloto2'; render(); }, 450);
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  if(state.tab==='piloto2'){
+    state.pools.piloto2.forEach(function(p){
+      var selected = state.pilotos[1] && state.pilotos[1].id===p.id;
+      var disabled = state.pilotos.length>=2 && !selected;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top">'+
+            '<div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">'+p.apelido+'</div></div>'+
+          '</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'))+
+          (state.almanac ? '' : traitTags(p.traitsPos, p.traitsNeg))+
+          (selected?'<div class="card-desc" style="margin-top:8px;margin-bottom:0;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
+        '</div>'
+      );
+      if(!disabled && !selected){
+        card.addEventListener('click', function(){
+          state.pilotos.push(p);
+          render();
+          setTimeout(function(){ state.tab='motor'; render(); }, 450);
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  if(state.tab==='motor'){
+    state.pools.motor.forEach(function(m){
+      var selected = state.motor && state.motor.id===m.id;
+      var locked = !!state.motor;
+      var disabled = locked && !selected;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top">'+
+            '<div><div class="card-name">'+m.nome+'</div><div class="card-role">'+m.fabricante+'</div></div>'+
+          '</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Potência',m.pot)+statBar('Confiabilidade',m.confiab)+'</div>'))+
+          (state.almanac
+            ? (selected?'<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">CONTRATADO</b></div>':'')
+            : ('<div class="card-desc" style="margin-top:8px;">'+m.desc+(selected?' <b style="color:var(--good);">— CONTRATADO</b>':'')+'</div>'))+
+          (state.almanac ? '' : traitTags(m.traitsPos, m.traitsNeg))+
+        '</div>'
+      );
+      if(!disabled && !selected){
+        card.addEventListener('click', function(){
+          state.motor = m;
+          render();
+          setTimeout(function(){
+            if(!state.teamName.trim()) state.teamName = 'Equipe Sem Nome';
+            if(state.mode==='quickseason'){
+              initSeason();
+              state.screen='quickseason';
+            } else {
+              if(state.mode==='season') initSeason();
+              state.screen='prerace';
+            }
+            render();
+          }, 500);
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  wrap.appendChild(grid);
+
+  var footer = el(
+    '<div class="footerbar">'+
+      '<div class="footer-info">'+(state.almanac ? '📖 Os números existem e valem pra corrida — você só não vê.' : '🎲 Tudo na sorte — a qualidade de cada contratado varia por temporada.')+'</div>'+
+    '</div>'
+  );
+  wrap.appendChild(footer);
+
+  return wrap;
+}
+
+function initSeason(){
+  var myPersonIds = state.pilotos.map(function(p){ return p.personId; });
+  var rivals = buildRivalPool(10, myPersonIds);
+  // a equipe do jogador tem 2 pilotos com pontos somados — pra ser justo, os 10 rivais também
+  // formam 5 equipes de 2, senão a equipe do jogador sempre pontua em dobro contra pilotos sozinhos
+  var standings = [{key:'mine', label:state.teamName, mine:true, points:0}];
+  for(var i=0;i<rivals.length;i+=2){
+    var teamKey = 'rt_'+(i/2);
+    var partner = rivals[i+1];
+    var anchorLabel = rivals[i].team + (rivals[i].year ? ' '+rivals[i].year : '');
+    var partnerLabel = partner ? partner.team + (partner.year ? ' '+partner.year : '') : null;
+    var teamLabel = (partner && partner.team && partner.team!==rivals[i].team) ? anchorLabel+' / '+partnerLabel : anchorLabel;
+    rivals[i].teamKey = teamKey;
+    if(partner) partner.teamKey = teamKey;
+    standings.push({key:teamKey, label:teamLabel, mine:false, points:0});
+  }
+  var tracks = (state.pickedTrackIds && state.pickedTrackIds.length===SEASON_LENGTH)
+    ? state.pickedTrackIds.map(function(id){ return TRACKS.filter(function(t){ return t.id===id; })[0]; })
+    : TRACKS.slice(0, SEASON_LENGTH);
+  state.season = { trackIndex:0, rivals:rivals, standings:standings, history:[], tracks:tracks, titleRivalKey:pickTitleRival(rivals) };
+}
+
+// escolhe qual equipe rival vai ser a "rival de título" da temporada: a que tem a maior média de
+// velocidade/consistência/agressividade dos pilotos reais (as únicas partes não-aleatórias do
+// grid rival), pra ser uma ameaça de verdade e não uma equipe qualquer sorteada
+function pickTitleRival(rivals){
+  var sums = {}, counts = {};
+  rivals.forEach(function(r){
+    var key = r.teamKey;
+    var q = (r.vel+r.cons+r.agr)/3;
+    sums[key] = (sums[key]||0) + q;
+    counts[key] = (counts[key]||0) + 1;
+  });
+  var bestKey = null, bestAvg = -1;
+  Object.keys(sums).forEach(function(key){
+    var avg = sums[key]/counts[key];
+    if(avg>bestAvg){ bestAvg = avg; bestKey = key; }
+  });
+  return bestKey;
+}
+
+function standingsHtml(standings){
+  var rivalKey = state.season ? state.season.titleRivalKey : null;
+  return standings.map(function(s,i){
+    var isRival = !s.mine && s.key===rivalKey;
+    var cls = s.mine ? ' mine' : (isRival ? ' rival' : '');
+    var marker = isRival ? '🎯 ' : '';
+    return '<div class="stand-row'+cls+'"><div class="stand-pos">'+(i+1)+'</div><div class="stand-label">'+marker+s.label+'</div><div class="stand-pts">'+s.points+' pts</div></div>';
+  }).join('');
+}
+
+// linha de destaque com a rival de título e a diferença de pontos atual — usada em toda tela que
+// já mostra a classificação, pra dar um fio narrativo à temporada em vez de só uma tabela
+function titleRivalCalloutHtml(){
+  var seas = state.season;
+  if(!seas || !seas.titleRivalKey) return '';
+  var mine = seas.standings.filter(function(s){ return s.mine; })[0];
+  var rival = seas.standings.filter(function(s){ return s.key===seas.titleRivalKey; })[0];
+  if(!mine || !rival) return '';
+  var diff = mine.points - rival.points;
+  var cmp = diff===0 ? 'empatada em pontos com' : diff>0 ? ('com <b style="color:var(--good);">'+diff+' pts</b> de vantagem sobre') : ('<b style="color:var(--danger);">'+(-diff)+' pts</b> atrás de');
+  return '<div class="footer-info" style="margin-bottom:10px;">🎯 Sua rival de título é a <b style="color:var(--text);">'+rival.label+'</b> — você está '+cmp+' ela.</div>';
+}
+
+// mensagem de fechamento pra tela de campeão: como terminou a disputa com a rival de título
+// especificamente, além da posição geral na tabela
+function titleRivalOutcomeHtml(){
+  var seas = state.season;
+  if(!seas || !seas.titleRivalKey) return '';
+  var mine = seas.standings.filter(function(s){ return s.mine; })[0];
+  var rival = seas.standings.filter(function(s){ return s.key===seas.titleRivalKey; })[0];
+  if(!mine || !rival) return '';
+  var diff = mine.points - rival.points;
+  var msg = diff===0
+    ? 'Você terminou empatado em pontos com sua rival de título, <b style="color:var(--text);">'+rival.label+'</b>.'
+    : diff>0
+      ? '🎯 E você ainda superou sua rival de título, <b style="color:var(--text);">'+rival.label+'</b> ('+mine.points+' a '+rival.points+' pts)!'
+      : '🎯 Sua rival de título, <b style="color:var(--text);">'+rival.label+'</b>, terminou à frente ('+rival.points+' a '+mine.points+' pts).';
+  return '<div class="panel" style="text-align:center;"><div class="footer-info" style="margin:0;">'+msg+'</div></div>';
+}
+
+function highlightsHtml(highlights){
+  return highlights.map(function(h){
+    return '<div class="hl-card" style="opacity:1;transform:none;animation:none;">'+
+      '<div class="hl-icon">'+h.icon+'</div>'+
+      '<div class="hl-body"><div class="hl-title">'+h.title+'</div><div class="hl-text">'+h.text+'</div></div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderPrerace(){
+  var wrap = el('<div></div>');
+  var seasonActive = !!state.season;
+  var track = seasonActive ? state.season.tracks[state.season.trackIndex] : null;
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">'+(seasonActive? 'Corrida '+(state.season.trackIndex+1)+' de '+state.season.tracks.length+' — '+track.flag+' '+track.country : 'Grid de largada')+'</div>'+
+      '<h1>'+(seasonActive? track.name : state.teamName)+'</h1>'+
+      '<div class="subtitle">'+(seasonActive? 'Pista conhecida por '+track.flavor+'.' : 'Escalação confirmada e travada. Boa corrida.')+'</div>'+
+    '</div>'
+  ));
+
+  var panel = el('<div class="panel"></div>');
+  panel.innerHTML =
+    '<div class="lineup-row"><div><div class="lineup-role">Chefe de equipe</div><div class="lineup-name">'+state.chefe.pais+' '+state.chefe.nome+' — '+state.chefe.apelido+'</div></div></div>'+
+    state.pilotos.map(function(p){
+      return '<div class="lineup-row"><div><div class="lineup-role">Piloto</div><div class="lineup-name">'+p.pais+' '+p.nome+' '+p.apelido+'</div></div></div>';
+    }).join('')+
+    '<div class="lineup-row"><div><div class="lineup-role">Motor</div><div class="lineup-name">'+state.motor.nome+' ('+state.motor.fabricante+')</div></div></div>';
+  wrap.appendChild(panel);
+
+  if(seasonActive && state.season.trackIndex>0){
+    var standWrap = el('<div class="panel"></div>');
+    standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação atual do campeonato</div>'+titleRivalCalloutHtml()+standingsHtml(state.season.standings);
+    wrap.appendChild(standWrap);
+  }
+
+  var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"></div>');
+  if(state.raceStyle==='longa'){
+    var goBtn = el('<button class="btn">🌦️ Ver previsão e escolher pneus</button>');
+    goBtn.addEventListener('click', function(){ enterStrategy(); });
+    actions.appendChild(goBtn);
+  } else if(seasonActive){
+    var watchBtn = el('<button class="btn">🎬 Assistir corrida</button>');
+    watchBtn.addEventListener('click', function(){ startSeasonRace(true); });
+    var hlBtn = el('<button class="btn ghost">⚡ Ver melhores momentos</button>');
+    hlBtn.addEventListener('click', function(){ startSeasonRace(false); });
+    actions.appendChild(watchBtn);
+    actions.appendChild(hlBtn);
+  } else {
+    var startBtn = el('<button class="btn">Largar para a corrida</button>');
+    startBtn.addEventListener('click', function(){ startRace(); });
+    actions.appendChild(startBtn);
+  }
+  wrap.appendChild(actions);
+
+  return wrap;
+}
+
+function rand(min,max){ return min + Math.random()*(max-min); }
+
+function buildRival(name, team){
+  var vel = rand(68,96), cons = rand(60,92), agr = rand(50,92);
+  var pot = rand(68,97), confiab = rand(65,92);
+  return {personId:'filler_'+name, nome:name, pais:null, team:team, vel:vel, cons:cons, agr:agr, pot:pot, confiab:confiab};
+}
+
+// sorteia os rivais da corrida a partir do MESMO pool de pilotos que o jogador pode escolher no draft
+// (excluindo quem já está na sua equipe), com atributos de motor aleatórios já que eles não têm um motor escolhido.
+// cada rival sorteado ("âncora") entra na corrida junto do companheiro de equipe REAL daquela temporada
+// (campo "teammate" da base de dados): se esse companheiro também tiver carta própria no pool, os dois
+// correm com estatísticas reais; senão ele entra como piloto avulso mas com o nome histórico certo.
+// O resto do grid é preenchido com pilotos soltos como antes.
+function buildRivalPool(n, excludePersonIds){
+  var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludePersonIds.indexOf(c.personId)===-1; });
+  var rivals = [];
+  var usedPersonIds = {};
+  // rastreado por NOME (não só personId) porque um companheiro sem carta própria vira um piloto
+  // avulso com personId sintético ('filler_'+nome) — sem isso a mesma pessoa podia ser criada de
+  // novo como companheiro de outra âncora diferente e aparecer duas vezes na mesma corrida
+  var usedNames = {};
+  // uma equipe não pode aparecer 2x no grid mesmo com anos diferentes (ex: "Mercedes 2015" e
+  // "Mercedes 2019" juntas confundiriam, ainda mais com a cor da bolinha marcando dupla real)
+  var usedTeams = {};
+  var pairSeq = 0;
+
+  var byPerson = {};
+  candidates.forEach(function(c){ (byPerson[c.personId]=byPerson[c.personId]||[]).push(c); });
+  var personGroups = pickRandom(Object.keys(byPerson).map(function(k){ return byPerson[k]; }), Object.keys(byPerson).length);
+
+  personGroups.forEach(function(group){
+    if(rivals.length>=n) return;
+    var anchorCard = group[Math.floor(Math.random()*group.length)];
+    if(usedPersonIds[anchorCard.personId] || usedNames[anchorCard.nome] || usedTeams[anchorCard.team]) return;
+
+    var pairKey = 'pair_'+(pairSeq++);
+    rivals.push({
+      personId:anchorCard.personId, nome:anchorCard.nome, pais:anchorCard.pais, team:anchorCard.team, year:anchorCard.year,
+      vel:anchorCard.vel, cons:anchorCard.cons, agr:anchorCard.agr,
+      pot:rand(68,97), confiab:rand(65,92), pairKey:pairKey
+    });
+    usedPersonIds[anchorCard.personId] = true;
+    usedNames[anchorCard.nome] = true;
+    usedTeams[anchorCard.team] = true;
+    if(rivals.length>=n) return;
+
+    var teammateName = anchorCard.teammate;
+    if(!teammateName || teammateName.indexOf('None')===0 || usedNames[teammateName]) return;
+    var realPartner = candidates.filter(function(c){ return c.nome===teammateName && c.personId!==anchorCard.personId && !usedPersonIds[c.personId]; })[0];
+    if(realPartner){
+      rivals.push({
+        personId:realPartner.personId, nome:realPartner.nome, pais:realPartner.pais, team:anchorCard.team, year:anchorCard.year,
+        vel:realPartner.vel, cons:realPartner.cons, agr:realPartner.agr,
+        pot:rand(68,97), confiab:rand(65,92), realTeammate:true, pairKey:pairKey
+      });
+      usedPersonIds[realPartner.personId] = true;
+      usedNames[realPartner.nome] = true;
+    } else {
+      var filler = buildRival(teammateName, anchorCard.team);
+      filler.year = anchorCard.year;
+      filler.realTeammate = true;
+      filler.pairKey = pairKey;
+      rivals.push(filler);
+      usedNames[teammateName] = true;
+    }
+  });
+
+  if(rivals.length < n){
+    var remainingCandidates = candidates.filter(function(c){ return !usedPersonIds[c.personId] && !usedNames[c.nome] && !usedTeams[c.team]; });
+    var picks = pickRandomDistinctPersons(remainingCandidates, n-rivals.length);
+    picks.forEach(function(p){
+      rivals.push({
+        personId:p.personId, nome:p.nome, pais:p.pais, team:p.team, year:p.year,
+        vel:p.vel, cons:p.cons, agr:p.agr,
+        pot:rand(68,97), confiab:rand(65,92), pairKey:'pair_'+(pairSeq++)
+      });
+      usedNames[p.nome] = true;
+      usedTeams[p.team] = true;
+    });
+  }
+  if(rivals.length < n){
+    FILLER_NOMES.slice().sort(function(){ return Math.random()-0.5; }).forEach(function(f){
+      if(rivals.length>=n) return;
+      if(usedNames[f[0]] || usedTeams[f[1]]) return;
+      var filler = buildRival(f[0], f[1]);
+      filler.pairKey = 'pair_'+(pairSeq++);
+      rivals.push(filler);
+      usedNames[f[0]] = true;
+      usedTeams[f[1]] = true;
+    });
+  }
+  return rivals.slice(0, n);
+}
+
+function computeScore(driver){
+  var base = driver.vel*0.35 + driver.agr*0.15 + driver.cons*0.15 + driver.pot*0.25 + driver.confiab*0.10;
+  base = base * (driver.scoreMult||1);
+  var varianceRange = (100-driver.cons)*0.4 * (driver.varMult||1);
+  var noisy = base + (Math.random()*2-1)*varianceRange*0.3;
+  return noisy;
+}
+
+function buildFieldBase(rivals){
+  var field = [];
+  state.pilotos.forEach(function(p){
+    field.push({
+      nome:p.pais+' '+p.nome+' '+p.apelido, driverName:p.nome, year:p.year, team:state.teamName, mine:true,
+      vel:p.vel, cons:p.cons, agr:p.agr,
+      pot:state.motor.pot, confiab:state.motor.confiab,
+      scoreMult:state.chefe.scoreMult, varMult:state.chefe.varMult
+    });
+  });
+  var rivalMult = (RIVAL_DIFFICULTY[state.rivalDifficulty] || RIVAL_DIFFICULTY.normal).mult;
+  rivals.forEach(function(r){
+    field.push({
+      nome:(r.pais?r.pais+' ':'')+r.nome, driverName:r.nome, year:r.year, team:r.team, personId:r.personId, teamKey:r.teamKey, pairKey:r.pairKey, mine:false,
+      vel:r.vel, cons:r.cons, agr:r.agr, pot:r.pot, confiab:r.confiab,
+      scoreMult:rivalMult, varMult:1
+    });
+  });
+  return field;
+}
+
+function rollDriverOutcome(d, laps, varBoost){
+  var dnfChance = (100-d.confiab)*0.004;
+  d.dnf = Math.random() < dnfChance;
+  if(varBoost) d.varMult = (d.varMult||1) * varBoost;
+  d.score = d.dnf ? -9999 - Math.random()*10 : computeScore(d);
+  if(d.dnf) d._dnfLap = Math.max(1, Math.round(rand(1, Math.max(1,laps-2))));
+}
+
+function resolveRivalsOnly(field, laps, varBoost){
+  field.forEach(function(d){ rollDriverOutcome(d, laps, varBoost); });
+  return field;
+}
+
+function finalizeField(field){
+  field.sort(function(a,b){ return b.score - a.score; });
+
+  var pointsTable = [25,18,15,12,10,8,6,4,2,1];
+  field.forEach(function(d,i){
+    d.pos = i+1;
+    d.pts = d.dnf ? 0 : (pointsTable[i]||0);
+  });
+
+  var leaderScore = field[0].score;
+  field.forEach(function(d){
+    d.gap = d.dnf ? 'ABANDONOU' : (d.pos===1? 'LÍDER' : '+'+((leaderScore-d.score)*0.31).toFixed(3)+'s');
+  });
+
+  return field;
+}
+
+function resolveRace(field, laps){
+  field.forEach(function(d){ rollDriverOutcome(d, laps); });
+  return finalizeField(field);
+}
+
+function startRace(){
+  clearRaceTimers();
+  clearTimeout(state.revealTimer);
+  TOTAL_LAPS = 7;
+  state.highlights = [];
+  state.raceTrack = TRACKS[Math.floor(Math.random()*TRACKS.length)];
+  var myPersonIds = state.pilotos.map(function(p){ return p.personId; });
+  var rivals = buildRivalPool(10, myPersonIds);
+  var field = resolveRace(buildFieldBase(rivals), TOTAL_LAPS);
+
+  state.results = field;
+  state.revealIndex = field.length; // will count down
+  state.raceTimers = [];
+  state.screen='race';
+  render();
+}
+
+function fastestLapTime(d){
+  var base = 96 - (d.vel*0.28 + d.pot*0.16);
+  var t = Math.max(56, base + rand(-1.2,1.2));
+  var mins = Math.floor(t/60);
+  var secs = t - mins*60;
+  return mins+':'+(secs<10?'0':'')+secs.toFixed(3);
+}
+
+function buildHighlights(field, track){
+  var events = [];
+  var finishers = field.filter(function(d){ return !d.dnf; });
+  var dnfs = field.filter(function(d){ return d.dnf; });
+
+  if(finishers.length>1){
+    var starter = finishers[Math.floor(Math.random()*Math.min(6,finishers.length))];
+    events.push({icon:'🏁', title:'Largada', text: shortName(starter.driverName)+' ('+starter.team+') teve uma saída forte e já ganhou posições nas primeiras curvas.'});
+  }
+
+  var stratDriver = field[Math.floor(Math.random()*field.length)];
+  events.push({icon:'🔧', title:'Estratégia', text: 'Em '+track.name+', a '+stratDriver.team+' apostou numa janela de pit stop diferente da maioria — pista conhecida por '+track.flavor+'.'});
+
+  dnfs.forEach(function(d){
+    events.push({icon:'💥', title:'Abandono', text: shortName(d.driverName)+' ('+d.team+') parou na volta '+d._dnfLap+' e não viu a bandeira quadriculada.'});
+  });
+
+  if(finishers.length){
+    var candidates = finishers.slice().sort(function(a,b){ return (b.vel+b.pot) - (a.vel+a.pot); }).slice(0,4);
+    var flDriver = candidates[Math.floor(Math.random()*candidates.length)];
+    events.push({icon:'⏱️', title:'Volta mais rápida', text: shortName(flDriver.driverName)+' ('+flDriver.team+') cravou a volta mais rápida da corrida: '+fastestLapTime(flDriver)+'.'});
+  }
+
+  var podium = field.slice(0,3);
+  events.push({icon:'🏆', title:'Pódio', text: podium.map(function(d,i){ return (i+1)+'º '+shortName(d.driverName)+' ('+d.team+')'; }).join(' · ')});
+
+  return events;
+}
+
+function applyStandings(field){
+  var mineEntry = state.season.standings.filter(function(s){ return s.key==='mine'; })[0];
+  var minePts = field.filter(function(d){ return d.mine; }).reduce(function(s,d){ return s+d.pts; },0);
+  mineEntry.points += minePts;
+  field.filter(function(d){ return !d.mine; }).forEach(function(d){
+    var entry = state.season.standings.filter(function(s){ return s.key===d.teamKey; })[0];
+    if(entry) entry.points += d.pts;
+  });
+  state.season.standings.sort(function(a,b){ return b.points - a.points; });
+}
+
+function startSeasonRace(watchLive){
+  var track = state.season.tracks[state.season.trackIndex];
+  TOTAL_LAPS = track.laps;
+  state.raceTrack = track;
+  var field = resolveRace(buildFieldBase(state.season.rivals), track.laps);
+  applyStandings(field);
+  var highlights = buildHighlights(field, track);
+  state.season.history.push({track:track, results:field.slice(), highlights:highlights});
+
+  state.results = field;
+  state.highlights = highlights;
+  state.highlightIndex = 0;
+
+  if(watchLive){
+    clearRaceTimers();
+    clearTimeout(state.revealTimer);
+    state.revealIndex = field.length;
+    state.raceTimers = [];
+    state.screen = 'race';
+  } else {
+    state.screen = 'highlights';
+  }
+  render();
+}
+
+/* ---------- temporada expressa: mesma temporada de 5 corridas, sem simulação ao vivo. cada
+   corrida é resolvida de uma vez (o RESULTADO já está decidido), mas a REVELAÇÃO na tela é
+   manual via DOM: os pilotos do top 5 (+ a posição da sua equipe, se ficar fora dele) vão
+   surgindo um de cada vez dentro de uma <details> aberta; quando termina, ela fecha sozinha
+   (sobra só a setinha nativa do <summary> pra reabrir e rever) e a próxima corrida começa.
+   Depois do primeiro render() que monta o esqueleto da tela, tudo daqui pra frente mexe direto
+   no DOM (sem chamar render() de novo) — assim um <details> que o jogador reabriu manualmente
+   não é derrubado por um re-render de uma corrida seguinte. ---------- */
+function clearQuickSeasonTimer(){
+  if(state.qsTimer){ clearTimeout(state.qsTimer); state.qsTimer = null; }
+}
+
+function resolveOneQuickRace(){
+  var seas = state.season;
+  var track = seas.tracks[seas.trackIndex];
+  var field = resolveRace(buildFieldBase(seas.rivals), track.laps);
+  applyStandings(field);
+  seas.history.push({track:track, results:field.slice(), highlights:buildHighlights(field, track)});
+  seas.trackIndex++;
+}
+
+function quickRaceRowHtml(d){
+  var posClass = d.pos===1?'p1':d.pos===2?'p2':d.pos===3?'p3':'';
+  return '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'" style="animation:none;opacity:1;">'+
+    '<div class="pos '+posClass+'">'+d.pos+'</div>'+
+    '<div class="row-main"><div class="row-driver">'+shortName(d.driverName)+'</div><div class="row-team">'+d.team+'</div></div>'+
+    '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
+  '</div>';
+}
+
+// lista de "passos" de revelação de uma corrida: primeiro o top 5 (em ordem, 1º ao 5º), depois
+// a posição de qualquer piloto seu que tenha ficado fora do top 5
+function quickRaceRevealItems(entry){
+  var top5 = entry.results.slice(0, 5);
+  var mineOutside = entry.results.filter(function(d){ return d.mine && d.pos>5; });
+  return top5.map(function(d){ return quickRaceRowHtml(d); }).concat(mineOutside.map(function(d){
+    return '<div class="footer-info" style="margin-top:2px;">'+(d.dnf ? ('❌ '+shortName(d.driverName)+' abandonou') : ('📍 '+shortName(d.driverName)+': P'+d.pos))+'</div>';
+  }));
+}
+
+var QS_REVEAL_STEP_MS = 550; // intervalo entre cada piloto revelado
+var QS_COLLAPSE_PAUSE_MS = 900; // pausa depois do último piloto, antes de fechar a caixa
+
+function startNextQuickRace(){
+  var seas = state.season;
+  if(!seas || state.screen!=='quickseason') return;
+  var board = document.getElementById('gpm-qs-board');
+  if(!board) return;
+
+  if(seas.trackIndex >= seas.tracks.length){ finishQuickSeasonUI(); return; }
+
+  resolveOneQuickRace();
+  var idx = seas.history.length-1;
+  var entry = seas.history[idx];
+
+  var det = el(
+    '<details class="panel" open id="gpm-qs-race-'+idx+'">'+
+      '<summary>Corrida '+(idx+1)+' de '+seas.tracks.length+' — '+entry.track.flag+' '+entry.track.name+'</summary>'+
+      '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;" id="gpm-qs-rows-'+idx+'"></div>'+
+    '</details>'
+  );
+  board.appendChild(det);
+  det.scrollIntoView({behavior:'smooth', block:'center'});
+
+  revealQuickRaceStep(idx, quickRaceRevealItems(entry), 0);
+}
+
+function revealQuickRaceStep(idx, items, i){
+  if(state.screen!=='quickseason') return;
+  var rowsEl = document.getElementById('gpm-qs-rows-'+idx);
+  if(!rowsEl) return;
+  if(i < items.length){
+    rowsEl.appendChild(el(items[i]));
+    state.qsTimer = setTimeout(function(){ revealQuickRaceStep(idx, items, i+1); }, QS_REVEAL_STEP_MS);
+  } else {
+    // todos os pilotos já apareceram — espera um instante, fecha a caixa (só a setinha do
+    // summary continua clicável pra reabrir) e emenda na próxima corrida
+    state.qsTimer = setTimeout(function(){
+      var det = document.getElementById('gpm-qs-race-'+idx);
+      if(det) det.open = false;
+      startNextQuickRace();
+    }, QS_COLLAPSE_PAUSE_MS);
+  }
+}
+
+// resolve e monta instantaneamente (já com tudo revelado) o que faltar da temporada — usado só
+// pelo botão "pular tudo"
+function skipQuickSeason(){
+  clearQuickSeasonTimer();
+  var seas = state.season;
+  if(!seas) return;
+  var curIdx = seas.history.length-1;
+  if(curIdx>=0){
+    var rowsEl = document.getElementById('gpm-qs-rows-'+curIdx);
+    if(rowsEl) rowsEl.innerHTML = quickRaceRevealItems(seas.history[curIdx]).join('');
+    var curDet = document.getElementById('gpm-qs-race-'+curIdx);
+    if(curDet) curDet.open = false;
+  }
+  var board = document.getElementById('gpm-qs-board');
+  while(seas.trackIndex < seas.tracks.length){
+    resolveOneQuickRace();
+    var idx = seas.history.length-1;
+    var entry = seas.history[idx];
+    if(board){
+      board.appendChild(el(
+        '<details class="panel" id="gpm-qs-race-'+idx+'">'+
+          '<summary>Corrida '+(idx+1)+' de '+seas.tracks.length+' — '+entry.track.flag+' '+entry.track.name+'</summary>'+
+          '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">'+quickRaceRevealItems(entry).join('')+'</div>'+
+        '</details>'
+      ));
+    }
+  }
+  finishQuickSeasonUI();
+}
+
+function finishQuickSeasonUI(){
+  var seas = state.season;
+  var skipbar = document.getElementById('gpm-qs-skipbar');
+  if(skipbar) skipbar.style.display = 'none';
+  var actionsSlot = document.getElementById('gpm-qs-actions');
+  if(!actionsSlot) return;
+  actionsSlot.innerHTML = '';
+
+  var standWrap = el('<div class="panel"></div>');
+  standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+titleRivalCalloutHtml()+standingsHtml(seas.standings);
+  actionsSlot.appendChild(standWrap);
+
+  var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
+  var finish = el('<button class="btn">Ver resultado do campeonato</button>');
+  finish.addEventListener('click', function(){ clearQuickSeasonTimer(); state.screen='champion'; render(); });
+  var quit = el('<button class="btn ghost">Abandonar temporada</button>');
+  quit.addEventListener('click', function(){ clearQuickSeasonTimer(); resetState(); render(); });
+  actions.appendChild(finish);
+  actions.appendChild(quit);
+  actionsSlot.appendChild(actions);
+  actionsSlot.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function renderQuickSeason(){
+  var wrap = el('<div></div>');
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">⚡ Temporada Expressa</div>'+
+      '<h1>'+state.teamName+'</h1>'+
+      '<div class="subtitle">Os resultados vão aparecendo piloto por piloto. Cada corrida fecha sozinha ao terminar — clique nela pra reabrir e rever.</div>'+
+    '</div>'
+  ));
+
+  wrap.appendChild(el('<div id="gpm-qs-board"></div>'));
+  wrap.appendChild(el('<div id="gpm-qs-actions"></div>'));
+
+  var skipbar = el('<div class="skipbar" id="gpm-qs-skipbar"><button class="btn ghost">Pular tudo</button></div>');
+  skipbar.querySelector('button').addEventListener('click', skipQuickSeason);
+  wrap.appendChild(skipbar);
+
+  // a partir daqui, tudo é manipulação direta do DOM (startNextQuickRace/revealQuickRaceStep) —
+  // este render() não é chamado de novo enquanto a tela continuar sendo a Temporada Expressa
+  clearQuickSeasonTimer();
+  setTimeout(function(){ startNextQuickRace(); }, 50);
+
+  return wrap;
+}
+
+var TOTAL_LAPS = 7;
+var LAP_SECONDS = 15; // segundos "de universo" por volta em 1x — 2x/4x aceleram a reprodução, não o resultado
+
+function clearRaceTimers(){
+  (state.raceTimers||[]).forEach(function(id){ clearTimeout(id); });
+  state.raceTimers = [];
+  if(state.raceAnimFrame){ cancelAnimationFrame(state.raceAnimFrame); state.raceAnimFrame=null; }
+}
+
+/* ---------- corrida longa: previsão + estratégia + eventos ao vivo ---------- */
+function enterStrategy(){
+  clearRaceTimers();
+  clearTimeout(state.revealTimer);
+  if(!state.season){
+    state.raceTrack = TRACKS[Math.floor(Math.random()*TRACKS.length)];
+  }
+  var track = getActiveTrack();
+  var longLaps = track.longLaps || track.laps;
+  TOTAL_LAPS = longLaps;
+  var weather = buildWeatherScript(longLaps);
+  state.longRace = {
+    weather: weather, wetnessNow: weather.actualWet[0], weatherCondNow: weather.actualCond[0],
+    lap: 0, liveLap: null, totalLaps: longLaps,
+    history: [], pendingDecision: null,
+    rivalsRoster: null, rivalField: null, mineField: null, finished:false,
+    events: [], eventIndex: 0, raceAnimFrame: null, started: false, timingOrder: null, safetyCar: null,
+    tireAlertQueue: [], activeTireAlert: null
+  };
+  state.screen = 'strategy';
+  render();
+}
+
+function renderStrategy(){
+  var wrap = el('<div></div>');
+  var track = getActiveTrack();
+  var laps = state.longRace.totalLaps;
+  var w = state.longRace.weather;
+  var startCond = trackConditionLabel(w.forecastWet[0]);
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">'+track.flag+' '+track.name+' — corrida longa</div>'+
+      '<h1>Previsão do tempo</h1>'+
+      '<div class="subtitle">Corrida de <b style="color:var(--accent-2);">'+laps+' voltas</b>. A previsão indica <b style="color:var(--accent-2);">largada com pista '+startCond+'</b> ('+WEATHER_COND_LABEL[w.forecastCond[0]].toLowerCase()+', '+w.forecastWet[0]+'% de umidade). Previsões não são 100% confiáveis: o clima real pode surpreender, e pode até mudar no meio da corrida.</div>'+
+    '</div>'
+  ));
+
+  var timeline = el('<div class="panel"></div>');
+  timeline.innerHTML = weatherTimelineHtml(state.longRace)+
+    '<div class="footer-info" style="margin-top:10px;">A umidade da pista é consequência da chuva: pista abaixo de 15% de umidade favorece os pneus de seco · entre 15% e 60% o Intermediário é o mais rápido · acima de 60% o pneu de Chuva é o mais rápido.</div>';
+  wrap.appendChild(timeline);
+
+  var grid = el('<div class="cardgrid"></div>');
+  TIRE_COMPOUNDS.forEach(function(t){
+    grid.appendChild(buildTireCard(t, laps, function(){ initLongRace(t.id); }));
+  });
+  wrap.appendChild(grid);
+
+  var footer = el(
+    '<div class="footerbar">'+
+      '<div class="footer-info">💡 Pneus mais macios são mais rápidos mas duram menos — às vezes vale mais parar uma vez do que rodar a prova toda com um pneu mais duro e lento.</div>'+
+    '</div>'
+  );
+  wrap.appendChild(footer);
+
+  return wrap;
+}
+
+function tireName(id){ var t = tireById(id); return t ? t.nome : id; }
+
+// modelo de desgaste inspirado na F1 real: o pneu perde ritmo aos poucos ao longo do stint
+// (degradação normal) e, se não for trocado a tempo, sofre uma queda de desempenho ("cliff")
+// bem mais acentuada — é o que torna o momento de parar realmente estratégico
+function tireCondition(compoundId, wetPct, tireLaps){
+  var t = tireById(compoundId);
+  var fit = tireWetnessFit(compoundId, wetPct); // encaixe do composto com a pista no momento (0.12..1)
+  var rawWear = (tireLaps*t.wear)/8; // 1.0 = 100% da vida útil nominal do composto
+  var wear;
+  if(rawWear<=1){
+    // degradação bem mais agressiva desde cedo no stint — na F1 real, um pneu já rodado (mesmo
+    // longe dos 100%) perde ritmo rápido o bastante pra um pneu novo de composto mais duro já
+    // alcançar bem antes do fim da vida útil (é a lógica por trás do "undercut" nas paradas)
+    wear = 1 - rawWear*0.42;
+  } else {
+    wear = Math.max(0.10, 0.58 - (rawWear-1)*0.9); // pneu "estourado" além da vida útil: despenca rápido
+  }
+  return fit*wear; // 0..1 — combina o encaixe com a pista e o estado físico do pneu
+}
+
+// ritmo do carro dado o composto/desgaste atual — usado tanto pro jogador quanto pros rivais,
+// multiplicado pelo fator de habilidade/skill de cada piloto (_paceFactor / _driverMult)
+function tirePaceFactor(compoundId, wetPct, tireLaps){
+  var cond = tireCondition(compoundId, wetPct, tireLaps);
+  return compoundGrip(compoundId) * (0.5 + cond*0.65); // 0.5 (pneu morto) .. 1.15 (novo, ótimo encaixe)
+}
+
+function tireStintQuality(compoundId, wetPct, tireLaps){
+  return tireCondition(compoundId, wetPct, tireLaps);
+}
+
+// ritmo efetivo de um rival considerando o pneu que ele está usando — sem isso, os rivais
+// corriam sempre no mesmo ritmo mesmo com o pneu 100% gasto (ou além disso)
+function rivalTirePace(d, wetPct){
+  return d._paceFactor * tirePaceFactor(d._tireCompound, wetPct, d._tireLaps);
+}
+
+var LR_LAP_SECONDS = 15; // segundos "de universo" por volta em 1x — 2x/4x aceleram a reprodução, não o resultado
+
+function cautionLogEntry(type){
+  return {icon: type==='sc'?'🚨':'🟡', title: type==='sc'?'Safety Car':'Virtual Safety Car', text: type==='sc' ? 'Safety Car na pista — janela boa e barata pra fazer o pit stop.' : 'VSC acionado — parada mais barata que o normal.'};
+}
+
+// monta a lista de eventos da corrida inteira (clima, abandonos, incidentes) já na hora de largar,
+// pra dar pra tocar a animação contínua entre um evento e outro, só pausando quando importa.
+// o número de vezes que a corrida realmente para pra pedir uma decisão é limitado de propósito
+// (média de ~3 por corrida, variando entre 2 e 4) — o resto das mudanças acontece em silêncio,
+// senão a corrida longa vira uma sequência cansativa de interrupções
+function precomputeLongRaceEvents(lr){
+  var weatherEvents = [];
+  var prevZone = null;
+  for(var lap=1; lap<=lr.totalLaps; lap++){
+    if((lap-1)%2===0){
+      var seg = Math.min(lr.weather.segCount-1, Math.floor((lap-1)/2));
+      var wet = lr.weather.actualWet[seg];
+      var cond = lr.weather.actualCond[seg];
+      var zone = wetnessZone(wet);
+      weatherEvents.push({lap:lap, type:'wetness', wetPct:wet, cond:cond, pause: prevZone!==null && zone!==prevZone});
+      prevZone = zone;
+    }
+  }
+
+  var cautionEvents = [];
+  lr.rivalField.forEach(function(d){
+    if(d.dnf){
+      var roll = Math.random();
+      // a maioria dos abandonos não exige neutralização — só quando o carro fica parado num lugar perigoso
+      var caution = roll<0.15 ? 'sc' : (roll<0.32 ? 'vsc' : null);
+      cautionEvents.push({lap:d._dnfLap, type:'dnf', driver:d, caution:caution});
+    }
+  });
+  for(var l=1;l<=lr.totalLaps;l++){
+    // raro: a maioria das corridas passa sem nenhum incidente aleatório, mas pode acontecer mais de um em casos isolados
+    if(Math.random()<0.012){
+      var r2 = Math.random();
+      cautionEvents.push({lap:l, type:'incident', caution: r2<0.4?'sc':'vsc'});
+    }
+  }
+
+  // junta tudo que PODERIA parar a corrida (mudança de zona de clima + cautions) e só deixa
+  // as primeiras "targetDecisions" (em ordem de volta) realmente pausarem — o resto se aplica
+  // sem interromper (clima muda silenciosamente, abandono/incidente não gera safety car)
+  var targetDecisions = Math.max(1, Math.round(rand(2,4)));
+  var candidates = weatherEvents.filter(function(e){ return e.pause; })
+    .concat(cautionEvents.filter(function(e){ return e.caution; }))
+    .sort(function(a,b){ return a.lap-b.lap; });
+  var allowed = new Set(candidates.slice(0, targetDecisions));
+  weatherEvents.forEach(function(e){ if(e.pause && !allowed.has(e)) e.pause = false; });
+  cautionEvents.forEach(function(e){ if(e.caution && !allowed.has(e)) e.caution = null; });
+
+  var events = weatherEvents.concat(cautionEvents);
+  events.sort(function(a,b){ return a.lap-b.lap; });
+  lr.events = events;
+  lr.eventIndex = 0;
+}
+
+function initLongRace(compoundId){
+  var lr = state.longRace;
+
+  var myPersonIds = state.pilotos.map(function(p){ return p.personId; });
+  var rivalsRoster = state.season ? state.season.rivals : buildRivalPool(10, myPersonIds);
+  lr.rivalsRoster = rivalsRoster;
+
+  var fullField = buildFieldBase(rivalsRoster);
+  var wetSum = 0;
+  for(var i=0;i<lr.weather.segCount;i++){ wetSum += lr.weather.actualWet[i]; }
+  var avgWet = (wetSum/lr.weather.segCount)/100;
+  var varBoost = 1 + avgWet*0.5;
+  lr.rivalField = resolveRivalsOnly(fullField.filter(function(d){ return !d.mine; }), lr.totalLaps, varBoost);
+  lr.mineField = fullField.filter(function(d){ return d.mine; });
+
+  // pontua os pilotos do jogador com a MESMA fórmula usada pros rivais (computeScore, que já
+  // pesa velocidade/consistência/agressividade do piloto + potência/confiabilidade do motor +
+  // scoreMult do chefe) — sem isso, a qualidade do que você contratou no draft não influenciava
+  // quase nada o ritmo na corrida longa, só o pneu, o que deixava a IA parecer imbatível mesmo
+  // com uma equipe muito melhor contratada
+  lr.mineField.forEach(function(d){ d.score = computeScore(d); });
+  var finisherScores = lr.rivalField.filter(function(d){ return !d.dnf; }).map(function(d){ return d.score; });
+  var allScores = finisherScores.concat(lr.mineField.map(function(d){ return d.score; }));
+  var minS = allScores.length ? Math.min.apply(null, allScores) : 0;
+  var maxS = allScores.length ? Math.max.apply(null, allScores) : 1;
+  var palette = ['#5aa9e6','#c792ea','#67d8b0','#f2a65a','#ef7a85','#8a94a6','#d4b483','#7fb3ff','#e8a0bf','#8fd694'];
+  var laneOffsets = [-8,-5,-2,2,5,8];
+  // companheiros de equipe reais (mesmo pairKey) compartilham a cor da bolinha, pra ficar visível
+  // na pista/tempo ao vivo que os dois correm pela mesma equipe
+  var pairColors = {}, pairColorIdx = 0;
+  lr.rivalField.forEach(function(d,i){
+    var norm = (d.score-minS)/((maxS-minS)||1);
+    d._paceFactor = 0.85 + Math.max(0,Math.min(1,norm))*0.30;
+    d._lane = laneOffsets[i%laneOffsets.length];
+    var key = d.pairKey || ('solo_'+i);
+    if(!pairColors[key]){ pairColors[key] = palette[pairColorIdx%palette.length]; pairColorIdx++; }
+    d._color = pairColors[key];
+    d._progress = 0;
+    d._tireCompound = pickCompoundForConditions(lr.wetnessNow);
+    d._tireLaps = 0;
+    // a parada tem que fazer sentido com o pneu escolhido — perto do fim da vida útil do
+    // composto (com uma variação de estratégia), não um número solto sem relação com o pneu
+    var tireLife = tireLifeLaps(tireById(d._tireCompound));
+    var idealPitLap = Math.round(tireLife * rand(0.8, 1.15));
+    var pitChance = idealPitLap < lr.totalLaps-1 ? 0.85 : 0.25; // pneu que aguenta a prova toda: raramente para
+    d._pitLap = Math.random()<pitChance ? Math.min(lr.totalLaps-1, Math.max(2, idealPitLap)) : null;
+    if(d._pitLap){
+      var rivalTeamSkill = rand(45,92); // competência genérica da equipe rival nos boxes
+      var pitRoll = rollPitStop(rivalTeamSkill);
+      d._pitStopMs = pitRoll.ms;
+      d._pitStopProblem = pitRoll.problem;
+    }
+  });
+  var startPace = tirePaceFactor(compoundId, lr.wetnessNow, 0);
+  lr.mineField.forEach(function(d,i){
+    d._mineIdx = i;
+    d._lane = [-3,3][i%2];
+    d._color = i===0 ? '#ff7a29' : '#ffb15c';
+    d._progress = 0;
+    // mesma escala 0.85x..1.15x dos rivais, comparando o score do piloto contra o campo inteiro
+    // (rivais + os 2 seus) — uma equipe bem contratada agora realmente compensa
+    var norm = (d.score-minS)/((maxS-minS)||1);
+    d._driverMult = 0.85 + Math.max(0,Math.min(1,norm))*0.30;
+    d._paceFactor = startPace * d._driverMult;
+    // cada piloto tem seu próprio pneu e sua própria janela de pit — um não precisa esperar o
+    // outro chegar nos boxes pra trocar (independente de verdade, não só visual)
+    d._tireCompound = compoundId;
+    d._tireLaps = 0;
+    d._tireWarnStage = 0;
+    d._pitStops = 0;
+    d._pitPhase = null;
+    // mesmo risco de abandono mecânico que os rivais têm, baseado na confiabilidade do motor —
+    // sem isso, uma equipe bem contratada nunca corria risco nenhum e ganhava quase sempre
+    d.dnf = Math.random() < (100-d.confiab)*0.004;
+    if(d.dnf) d._dnfLap = Math.max(1, Math.round(rand(1, Math.max(1,lr.totalLaps-2))));
+  });
+
+  // id estável por carro (não muda quando a ordem da tabela de tempos muda), usado pra mover
+  // as linhas da tabela em vez de recriá-las toda hora
+  lr.rivalField.concat(lr.mineField).forEach(function(d,i){ d._stableIdx = i; });
+
+  precomputeLongRaceEvents(lr);
+
+  lr.history.push({icon:WEATHER_COND_ICON[lr.weatherCondNow], title:'Largada', text:'Pista '+trackConditionLabel(lr.wetnessNow)+' ('+WEATHER_COND_LABEL[lr.weatherCondNow].toLowerCase()+', '+Math.round(lr.wetnessNow)+'% de umidade). Você larga com pneus '+tireName(compoundId)+'.'});
+
+  state.screen = 'longrace';
+  render();
+}
+
+function logLongRaceEvent(entry, silent){
+  var lr = state.longRace;
+  lr.history.push(entry);
+  if(silent) appendHistoryCard(entry);
+}
+
+function appendHistoryCard(entry){
+  var board = document.getElementById('gpm-lr-feed');
+  if(!board) return;
+  var card = el('<div class="hl-card" style="opacity:1;transform:none;animation:none;"><div class="hl-icon">'+entry.icon+'</div><div class="hl-body"><div class="hl-title">'+entry.title+'</div><div class="hl-text">'+entry.text+'</div></div></div>');
+  board.insertBefore(card, board.firstChild);
+}
+
+// desgasta o pneu de cada rival em 1 volta; quando cruza a volta do pit stop dele, troca o composto
+// E aplica o custo real de tempo da parada (mesmo sorteio de sorte+competência usado pro jogador)
+function advanceRivalTiresOneLap(lr, lap){
+  lr.rivalField.forEach(function(d){
+    if(d.dnf && lap>=d._dnfLap) return;
+    if(d._pitLap===lap){
+      d._tireCompound = pickCompoundForConditions(wetnessAtSegment(lr, lap));
+      d._tireLaps = 0;
+      if(d._pitStopMs){
+        d._progress -= (d._pitStopMs/1000)/LR_LAP_SECONDS;
+        if(d._liveProgress!=null) d._liveProgress = d._progress;
+      }
+    } else {
+      d._tireLaps++;
+    }
+  });
+}
+
+function refreshLongRaceStatus(){
+  var lr = state.longRace;
+  var w = document.getElementById('gpm-lr-weather'); if(w) w.textContent = weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow);
+  lr.mineField.forEach(function(d,i){
+    var t = document.getElementById('gpm-lr-tire-'+i); if(t) t.textContent = tireName(d._tireCompound);
+    var tl = document.getElementById('gpm-lr-tirelaps-'+i); if(tl) tl.textContent = Math.floor(d._tireLaps);
+    var ps = document.getElementById('gpm-lr-pitstops-'+i); if(ps) ps.textContent = d._pitStops||0;
+  });
+  // o popup de previsão fica aberto entre voltas — se não atualizar aqui, ele trava mostrando
+  // o clima da volta em que foi aberto mesmo enquanto o resto da tela já avançou
+  var wp = document.getElementById('gpm-lr-weather-popup');
+  if(wp) wp.innerHTML = weatherTimelineHtml(lr);
+  var histCount = document.getElementById('gpm-lr-hist-count');
+  if(histCount) histCount.textContent = lr.history.length;
+  refreshPitButtonVisibility();
+}
+
+// mantém o botão de pit voluntário em sincronia sem precisar de um render() completo — como cada
+// piloto pode terminar o pit em momentos diferentes, o botão pode voltar a ficar disponível no
+// meio de uma volta, não só nos pontos em que a tela inteira é reconstruída
+function refreshPitButtonVisibility(){
+  var lr = state.longRace;
+  if(!lr) return;
+  var btn = document.getElementById('gpm-lr-pitbtn-top');
+  if(!btn) return;
+  var canPit = lr.started && !lr.finished && !lr.pendingDecision && !lr.mineField.some(function(d){ return d._pitPhase; });
+  btn.style.display = canPit ? 'inline-flex' : 'none';
+}
+
+// aplica um evento já vencido; devolve true se ele pausa a corrida (decisão do jogador)
+function applyLongRaceEvent(ev){
+  var lr = state.longRace;
+  if(ev.type==='wetness'){
+    lr.wetnessNow = ev.wetPct;
+    lr.weatherCondNow = ev.cond;
+    if(ev.pause){
+      logLongRaceEvent({icon:WEATHER_COND_ICON[ev.cond], title:'Mudança de clima', text:'Agora está '+WEATHER_COND_LABEL[ev.cond].toLowerCase()+' — pista com '+Math.round(ev.wetPct)+'% de umidade.'});
+      lr.pendingDecision = {type:'weather'};
+      return true;
+    }
+    refreshLongRaceStatus();
+    return false;
+  }
+  if(ev.type==='dnf'){
+    logLongRaceEvent({icon:'💥', title:'Abandono', text:shortName(ev.driver.driverName)+' ('+ev.driver.team+') parou na pista.'}, true);
+    if(ev.caution){
+      logLongRaceEvent(cautionLogEntry(ev.caution));
+      enterSafetyCar(ev.caution, ev.lap);
+    }
+    return false;
+  }
+  if(ev.type==='incident'){
+    if(ev.caution){
+      logLongRaceEvent({icon:'⚠️', title:'Incidente na pista', text:'Detritos na pista provocam neutralização.'});
+      logLongRaceEvent(cautionLogEntry(ev.caution));
+      enterSafetyCar(ev.caution, ev.lap);
+    }
+    return false;
+  }
+  if(ev.type==='sc_end'){
+    // safety car de verdade agrupa o pelotão atrás do carro de segurança; VSC só reduz o ritmo
+    // geral e mantém as distâncias — ninguém pode fechar ou abrir gap livremente, mas não cola
+    if(ev.caution==='sc') bunchField(lr);
+    lr.safetyCar = null;
+    lr.pendingDecision = {type:ev.caution};
+    return true;
+  }
+  return false;
+}
+
+// o safety car/VSC fica na pista por pelo menos 1 volta antes de oferecer a janela de pit stop —
+// insere um evento sintético que fecha essa volta, e enquanto isso mostra o aviso na tela
+function enterSafetyCar(caution, atLap){
+  var lr = state.longRace;
+  lr.safetyCar = {type:caution};
+  var banner = document.getElementById('gpm-lr-sc-banner');
+  if(banner){
+    banner.style.display = 'block';
+    banner.textContent = caution==='sc' ? '🚨 SAFETY CAR NA PISTA — o pelotão está se agrupando' : '🟡 VIRTUAL SAFETY CAR NA PISTA — ritmo reduzido, sem ultrapassagens';
+  }
+  var endLap = Math.min(lr.totalLaps, atLap+1);
+  lr.events.push({lap:endLap, type:'sc_end', caution:caution});
+  lr.events.sort(function(a,b){ return a.lap-b.lap; });
+}
+
+// o safety car neutraliza a corrida: todo mundo se agrupa numa fila com distância mínima,
+// mantendo a ordem mas zerando os gaps que tinham se formado até ali
+function bunchField(lr){
+  var cars = lr.rivalField.concat(lr.mineField).filter(function(d){ return !(d.dnf && d._progress>=d._dnfLap-1e-9); });
+  cars.sort(function(a,b){ return b._progress - a._progress; });
+  var leadProgress = cars.length ? cars[0]._progress : 0;
+  var gap = 0.02; // fração mínima de volta entre um carro e o próximo, todos colados atrás do safety car
+  cars.forEach(function(d,i){
+    d._progress = leadProgress - i*gap;
+    d._liveProgress = d._progress;
+  });
+}
+
+function processLongRaceEvents(){
+  var lr = state.longRace;
+  while(lr.eventIndex < lr.events.length && lr.events[lr.eventIndex].lap<=lr.lap){
+    var ev = lr.events[lr.eventIndex];
+    lr.eventIndex++;
+    if(applyLongRaceEvent(ev)){ render(); return; }
+  }
+  if(lr.lap>=lr.totalLaps){ finalizeLongRace(); }
+  else { runLongRaceSegment(); }
+}
+
+function lrCarPosition(trackData, distance, lane){
+  var pt = trackPointAt(trackData, distance);
+  var pt2 = trackPointAt(trackData, distance+1.2);
+  var dx = pt2.x-pt.x, dy = pt2.y-pt.y;
+  var mag = Math.sqrt(dx*dx+dy*dy) || 1;
+  var nx = -dy/mag, ny = dx/mag;
+  return { x: pt.x+nx*lane, y: pt.y+ny*lane };
+}
+
+// os boxes ficam na reta principal (o trecho onde a volta começa, distância 0), afastados da pista
+function pitBoxPosition(track){
+  var pt = trackPointAt(track.trackData, 0);
+  var pt2 = trackPointAt(track.trackData, 4);
+  var dx = pt2.x-pt.x, dy = pt2.y-pt.y;
+  var mag = Math.sqrt(dx*dx+dy*dy) || 1;
+  var nx = -dy/mag, ny = dx/mag;
+  return { x: pt.x+nx*20, y: pt.y+ny*20 };
+}
+
+function pitLaneMarkup(track){
+  var pit = pitBoxPosition(track);
+  return '<rect x="'+(pit.x-14).toFixed(1)+'" y="'+(pit.y-6).toFixed(1)+'" width="28" height="12" rx="2" fill="#2b303c" stroke="#ffd23f" stroke-width="1" opacity="0.9"/>'+
+    '<text x="'+pit.x.toFixed(1)+'" y="'+(pit.y+3.2).toFixed(1)+'" font-size="6" fill="#ffd23f" text-anchor="middle" font-family="Rajdhani,sans-serif" font-weight="700">PIT</text>';
+}
+
+// sorteia a duração da parada e entra na fase "aproximando dos boxes" (o carro termina a volta
+// atual normalmente pela pista até chegar na entrada do pit) — cada piloto chama isso
+// independentemente do outro, então um não fica esperando o outro chegar pra trocar de pneu
+function startMinePitApproach(d, compoundId){
+  var lr = state.longRace;
+  var myPaceFactor = tirePaceFactor(d._tireCompound, lr.wetnessNow, d._tireLaps);
+  var cautionMult = lr.safetyCar ? 0.55 : 1;
+  var segPace = myPaceFactor * (d._driverMult||1) * cautionMult;
+  var basePaceLapsPerMs = 1/(LR_LAP_SECONDS*1000);
+  var start = d._progress||0;
+  var target = Math.ceil(start - 1e-6);
+  var distLaps = Math.max(0, target-start);
+  d._pitPhase = 'approach';
+  d._pitApproach = { compound:compoundId, start:start, target:target, segPace:segPace, elapsedMs:0, requiredMs:Math.max(300, distLaps/(segPace*basePaceLapsPerMs)) };
+}
+
+// avança um carro do jogador em dtUniverse ms: corrida normal, ou uma das duas fases do pit stop
+// (aproximação até a entrada do box, depois parado trocando pneu) — sempre no próprio ritmo,
+// nunca esperando o outro piloto da equipe
+function advanceMineCar(d, dtUniverse, track, cautionMult){
+  var lr = state.longRace;
+  var basePaceLapsPerMs = 1/(LR_LAP_SECONDS*1000);
+  var elx = document.getElementById(d._elId);
+
+  if(d.dnf && d._progress >= d._dnfLap-1e-9){
+    if(!d._dnfLogged){
+      d._dnfLogged = true;
+      logLongRaceEvent({icon:'💥', title:'Abandono', text:shortName(d.driverName)+': problema mecânico tirou o carro da corrida.'}, true);
+      refreshPitButtonVisibility();
+    }
+    d._liveProgress = d._progress;
+    return;
+  }
+
+  if(d._pitPhase==='approach'){
+    var pa = d._pitApproach;
+    pa.elapsedMs = Math.min(pa.elapsedMs + dtUniverse, pa.requiredMs);
+    var liveProgress = Math.min(pa.target, pa.start + pa.elapsedMs*basePaceLapsPerMs*pa.segPace);
+    d._progress = liveProgress; d._liveProgress = liveProgress;
+    var remainLaps = pa.target - liveProgress;
+    var dist = remainLaps<1e-9 ? 0 : (liveProgress%1)*track.trackData.total;
+    var pos = lrCarPosition(track.trackData, dist, d._lane||0);
+    if(remainLaps < 0.06){
+      var blend = 1 - Math.max(0,remainLaps)/0.06;
+      var pit = pitBoxPosition(track);
+      pos = { x: pos.x+(pit.x-pos.x)*blend, y: pos.y+(pit.y-pos.y)*blend };
+    }
+    if(elx) elx.setAttribute('transform', 'translate('+pos.x.toFixed(2)+','+pos.y.toFixed(2)+')');
+    if(pa.elapsedMs >= pa.requiredMs){
+      d._progress = pa.target; d._liveProgress = pa.target;
+      var chefeSkill = (state.chefe && state.chefe.estrategia!=null) ? state.chefe.estrategia : 70;
+      var roll = rollPitStop(chefeSkill);
+      d._pitPhase = 'timer';
+      d._pitTimer = { compound:pa.compound, elapsedMs:0, requiredMs:roll.ms, problem:roll.problem, message:roll.message };
+      d._pitApproach = null;
+
+      // troca a fase mostrada no card sem precisar de um render() completo (que poderia derrubar
+      // o loop de animação em andamento)
+      var titleEl = document.getElementById('gpm-lr-pit-title-'+d._mineIdx);
+      if(titleEl) titleEl.textContent = '🔧 '+shortName(d.driverName)+': troca de pneus em andamento';
+      var approachEl = document.getElementById('gpm-lr-pit-approach-'+d._mineIdx);
+      if(approachEl) approachEl.style.display = 'none';
+      var timerWrapEl = document.getElementById('gpm-lr-pit-timerwrap-'+d._mineIdx);
+      if(timerWrapEl) timerWrapEl.style.display = 'block';
+      var trackWrapEl = document.getElementById('gpm-lr-pit-trackwrap-'+d._mineIdx);
+      if(trackWrapEl) trackWrapEl.style.display = 'block';
+      var reqEl = document.getElementById('gpm-lr-pit-req-'+d._mineIdx);
+      if(reqEl) reqEl.textContent = 'de '+(d._pitTimer.requiredMs/1000).toFixed(1)+'s necessários';
+      if(d._pitTimer.problem){
+        var probEl = document.getElementById('gpm-lr-pit-problem-'+d._mineIdx);
+        if(probEl){ probEl.style.display = 'block'; probEl.textContent = '⚠️ '+d._pitTimer.message+' — a equipe está perdendo tempo extra nesta parada.'; }
+      }
+    }
+    return;
+  }
+
+  if(d._pitPhase==='timer'){
+    var pt = d._pitTimer;
+    pt.elapsedMs = Math.min(pt.elapsedMs + dtUniverse, pt.requiredMs);
+    var pit2 = pitBoxPosition(track);
+    if(elx) elx.setAttribute('transform', 'translate('+pit2.x.toFixed(2)+','+pit2.y.toFixed(2)+')');
+    var elapsedEl = document.getElementById('gpm-lr-pit-elapsed-'+d._mineIdx);
+    if(elapsedEl) elapsedEl.textContent = (pt.elapsedMs/1000).toFixed(1)+'s';
+    var fillEl = document.getElementById('gpm-lr-pit-fill-'+d._mineIdx);
+    if(fillEl) fillEl.style.width = Math.min(100, (pt.elapsedMs/pt.requiredMs)*100)+'%';
+    if(pt.elapsedMs >= pt.requiredMs){
+      d._tireCompound = pt.compound;
+      d._tireLaps = 0;
+      d._tireWarnStage = 0;
+      d._pitStops = (d._pitStops||0)+1;
+      var secs = (pt.requiredMs/1000).toFixed(1);
+      var text = shortName(d.driverName)+': parada de '+secs+'s concluída. Trocou para pneus '+tireName(pt.compound)+'.';
+      text += pt.problem ? ' ⚠️ Problema na parada: '+pt.message+' — tempo extra perdido.' : ' Troca rápida e limpa.';
+      logLongRaceEvent({icon: pt.problem ? '⚠️' : '🔧', title:'Pit stop', text:text}, true);
+      d._pitPhase = null;
+      d._pitTimer = null;
+      var panelEl = document.getElementById('gpm-lr-pitpanel-'+d._mineIdx);
+      if(panelEl) panelEl.style.display = 'none';
+      // esconde o card de posição/previsão que acompanha o pit quando NENHUM piloto está mais parando
+      if(!lr.mineField.some(function(x){ return x._pitPhase; })){
+        var pitFcEl = document.getElementById('gpm-lr-pitfc');
+        if(pitFcEl) pitFcEl.style.display = 'none';
+      }
+      refreshLongRaceStatus();
+      refreshPitButtonVisibility();
+    }
+    return;
+  }
+
+  var myPaceFactor = tirePaceFactor(d._tireCompound, lr.wetnessNow, d._tireLaps);
+  d._segPace = myPaceFactor * (d._driverMult||1) * cautionMult;
+  var lapsGained = dtUniverse*basePaceLapsPerMs;
+  var next = d._progress + lapsGained*d._segPace;
+  d._progress = next; d._liveProgress = next;
+  d._tireLaps += lapsGained;
+  checkTireWearWarning(d);
+  var dist2 = next * track.trackData.total;
+  var pos2 = lrCarPosition(track.trackData, dist2, d._lane||0);
+  if(elx) elx.setAttribute('transform', 'translate('+pos2.x.toFixed(2)+','+pos2.y.toFixed(2)+')');
+}
+
+// avisa o jogador quando o pneu de um piloto começa a cair de rendimento, e de novo quando já
+// está bem prejudicado — cada aviso dispara só uma vez por jogo de pneu (reseta ao trocar).
+// além de ficar no histórico, entra numa fila de popup que o jogador precisa confirmar (OK),
+// senão passava despercebido dentro do histórico recolhido
+function checkTireWearWarning(d){
+  var wearPct = tireWearPct(d._tireCompound, d._tireLaps);
+  if((d._tireWarnStage||0) < 1 && wearPct >= 55){
+    d._tireWarnStage = 1;
+    var text1 = shortName(d.driverName)+': o pneu '+tireName(d._tireCompound)+' já está com '+wearPct+'% de desgaste e começando a perder ritmo.';
+    logLongRaceEvent({icon:'📉', title:'Pneu perdendo desempenho', text:text1}, true);
+    queueTireAlert(text1);
+  }
+  if((d._tireWarnStage||0) < 2 && wearPct >= 88){
+    d._tireWarnStage = 2;
+    var text2 = shortName(d.driverName)+': o pneu '+tireName(d._tireCompound)+' está com '+wearPct+'% de desgaste — o desempenho já caiu bastante, considere parar nos boxes.';
+    logLongRaceEvent({icon:'🚨', title:'Pneu bem prejudicado', text:text2}, true);
+    queueTireAlert(text2);
+  }
+}
+
+function queueTireAlert(text){
+  var lr = state.longRace;
+  lr.tireAlertQueue.push(text);
+  showNextTireAlert();
+}
+
+function showNextTireAlert(){
+  var lr = state.longRace;
+  var banner = document.getElementById('gpm-lr-tire-alert');
+  if(!banner || lr.activeTireAlert || !lr.tireAlertQueue.length) return;
+  lr.activeTireAlert = lr.tireAlertQueue.shift();
+  var textEl = document.getElementById('gpm-lr-tire-alert-text');
+  if(textEl) textEl.textContent = '⚠️ '+lr.activeTireAlert;
+  banner.style.display = 'flex';
+}
+
+function dismissTireAlert(){
+  var lr = state.longRace;
+  var banner = document.getElementById('gpm-lr-tire-alert');
+  if(banner) banner.style.display = 'none';
+  lr.activeTireAlert = null;
+  showNextTireAlert();
+}
+
+// anima suavemente (requestAnimationFrame) do fim da última volta processada até a volta do próximo evento.
+// os carros do jogador avançam à parte (advanceMineCar), continuamente, mesmo durante um pit stop —
+// a corrida (rivais, clima, eventos) nunca fica pausada esperando o pit terminar
+function runLongRaceSegment(){
+  var lr = state.longRace;
+  if(!lr || state.screen!=='longrace') return;
+  if(lr.lap>=lr.totalLaps){ finalizeLongRace(); return; }
+
+  var nextEv = lr.events[lr.eventIndex];
+  var targetLap = nextEv ? Math.min(nextEv.lap, lr.totalLaps) : lr.totalLaps;
+  if(targetLap<=lr.lap) targetLap = Math.min(lr.lap+1, lr.totalLaps);
+
+  var track = getActiveTrack();
+  var fromLap = lr.lap;
+  var lapsToRun = targetLap - fromLap;
+
+  // sob safety car/VSC todo mundo reduz o ritmo igual — mantém as distâncias relativas (VSC) ou
+  // deixa o pelotão se aproximar naturalmente antes do agrupamento no fim da volta (SC)
+  var cautionMult = lr.safetyCar ? 0.55 : 1;
+  lr.rivalField.forEach(function(d){ d._segPace = rivalTirePace(d, lr.wetnessNow) * cautionMult; });
+
+  var basePaceLapsPerMs = 1/(LR_LAP_SECONDS*1000);
+  var segDuration = lapsToRun/basePaceLapsPerMs; // ms "de universo" (não de relógio real)
+  var elapsed = 0, lastTs = null;
+
+  function frame(ts){
+    if(lastTs===null) lastTs = ts;
+    // se a aba ficou em segundo plano (ou travou um instante), o navegador pode pular vários
+    // segundos entre um frame e outro — sem esse limite, os carros do jogador (que avançam sem
+    // o teto do "elapsed" do segmento) disparavam muito à frente dos rivais nesse salto
+    var dtReal = Math.min(ts-lastTs, 250);
+    lastTs = ts;
+    var speed = state.raceSpeed||1;
+    var dtUniverse = dtReal*speed;
+    elapsed = Math.min(elapsed + dtUniverse, segDuration);
+    var fracLaps = elapsed*basePaceLapsPerMs;
+
+    lr.rivalField.forEach(function(d){
+      // usa o progresso já confirmado (não a volta do segmento) pra detectar o abandono na hora certa, mesmo em segmentos longos
+      if(d.dnf && d._progress >= d._dnfLap-1e-9){ d._liveProgress = d._progress; return; }
+      var live = d._progress + fracLaps*d._segPace;
+      if(d.dnf && live >= d._dnfLap) live = d._dnfLap;
+      d._liveProgress = live;
+      var dist = live * track.trackData.total;
+      var pos = lrCarPosition(track.trackData, dist, d._lane||0);
+      if(d._pitLap){
+        var curLapFloat = fromLap + fracLaps;
+        var pitDelta = Math.abs(curLapFloat - d._pitLap);
+        if(pitDelta < 0.35){
+          var blend = 1 - (pitDelta/0.35);
+          var pitPos = pitBoxPosition(track);
+          pos = { x: pos.x+(pitPos.x-pos.x)*blend, y: pos.y+(pitPos.y-pos.y)*blend };
+        }
+      }
+      var elc = document.getElementById(d._elId);
+      if(elc) elc.setAttribute('transform', 'translate('+pos.x.toFixed(2)+','+pos.y.toFixed(2)+')');
+    });
+
+    lr.mineField.forEach(function(d){ advanceMineCar(d, dtUniverse, track, cautionMult); });
+
+    updateTimingTower(lr);
+
+    var curLap = Math.min(targetLap, fromLap+Math.floor(fracLaps)+1);
+    lr.liveLap = curLap; // volta realmente exibida agora — pode estar à frente do lr.lap (que só
+    // avança quando o segmento atual termina de verdade), usado pra manter a previsão do tempo e
+    // uma parada voluntária no meio do segmento em sincronia com o que o jogador está vendo
+    lr.liveLapFloat = Math.min(targetLap, fromLap+fracLaps+1);
+    // o clima de verdade muda aos poucos ao longo da corrida, não pula de repente a cada 2 voltas
+    var lw = liveWetnessNow(lr);
+    lr.wetnessNow = lw.wetPct;
+    lr.weatherCondNow = lw.cond;
+    var lapBadge = document.getElementById('gpm-lr-lapbadge');
+    if(lapBadge) lapBadge.textContent = 'Volta '+curLap+'/'+lr.totalLaps;
+    refreshLongRaceStatus();
+
+    if(elapsed<segDuration){
+      lr.raceAnimFrame = requestAnimationFrame(frame);
+    } else {
+      lr.rivalField.forEach(function(d){
+        if(d.dnf && d._progress >= d._dnfLap-1e-9) return;
+        var newProgress = d._progress + lapsToRun*d._segPace;
+        if(d.dnf && newProgress > d._dnfLap) newProgress = d._dnfLap;
+        d._progress = newProgress;
+      });
+      for(var l=fromLap+1; l<=targetLap; l++){
+        advanceRivalTiresOneLap(lr, l);
+      }
+      lr.lap = targetLap;
+      refreshLongRaceStatus();
+      processLongRaceEvents();
+    }
+  }
+  lr.raceAnimFrame = requestAnimationFrame(frame);
+}
+
+function mountLongRaceFrame(){
+  var lr = state.longRace;
+  if(!lr || state.screen!=='longrace') return;
+  var carsGroup = document.getElementById('gpm-lr-cars');
+  if(!carsGroup) return;
+  var track = getActiveTrack();
+  var cars = lr.rivalField.concat(lr.mineField);
+  cars.forEach(function(d,i){
+    var id = 'gpm-lr-car-'+i;
+    d._elId = id;
+    var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('id', id);
+    var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r', d.mine ? 5.5 : 4.2);
+    c.setAttribute('fill', d._color);
+    c.setAttribute('stroke', d.mine ? '#fff' : 'rgba(0,0,0,.4)');
+    c.setAttribute('stroke-width', d.mine ? 1.4 : 0.8);
+    g.appendChild(c);
+    carsGroup.appendChild(g);
+    var dist = (d._progress||0) * track.trackData.total;
+    var pos = lrCarPosition(track.trackData, dist, d._lane||0);
+    g.setAttribute('transform', 'translate('+pos.x.toFixed(2)+','+pos.y.toFixed(2)+')');
+  });
+
+  mountLongRaceTiming();
+
+  if(lr.pendingDecision || lr.finished) return;
+  if(!lr.started){
+    runLongRaceLights();
+  } else {
+    runLongRaceSegment();
+  }
+}
+
+function mountLongRaceTiming(){
+  var lr = state.longRace;
+  var rows = document.getElementById('gpm-lr-timing-rows');
+  if(!rows) return;
+  rows.innerHTML = '';
+  var all = lr.rivalField.concat(lr.mineField);
+  all.forEach(function(d){
+    var idx = d._stableIdx;
+    var rowId = 'gpm-lr-tr-'+idx, gapId = 'gpm-lr-tg-'+idx, tireId = 'gpm-lr-tt-'+idx, posId = 'gpm-lr-tp-'+idx, pitId = 'gpm-lr-tpit-'+idx;
+    d._rowElId = rowId; d._gapElId = gapId; d._tireElId = tireId; d._posElId = posId; d._pitBadgeElId = pitId;
+    var tireHtml = tireBadgeHtml(d._tireCompound, Math.floor(d._tireLaps));
+    var row = el(
+      '<div class="timing-row'+(d.mine?' mine':'')+'" id="'+rowId+'">'+
+        '<div class="timing-pos" id="'+posId+'">·</div>'+
+        '<div class="timing-dot" style="background:'+d._color+';"></div>'+
+        '<div class="timing-name">'+timingLabel(d)+'<span class="timing-pit-badge" id="'+pitId+'" style="display:none;">🔧</span></div>'+
+        '<div class="timing-tire" id="'+tireId+'">'+tireHtml+'</div>'+
+        '<div class="timing-gap" id="'+gapId+'">GRID</div>'+
+      '</div>'
+    );
+    rows.appendChild(row);
+  });
+  updateTimingTower(lr);
+}
+
+// recalcula a ordem por progresso atual, reordena as linhas na tela (não só o texto do gap) e
+// atualiza o gap — sem isso a posição ficava travada na ordem do último mount enquanto o gap
+// exibido já refletia o progresso ao vivo, e as duas coisas se descolavam (bug reportado)
+function updateTimingTower(lr){
+  var rows = document.getElementById('gpm-lr-timing-rows');
+  if(!rows) return;
+  var all = lr.rivalField.concat(lr.mineField);
+  var ordered = all.slice().sort(function(a,b){
+    var pa = a._liveProgress!=null?a._liveProgress:(a._progress||0);
+    var pb = b._liveProgress!=null?b._liveProgress:(b._progress||0);
+    if(Math.abs(pa-pb)>1e-6) return pb-pa;
+    return (b._paceFactor||1) - (a._paceFactor||1);
+  });
+  lr.timingOrder = ordered;
+  var leaderLive = ordered.length ? (ordered[0]._liveProgress!=null ? ordered[0]._liveProgress : (ordered[0]._progress||0)) : 0;
+  ordered.forEach(function(d,i){
+    var rowEl = document.getElementById(d._rowElId);
+    if(rowEl) rows.appendChild(rowEl);
+    var posEl = document.getElementById(d._posElId);
+    if(posEl) posEl.textContent = (i+1);
+    var gapEl = document.getElementById(d._gapElId);
+    if(!gapEl) return;
+    var myLive = d._liveProgress!=null ? d._liveProgress : (d._progress||0);
+    var pitBadgeEl = document.getElementById(d._pitBadgeElId);
+    if(pitBadgeEl){
+      var inPit = false, pitTitle = '';
+      if(d.mine){
+        inPit = !!d._pitPhase;
+        pitTitle = d._pitPhase==='timer' ? 'Trocando pneus' : 'Entrando nos boxes';
+      } else if(d._pitLap!=null){
+        inPit = Math.abs(myLive - d._pitLap) < 0.35;
+        if(inPit) pitTitle = d._pitStopMs ? 'Nos boxes (~'+(d._pitStopMs/1000).toFixed(1)+'s)' : 'Nos boxes';
+      }
+      pitBadgeEl.style.display = inPit ? 'inline' : 'none';
+      if(inPit) pitBadgeEl.title = pitTitle;
+    }
+    var tireEl = document.getElementById(d._tireElId);
+    if(tireEl) tireEl.innerHTML = tireBadgeHtml(d._tireCompound, Math.floor(d._tireLaps));
+    var isDnfFrozen = d.dnf && myLive >= d._dnfLap-1e-6;
+    if(rowEl) rowEl.classList.toggle('dnf', !!isDnfFrozen);
+    if(isDnfFrozen){ gapEl.textContent = 'ABANDONOU'; return; }
+    if(i===0){ gapEl.textContent = 'LÍDER'; return; }
+    if(!lr.started){ gapEl.textContent = 'GRID'; return; }
+    var gapSecs = (leaderLive-myLive)*LR_LAP_SECONDS;
+    gapEl.textContent = gapSecs<0.05 ? 'LÍDER' : '+'+gapSecs.toFixed(1)+'s';
+  });
+}
+
+function runLongRaceLights(){
+  var lr = state.longRace;
+  var lights = [0,1,2,3,4].map(function(i){ return document.getElementById('gpm-lr-light-'+i); });
+  var status = document.getElementById('gpm-lr-gridstatus');
+  if(status) status.textContent = 'Formando o grid...';
+  var i = 0;
+  function step(){
+    if(i<5){
+      if(lights[i]) lights[i].classList.add('on');
+      i++;
+      state.raceTimers.push(setTimeout(step, 500));
+    } else {
+      if(status) status.textContent = 'LUZES ACESAS...';
+      var holdMs = 500 + Math.random()*700;
+      state.raceTimers.push(setTimeout(function(){
+        lr.started = true;
+        render();
+      }, holdMs));
+    }
+  }
+  step();
+}
+
+var PIT_PROBLEM_MESSAGES = [
+  'a porca de uma das rodas cruzou na hora de fechar',
+  'a chave de impacto engasgou num dos pneus',
+  'o macaco demorou pra descer',
+  'confusão na troca — um mecânico pegou o pneu errado primeiro',
+  'sinal verde atrasado, a equipe segurou o carro por precaução extra',
+  'o pneu novo não encaixou de primeira'
+];
+
+// sorteia a duração real da parada (a troca de pneu em si): sorte + competência da equipe influenciam
+// a chance de algo dar errado — acima de 3s conta como "problema" e ganha uma mensagem explicando o motivo
+function rollPitStop(teamSkill){
+  var skill = teamSkill!=null ? teamSkill : 70;
+  var problemChance = Math.max(0.06, 0.28 - skill*0.002);
+  if(Math.random() < problemChance){
+    return { ms: Math.round(rand(3100,7000)), problem:true, message: PIT_PROBLEM_MESSAGES[Math.floor(Math.random()*PIT_PROBLEM_MESSAGES.length)] };
+  }
+  return { ms: Math.round(rand(1800,2900)), problem:false, message:null };
+}
+
+// aplica a decisão de parar (ou não) — quando decide parar, cada carro do jogador entra na fase
+// de aproximação de forma independente, e a corrida (rivais/clima/eventos) continua rolando
+// normalmente por trás, sem pausar esperando o pit terminar
+function resolveDecision(pit, compoundId){
+  var lr = state.longRace;
+  lr.pendingDecision = null;
+  if(pit){
+    // se um piloto já estiver no meio de outro pit (raro: uma decisão forçada caiu bem na hora
+    // de um pit voluntário), não reinicia a aproximação dele — deixa terminar o que já começou
+    lr.mineField.forEach(function(d){ if(!d._pitPhase && !d.dnf) startMinePitApproach(d, compoundId); });
+    render();
+  } else {
+    lr.history.push({icon:'🚦', title:'Sem parada', text:'Você decidiu seguir na pista sem parar.'});
+    render();
+  }
+}
+
+// permite pedir uma parada nos boxes a qualquer momento, mesmo sem safety car/VSC/mudança de clima
+function requestVoluntaryPit(){
+  var lr = state.longRace;
+  if(!lr || lr.pendingDecision || lr.finished || !lr.started || lr.lap>=lr.totalLaps) return;
+  if(lr.mineField.some(function(d){ return d._pitPhase; })) return;
+  if(lr.raceAnimFrame){ cancelAnimationFrame(lr.raceAnimFrame); lr.raceAnimFrame=null; }
+  var cars = lr.rivalField.concat(lr.mineField);
+  cars.forEach(function(d){ if(d._liveProgress!=null){ d._progress = d._liveProgress; } });
+  // lr.lap só avança quando o segmento atual termina de verdade — como a corrida foi
+  // interrompida no meio de um (até 2 voltas de antecedência), sem isso a volta "recuava" pro
+  // início do segmento quando a corrida retomasse depois da decisão. Alcança a volta que já
+  // estava sendo exibida, aplicando o desgaste/pit dos rivais das voltas puladas no caminho
+  if(lr.liveLap!=null){
+    var caughtUpLap = Math.min(lr.liveLap-1, lr.totalLaps);
+    if(caughtUpLap > lr.lap){
+      for(var l=lr.lap+1; l<=caughtUpLap; l++){ advanceRivalTiresOneLap(lr, l); }
+      lr.lap = caughtUpLap;
+    }
+  }
+  lr.pendingDecision = {type:'voluntary'};
+  render();
+}
+
+// o resultado final tem que refletir o que a simulação ao vivo mostrou — por isso a posição de
+// cada carro vem do progresso (_progress) realmente acumulado na corrida, não de um sorteio à parte
+function finalizeLongRace(){
+  var lr = state.longRace;
+  if(lr.raceAnimFrame){ cancelAnimationFrame(lr.raceAnimFrame); lr.raceAnimFrame=null; }
+  lr.safetyCar = null;
+
+  var field = lr.mineField.concat(lr.rivalField);
+  field.forEach(function(d){ d._finalProgress = d._progress||0; });
+  field.sort(function(a,b){
+    if(!!a.dnf !== !!b.dnf) return a.dnf ? 1 : -1;
+    if(a.dnf && b.dnf) return (b._dnfLap||0) - (a._dnfLap||0);
+    return b._finalProgress - a._finalProgress;
+  });
+
+  var pointsTable = [25,18,15,12,10,8,6,4,2,1];
+  var leaderProgress = field[0]._finalProgress;
+  field.forEach(function(d,i){
+    d.pos = i+1;
+    d.pts = d.dnf ? 0 : (pointsTable[i]||0);
+    d.gap = d.dnf ? 'ABANDONOU' : (d.pos===1 ? 'LÍDER' : '+'+((leaderProgress-d._finalProgress)*LR_LAP_SECONDS).toFixed(3)+'s');
+  });
+
+  state.results = field;
+  state.highlights = lr.history.slice();
+  lr.finished = true;
+
+  if(state.season){
+    applyStandings(field);
+    state.season.history.push({track:getActiveTrack(), results:field.slice(), highlights:lr.history.slice()});
+  }
+  state.screen = 'results';
+  render();
+}
+
+function skipLongRace(){
+  var lr = state.longRace;
+  if(lr.raceAnimFrame){ cancelAnimationFrame(lr.raceAnimFrame); lr.raceAnimFrame=null; }
+  lr.pendingDecision = null;
+  lr.mineField.forEach(function(d){ d._pitPhase = null; d._pitApproach = null; d._pitTimer = null; });
+  // pular a corrida não simula pit stops (eles dependem de decisão do jogador) — cada carro do
+  // jogador só avança normal no pneu que já estava usando, sem custo de tempo
+  for(var l=lr.lap+1; l<=lr.totalLaps; l++){
+    while(lr.eventIndex<lr.events.length && lr.events[lr.eventIndex].lap<=l){
+      var ev = lr.events[lr.eventIndex]; lr.eventIndex++;
+      if(ev.type==='wetness'){ lr.wetnessNow = ev.wetPct; lr.weatherCondNow = ev.cond; }
+    }
+    lr.mineField.forEach(function(d){
+      var myPaceFactor = tirePaceFactor(d._tireCompound, lr.wetnessNow, d._tireLaps);
+      d._progress += myPaceFactor * (d._driverMult||1);
+      d._tireLaps++;
+    });
+    lr.rivalField.forEach(function(d){
+      if(d.dnf && d._progress >= d._dnfLap-1e-9) return;
+      var next = d._progress + rivalTirePace(d, lr.wetnessNow);
+      if(d.dnf && next > d._dnfLap) next = d._dnfLap;
+      d._progress = next;
+    });
+    advanceRivalTiresOneLap(lr, l);
+  }
+  lr.lap = lr.totalLaps;
+  finalizeLongRace();
+}
+
+function renderLongRace(){
+  var wrap = el('<div></div>');
+  var lr = state.longRace;
+  var track = getActiveTrack();
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">'+track.flag+' '+track.name+' — <span id="gpm-lr-lapbadge">Volta '+lr.lap+'/'+lr.totalLaps+'</span></div>'+
+      '<h1>Corrida longa</h1>'+
+      '<div class="subtitle">Suas decisões de pneu e pit stop afetam o resultado.</div>'+
+    '</div>'
+  ));
+
+  wrap.appendChild(el('<div class="lr-sc-banner" id="gpm-lr-sc-banner" style="display:'+(lr.safetyCar?'block':'none')+';">'+(lr.safetyCar ? (lr.safetyCar.type==='sc' ? '🚨 SAFETY CAR NA PISTA — o pelotão está se agrupando' : '🟡 VIRTUAL SAFETY CAR NA PISTA — ritmo reduzido, sem ultrapassagens') : '')+'</div>'));
+
+  var tireAlertBox = el('<div class="lr-tire-alert" id="gpm-lr-tire-alert" style="display:'+(lr.activeTireAlert?'flex':'none')+';"><div id="gpm-lr-tire-alert-text">'+(lr.activeTireAlert?'⚠️ '+lr.activeTireAlert:'')+'</div><button type="button" class="btn">OK</button></div>');
+  tireAlertBox.querySelector('button').addEventListener('click', function(){ dismissTireAlert(); });
+  wrap.appendChild(tireAlertBox);
+
+  // controles agrupados numa faixa só (velocidade + pit voluntário), mais fácil de
+  // usar no celular do que espalhado pela tela inteira
+  var controls = el('<div class="lr-controls"></div>');
+  controls.appendChild(el(speedControlHtml()));
+  var canVoluntaryPit = lr.started && !lr.finished && !lr.pendingDecision && !lr.mineField.some(function(d){ return d._pitPhase; });
+  {
+    var pitBtnTop = el('<button type="button" class="btn ghost lr-ctrl-btn" id="gpm-lr-pitbtn-top" style="display:'+(canVoluntaryPit?'inline-flex':'none')+';">🔧 Pit stop</button>');
+    pitBtnTop.addEventListener('click', function(){ requestVoluntaryPit(); });
+    controls.appendChild(pitBtnTop);
+  }
+  wrap.appendChild(controls);
+  wireSpeedControl(controls);
+
+  // previsão do tempo fica sempre visível, sem precisar abrir/fechar
+  var weatherPopup = el('<div class="panel" id="gpm-lr-weather-popup"></div>');
+  weatherPopup.innerHTML = weatherTimelineHtml(lr);
+  wrap.appendChild(weatherPopup);
+
+  var layout = el('<div class="race-layout"></div>');
+  var trackCol = el('<div class="race-track-col"></div>');
+
+  if(!lr.started){
+    trackCol.appendChild(el(
+      '<div class="lights-gantry">'+
+        '<div class="light" id="gpm-lr-light-0"></div><div class="light" id="gpm-lr-light-1"></div>'+
+        '<div class="light" id="gpm-lr-light-2"></div><div class="light" id="gpm-lr-light-3"></div>'+
+        '<div class="light" id="gpm-lr-light-4"></div>'+
+      '</div>'
+    ));
+    trackCol.appendChild(el('<div class="grid-status" id="gpm-lr-gridstatus">Formando o grid...</div>'));
+  }
+
+  trackCol.appendChild(el(
+    '<div class="track-wrap" style="border-radius:'+(lr.started?'12px':'0 0 12px 12px')+';">'+
+      '<svg viewBox="0 0 520 300" preserveAspectRatio="xMidYMid meet">'+
+        '<path d="'+track.trackData.d+'" fill="none" stroke="#262b36" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>'+
+        '<path d="'+track.trackData.d+'" fill="none" stroke="#3a4150" stroke-width="1.5" stroke-dasharray="4 7" opacity=".6"/>'+
+        '<defs><pattern id="gpm-chk" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="3" height="3" fill="#eef0f3"/><rect x="3" width="3" height="3" fill="#20232b"/><rect y="3" width="3" height="3" fill="#20232b"/><rect x="3" y="3" width="3" height="3" fill="#eef0f3"/></pattern></defs>'+
+        startLineMarkup(track.trackData)+
+        pitLaneMarkup(track)+
+        '<g id="gpm-lr-cars"></g>'+
+      '</svg>'+
+    '</div>'
+  ));
+  trackCol.appendChild(el(
+    '<div class="legend"><span><span class="legend-dot" style="background:#ff7a29;"></span>Sua equipe</span><span><span class="legend-dot" style="background:#5aa9e6;"></span>Rivais</span></div>'
+  ));
+  layout.appendChild(trackCol);
+
+  var timingCol = el('<div class="race-timing-col"><div class="timing-tower"><div class="timing-title">Tempo ao vivo</div><div id="gpm-lr-timing-rows"></div></div></div>');
+  layout.appendChild(timingCol);
+
+  wrap.appendChild(layout);
+
+  var status = el('<div class="panel lr-status"></div>');
+  status.innerHTML =
+    '<div class="lr-stat"><div class="lr-stat-label">Clima</div><div class="lr-stat-val" id="gpm-lr-weather">'+weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow)+'</div></div>'+
+    lr.mineField.map(function(d,i){
+      return '<div class="lr-stat"><div class="lr-stat-label">'+shortName(d.driverName)+' — pneu</div><div class="lr-stat-val" id="gpm-lr-tire-'+i+'">'+tireName(d._tireCompound)+'</div></div>'+
+        '<div class="lr-stat"><div class="lr-stat-label">'+shortName(d.driverName)+' — voltas no pneu</div><div class="lr-stat-val" id="gpm-lr-tirelaps-'+i+'">'+Math.floor(d._tireLaps)+'</div></div>'+
+        '<div class="lr-stat"><div class="lr-stat-label">'+shortName(d.driverName)+' — pit stops</div><div class="lr-stat-val" id="gpm-lr-pitstops-'+i+'">'+(d._pitStops||0)+'</div></div>';
+    }).join('');
+  wrap.appendChild(status);
+
+  // cada piloto pode estar numa fase diferente do pit (ou fora dele) — mostra um card por piloto
+  // que estiver parando agora, sem ligar um ao andamento do outro
+  var pittingCars = lr.mineField.filter(function(d){ return d._pitPhase; });
+  if(pittingCars.length){
+    // marcação com placeholders estáveis pras duas fases — só alterna display/texto direto no DOM
+    // conforme o pit avança (advanceMineCar), sem precisar de um render() completo no meio da animação
+    pittingCars.forEach(function(d){
+      var idx = d._mineIdx;
+      var pt = d._pitTimer;
+      var pitPanel = el('<div class="panel lr-pit" id="gpm-lr-pitpanel-'+idx+'"></div>');
+      pitPanel.innerHTML =
+        '<div class="lr-decision-title" id="gpm-lr-pit-title-'+idx+'">🔧 '+shortName(d.driverName)+': '+(d._pitPhase==='timer'?'troca de pneus em andamento':'entrando nos boxes...')+'</div>'+
+        '<div class="lr-pit-approach" id="gpm-lr-pit-approach-'+idx+'" style="display:'+(d._pitPhase==='approach'?'block':'none')+';">O carro está chegando na zona do pit stop.</div>'+
+        '<div class="lr-pit-timer" id="gpm-lr-pit-timerwrap-'+idx+'" style="display:'+(d._pitPhase==='timer'?'block':'none')+';">'+
+          '<div class="lr-pit-time" id="gpm-lr-pit-elapsed-'+idx+'">0.0s</div>'+
+          '<div class="lr-pit-req" id="gpm-lr-pit-req-'+idx+'">de '+(pt?(pt.requiredMs/1000).toFixed(1):'0.0')+'s necessários</div>'+
+        '</div>'+
+        '<div class="lr-pit-track" id="gpm-lr-pit-trackwrap-'+idx+'" style="display:'+(d._pitPhase==='timer'?'block':'none')+';"><div class="lr-pit-fill" id="gpm-lr-pit-fill-'+idx+'" style="width:0%;"></div></div>'+
+        '<div class="lr-pit-problem" id="gpm-lr-pit-problem-'+idx+'" style="display:'+(pt&&pt.problem?'block':'none')+';">'+(pt&&pt.problem?('⚠️ '+pt.message+' — a equipe está perdendo tempo extra nesta parada.'):'')+'</div>';
+      wrap.appendChild(pitPanel);
+    });
+    var pitFc = el('<div class="panel" id="gpm-lr-pitfc"></div>');
+    pitFc.innerHTML = myStandingHtml(lr)+weatherTimelineHtml(lr);
+    wrap.appendChild(pitFc);
+  }
+  if(lr.pendingDecision){
+    var d = lr.pendingDecision;
+    var panel = el('<div class="panel lr-decision"></div>');
+    var title = d.type==='weather' ? '🌦️ O clima mudou' : d.type==='sc' ? '🚨 Safety Car!' : d.type==='voluntary' ? '🔧 Escolha o pneu' : '🟡 Virtual Safety Car';
+    var msg = d.type==='weather' ? 'A pista agora está com '+Math.round(lr.wetnessNow)+'% de umidade. Vale trocar de pneu?' : d.type==='voluntary' ? 'Escolha o composto para a parada.' : 'O ritmo de todo mundo caiu sob neutralização — ótima hora pra economizar tempo numa parada.';
+    panel.innerHTML = '<div class="lr-decision-title">'+title+'</div><div class="lr-decision-msg">'+msg+'</div>'+myStandingHtml(lr)+weatherTimelineHtml(lr);
+    var pitRow = el('<div class="cardgrid" style="margin-top:10px;"></div>');
+    var lapsLeft = Math.max(1, lr.totalLaps - lr.lap + 1);
+    TIRE_COMPOUNDS.forEach(function(t){
+      pitRow.appendChild(buildTireCard(t, lapsLeft, function(){ resolveDecision(true, t.id); }));
+    });
+    panel.appendChild(pitRow);
+    var stayBtn = el('<button class="btn ghost" style="margin-top:10px;width:100%;">'+(d.type==='voluntary'?'❌ Cancelar':'🚦 Continuar sem parar')+'</button>');
+    stayBtn.addEventListener('click', function(){ resolveDecision(false, null); });
+    panel.appendChild(stayBtn);
+    wrap.appendChild(panel);
+  }
+
+  var histWrap = el('<details class="panel"><summary>Histórico da corrida (<span id="gpm-lr-hist-count">'+lr.history.length+'</span>)</summary></details>');
+  var board = el('<div class="hl-board" id="gpm-lr-feed" style="margin-top:10px;"></div>');
+  board.innerHTML = highlightsHtml(lr.history.slice().reverse());
+  histWrap.appendChild(board);
+  wrap.appendChild(histWrap);
+
+  if(!lr.pendingDecision){
+    var skipbar = el('<div class="skipbar"><button class="btn ghost">Pular corrida longa</button></div>');
+    skipbar.querySelector('button').addEventListener('click', function(){ skipLongRace(); });
+    wrap.appendChild(skipbar);
+  }
+
+  setTimeout(function(){ mountLongRaceFrame(); }, 50);
+
+  return wrap;
+}
+
+function renderRace(){
+  var wrap = el('<div></div>');
+  var seasonActive = !!state.season;
+  var track = state.raceTrack;
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">'+(seasonActive? 'Corrida '+(state.season.trackIndex+1)+' de '+state.season.tracks.length+' — '+track.flag+' '+track.name : track.flag+' '+track.name)+'</div>'+
+      '<h1>Prontos para a largada</h1>'+
+      '<div class="subtitle">Acompanhe as luzes — seus carros aparecem em laranja.</div>'+
+    '</div>'
+  ));
+
+  wrap.appendChild(el(speedControlHtml()));
+  wireSpeedControl(wrap);
+
+  var layout = el('<div class="race-layout"></div>');
+  var trackCol = el('<div class="race-track-col"></div>');
+
+  trackCol.appendChild(el(
+    '<div class="lights-gantry">'+
+      '<div class="light" id="gpm-light-0"></div><div class="light" id="gpm-light-1"></div>'+
+      '<div class="light" id="gpm-light-2"></div><div class="light" id="gpm-light-3"></div>'+
+      '<div class="light" id="gpm-light-4"></div>'+
+    '</div>'
+  ));
+  trackCol.appendChild(el('<div class="grid-status" id="gpm-grid-status">Formando o grid...</div>'));
+
+  trackCol.appendChild(el(
+    '<div class="track-wrap">'+
+      '<svg id="gpm-track-svg" viewBox="0 0 520 300" preserveAspectRatio="xMidYMid meet">'+
+        '<defs>'+
+          '<pattern id="gpm-chk" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">'+
+            '<rect width="3" height="3" fill="#eef0f3"/><rect x="3" width="3" height="3" fill="#20232b"/>'+
+            '<rect y="3" width="3" height="3" fill="#20232b"/><rect x="3" y="3" width="3" height="3" fill="#eef0f3"/>'+
+          '</pattern>'+
+        '</defs>'+
+        '<path d="'+track.trackData.d+'" fill="none" stroke="#262b36" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>'+
+        '<path d="'+track.trackData.d+'" fill="none" stroke="#3a4150" stroke-width="1.5" stroke-dasharray="4 7" opacity=".6"/>'+
+        startLineMarkup(track.trackData)+
+        '<g id="gpm-cars"></g>'+
+      '</svg>'+
+    '</div>'
+  ));
+
+  trackCol.appendChild(el(
+    '<div class="legend"><span><span class="legend-dot" style="background:#ff7a29;"></span>Sua equipe</span><span><span class="legend-dot" style="background:#5aa9e6;"></span>Rivais</span><span id="gpm-lap-badge" style="font-family:\'Rajdhani\',sans-serif;font-weight:700;color:var(--accent-2);">Volta 0/'+TOTAL_LAPS+'</span></div>'
+  ));
+  trackCol.appendChild(el('<div class="toast" id="gpm-race-toast">Carros posicionando no grid...</div>'));
+
+  layout.appendChild(trackCol);
+
+  var timingCol = el('<div class="race-timing-col"><div class="timing-tower"><div class="timing-title">Tempo ao vivo</div><div id="gpm-timing-rows"></div></div></div>');
+  layout.appendChild(timingCol);
+
+  wrap.appendChild(layout);
+
+  var skipbar = el('<div class="skipbar"><button class="btn ghost">Pular simulação</button></div>');
+  skipbar.querySelector('button').addEventListener('click', function(){
+    clearRaceTimers();
+    state.screen='reveal';
+    render();
+  });
+  wrap.appendChild(skipbar);
+
+  setTimeout(function(){ initRaceSequence(); }, 100);
+
+  return wrap;
+}
+
+function shortName(fullName){
+  // pega apenas o sobrenome (ignora bandeira/emoji e apelidos entre aspas)
+  var cleaned = fullName.replace(/\p{Extended_Pictographic}/gu,'').replace(/"[^"]*"/g,'').trim();
+  var parts = cleaned.split(' ').filter(Boolean);
+  return parts.length ? parts[parts.length-1] : fullName;
+}
+
+// sobrenome + a temporada específica que o piloto está representando (a mesma pessoa pode
+// aparecer com atributos diferentes em anos diferentes) — ajuda a diferenciar no tempo ao vivo
+function timingLabel(d){
+  return shortName(d.driverName) + (d.year ? ' '+d.year : '');
+}
+
+function initRaceSequence(){
+  var carsGroup = document.getElementById('gpm-cars');
+  var timingRowsEl = document.getElementById('gpm-timing-rows');
+  if(!carsGroup || !timingRowsEl) return;
+
+  var field = state.results;
+  var finishers = field.filter(function(d){ return !d.dnf; });
+  var scores = finishers.map(function(d){ return d.score; });
+  var minS = Math.min.apply(null, scores), maxS = Math.max.apply(null, scores);
+  var laneOffsets = [-8,-5,-2,2,5,8];
+  var palette = ['#5aa9e6','#c792ea','#67d8b0','#f2a65a','#ef7a85','#8a94a6','#d4b483','#7fb3ff','#e8a0bf','#8fd694'];
+  var colorIdx = 0;
+  var gridGap = 13; // distância entre carros no grid de largada
+  // companheiros de equipe reais (mesmo pairKey) compartilham a cor da bolinha
+  var pairColors = {};
+
+  field.forEach(function(d,i){
+    d._lane = laneOffsets[i % laneOffsets.length];
+    if(d.mine){ d._color = '#ff7a29'; }
+    else {
+      var key = d.pairKey || ('solo_'+i);
+      if(!pairColors[key]){ pairColors[key] = palette[colorIdx % palette.length]; colorIdx++; }
+      d._color = pairColors[key];
+    }
+
+    // quanto melhor a posição no grid, mais rápido tende a ser (mas o resultado final já está decidido em state.results)
+    // clampado 0-1: sem isso, o score bem negativo de quem abandona (-9999) gerava um _paceFactor
+    // gigantesco e negativo, fazendo o carro "andar pra trás" pro resto da corrida em vez de travar no abandono
+    var norm = Math.max(0, Math.min(1, (d.score-minS)/((maxS-minS)||1)));
+    d._paceFactor = 0.85 + norm*0.30; // 0.85x .. 1.15x — varia bastante, sorte pura
+    d._gridOffset = -(i*gridGap);
+    if(d.dnf) d._dnfStopLap = rand(1, Math.max(1,TOTAL_LAPS-2));
+
+    var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('id','gpm-car-'+i);
+    var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r', d.mine ? 5.5 : 4.2);
+    c.setAttribute('fill', d._color);
+    c.setAttribute('stroke', d.mine ? '#fff' : 'rgba(0,0,0,.4)');
+    c.setAttribute('stroke-width', d.mine ? 1.4 : 0.8);
+    g.appendChild(c);
+    carsGroup.appendChild(g);
+    d._elId = 'gpm-car-'+i;
+
+    var row = el(
+      '<div class="timing-row'+(d.mine?' mine':'')+'" id="gpm-tr-'+i+'">'+
+        '<div class="timing-pos">'+(i+1)+'</div>'+
+        '<div class="timing-dot" style="background:'+d._color+';"></div>'+
+        '<div class="timing-name">'+timingLabel(d)+'</div>'+
+        '<div class="timing-gap" id="gpm-tg-'+i+'">'+(i===0?'GRID':'—')+'</div>'+
+      '</div>'
+    );
+    timingRowsEl.appendChild(row);
+    d._gapElId = 'gpm-tg-'+i;
+    d._rowElId = 'gpm-tr-'+i;
+  });
+
+  // posiciona os carros no grid (parados, formação real)
+  field.forEach(function(d){
+    placeCarAt(d, d._gridOffset);
+  });
+
+  var statusEl = document.getElementById('gpm-grid-status');
+  if(statusEl) statusEl.textContent = 'Grid formado — luzes acendendo...';
+  var toastEl = document.getElementById('gpm-race-toast');
+  if(toastEl) toastEl.textContent = 'Aguardando a largada...';
+
+  state.raceTimers.push(setTimeout(function(){ runLights(field); }, 900));
+}
+
+function placeCarAt(d, distance){
+  var trackData = state.raceTrack.trackData;
+  var pt = trackPointAt(trackData, distance);
+  var pt2 = trackPointAt(trackData, distance+1.2);
+  var dx = pt2.x-pt.x, dy = pt2.y-pt.y;
+  var mag = Math.sqrt(dx*dx+dy*dy) || 1;
+  var nx = -dy/mag, ny = dx/mag;
+  var x = pt.x + nx*d._lane;
+  var y = pt.y + ny*d._lane;
+  var g = document.getElementById(d._elId);
+  if(g) g.setAttribute('transform','translate('+x.toFixed(2)+','+y.toFixed(2)+')');
+}
+
+function runLights(field){
+  var lights = [0,1,2,3,4].map(function(i){ return document.getElementById('gpm-light-'+i); });
+  var i = 0;
+  function step(){
+    if(i<5){
+      if(lights[i]) lights[i].classList.add('on');
+      i++;
+      state.raceTimers.push(setTimeout(step, 620));
+    } else {
+      var holdMs = 700 + Math.random()*900;
+      state.raceTimers.push(setTimeout(function(){
+        lights.forEach(function(l){ if(l) l.classList.remove('on'); });
+        var statusEl = document.getElementById('gpm-grid-status');
+        if(statusEl) statusEl.textContent = 'LUZES APAGADAS — LARGADA!';
+        var toastEl = document.getElementById('gpm-race-toast');
+        if(toastEl) toastEl.textContent = 'Largada dada — a corrida está rolando...';
+        field.forEach(function(d){
+          var rowEl = document.getElementById(d._rowElId);
+          if(rowEl) rowEl.style.background = '';
+        });
+        startRaceAnim(field);
+      }, holdMs));
+    }
+  }
+  step();
+}
+
+function startRaceAnim(field){
+  var leader = field[0]; // sempre o primeiro do grid, pois posição no grid e ritmo seguem a mesma ordem
+  var basePaceLapsPerMs = 1/(LAP_SECONDS*1000);
+  var leaderPaceLapsPerMs = basePaceLapsPerMs*leader._paceFactor;
+  var raceDuration = TOTAL_LAPS/leaderPaceLapsPerMs; // ms "de universo" (não de relógio real)
+
+  var elapsed = 0, lastTs = null;
+  var finished = false;
+
+  function frame(ts){
+    if(lastTs===null) lastTs = ts;
+    var dtReal = ts-lastTs;
+    lastTs = ts;
+    var speed = state.raceSpeed||1;
+    elapsed = Math.min(elapsed + dtReal*speed, raceDuration);
+    if(elapsed>=raceDuration) finished = true;
+
+    var leaderLapsNow = (leaderPaceLapsPerMs*elapsed);
+
+    field.forEach(function(d){
+      var ownLapsCompleted = basePaceLapsPerMs*d._paceFactor*elapsed;
+      var lapsCompleted = d.dnf ? Math.min(ownLapsCompleted, d._dnfStopLap) : ownLapsCompleted;
+      var distance = d._gridOffset + lapsCompleted*state.raceTrack.trackData.total;
+      placeCarAt(d, distance);
+
+      var gapEl = document.getElementById(d._gapElId);
+      if(gapEl){
+        var hasStopped = d.dnf && lapsCompleted >= d._dnfStopLap - 1e-6;
+        if(hasStopped){
+          gapEl.textContent = 'ABANDONOU';
+          var rowEl = document.getElementById(d._rowElId);
+          if(rowEl) rowEl.classList.add('dnf');
+        } else if(d===leader){
+          gapEl.textContent = 'LÍDER';
+        } else {
+          var gapLaps = leaderLapsNow - lapsCompleted;
+          var gapSecs = gapLaps*LAP_SECONDS;
+          gapEl.textContent = gapSecs<0.05 ? 'LÍDER' : '+'+gapSecs.toFixed(1)+'s';
+        }
+      }
+    });
+
+    var lapBadge = document.getElementById('gpm-lap-badge');
+    if(lapBadge){
+      var curLap = Math.min(TOTAL_LAPS, Math.floor((elapsed/raceDuration)*TOTAL_LAPS)+1);
+      lapBadge.textContent = 'Volta '+curLap+'/'+TOTAL_LAPS;
+    }
+
+    var toastEl = document.getElementById('gpm-race-toast');
+    if(toastEl && !finished){
+      var frac = elapsed/raceDuration;
+      if(frac>0.85) toastEl.textContent = 'Últimos metros até a linha de chegada...';
+      else if(frac>0.4) toastEl.textContent = 'Corrida em andamento — briga acirrada!';
+    }
+
+    if(!finished){
+      state.raceAnimFrame = requestAnimationFrame(frame);
+    } else {
+      var lapBadge2 = document.getElementById('gpm-lap-badge');
+      if(lapBadge2) lapBadge2.textContent = 'Volta '+TOTAL_LAPS+'/'+TOTAL_LAPS;
+      if(toastEl) toastEl.textContent = 'Bandeira quadriculada — o líder cruzou a linha!';
+      var statusEl = document.getElementById('gpm-grid-status');
+      if(statusEl) statusEl.textContent = 'CORRIDA ENCERRADA';
+      state.raceTimers.push(setTimeout(function(){ state.screen='reveal'; render(); }, 1100));
+    }
+  }
+  state.raceAnimFrame = requestAnimationFrame(frame);
+}
+
+function renderHighlights(){
+  var wrap = el('<div></div>');
+  var track = state.season.tracks[state.season.trackIndex];
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Corrida '+(state.season.trackIndex+1)+' de '+state.season.tracks.length+' — '+track.flag+' '+track.name+'</div>'+
+      '<h1>Melhores momentos</h1>'+
+      '<div class="subtitle">A corrida rolou nos bastidores — aqui estão os destaques.</div>'+
+    '</div>'
+  ));
+
+  var board = el('<div class="hl-board" id="gpm-hl-board"></div>');
+  wrap.appendChild(board);
+
+  var continueWrap = el('<div class="center-cta" id="gpm-hl-continue" style="display:none;"><button class="btn">Ver resultado da corrida</button></div>');
+  continueWrap.querySelector('button').addEventListener('click', function(){
+    clearTimeout(state.revealTimer);
+    state.screen='results';
+    render();
+  });
+  wrap.appendChild(continueWrap);
+
+  var skipbar = el('<div class="skipbar" id="gpm-hl-skipbar"><button class="btn ghost">Pular</button></div>');
+  skipbar.querySelector('button').addEventListener('click', function(){
+    clearTimeout(state.revealTimer);
+    state.screen='results';
+    render();
+  });
+  wrap.appendChild(skipbar);
+
+  setTimeout(function(){ revealNextHighlight(); }, 100);
+
+  return wrap;
+}
+
+function revealNextHighlight(){
+  var board = document.getElementById('gpm-hl-board');
+  if(!board) return;
+  if(state.highlightIndex >= state.highlights.length){
+    var cont = document.getElementById('gpm-hl-continue');
+    if(cont) cont.style.display = 'flex';
+    var skipbar = document.getElementById('gpm-hl-skipbar');
+    if(skipbar) skipbar.style.display = 'none';
+    return;
+  }
+  var h = state.highlights[state.highlightIndex];
+  var card = el(
+    '<div class="hl-card">'+
+      '<div class="hl-icon">'+h.icon+'</div>'+
+      '<div class="hl-body"><div class="hl-title">'+h.title+'</div><div class="hl-text">'+h.text+'</div></div>'+
+    '</div>'
+  );
+  board.appendChild(card);
+  state.highlightIndex++;
+  state.revealTimer = setTimeout(revealNextHighlight, 900);
+}
+
+function renderReveal(){
+  var wrap = el('<div></div>');
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Bandeira quadriculada</div>'+
+      '<h1>Resultado chegando...</h1>'+
+      '<div class="subtitle">Revelando do último ao primeiro colocado.</div>'+
+    '</div>'
+  ));
+
+  var board = el('<div class="board" id="gpm-board"></div>');
+  wrap.appendChild(board);
+
+  var skipbar = el('<div class="skipbar"><button class="btn ghost">Pular animação</button></div>');
+  skipbar.querySelector('button').addEventListener('click', function(){
+    clearTimeout(state.revealTimer);
+    state.screen='results';
+    render();
+  });
+  wrap.appendChild(skipbar);
+
+  // kick off reveal after mount
+  setTimeout(function(){ revealNext(); }, 100);
+
+  return wrap;
+}
+
+function revealNext(){
+  var board = document.getElementById('gpm-board');
+  if(!board) return;
+  if(state.revealIndex<=0){
+    state.revealTimer = setTimeout(function(){ state.screen='results'; render(); }, 700);
+    return;
+  }
+  var idx = state.revealIndex-1;
+  var d = state.results[idx];
+  var posClass = d.pos===1?'p1':d.pos===2?'p2':d.pos===3?'p3':'';
+  var row = el(
+    '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'">'+
+      '<div class="pos '+posClass+'">'+d.pos+'</div>'+
+      '<div class="row-main"><div class="row-driver">'+d.nome+'</div><div class="row-team">'+d.team+'</div></div>'+
+      '<div class="row-gap">'+d.gap+'</div>'+
+      '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
+    '</div>'
+  );
+  board.appendChild(row);
+  state.revealIndex = idx;
+  var delay = d.pos<=3 ? 1100 : 550;
+  state.revealTimer = setTimeout(revealNext, delay);
+}
+
+function renderResults(){
+  var wrap = el('<div></div>');
+  var mine = state.results.filter(function(d){return d.mine;});
+  var myPts = mine.reduce(function(s,d){return s+d.pts;},0);
+  var bestPos = Math.min.apply(null, mine.map(function(d){return d.pos;}));
+  var seasonActive = !!state.season;
+  var track = seasonActive ? state.season.tracks[state.season.trackIndex] : null;
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">'+(seasonActive? 'Corrida '+(state.season.trackIndex+1)+' de '+state.season.tracks.length+' concluída' : 'Bandeirada final')+'</div>'+
+      '<h1>'+(seasonActive? track.flag+' '+track.name : state.teamName)+'</h1>'+
+    '</div>'
+  ));
+
+  wrap.appendChild(el(
+    '<div class="panel hero-result">'+
+      '<div class="num">'+myPts+' pts</div>'+
+      '<div class="lbl">Melhor posição: P'+bestPos+' &nbsp;•&nbsp; '+mine.map(function(d){return d.nome+' (P'+d.pos+')';}).join(' · ')+'</div>'+
+    '</div>'
+  ));
+
+  if(state.highlights && state.highlights.length){
+    var recapPanel = el('<details class="panel"></details>');
+    recapPanel.innerHTML = '<summary>Ver melhores momentos desta corrida</summary>'+
+      '<div class="hl-board" style="margin-top:10px;">'+highlightsHtml(state.highlights)+'</div>';
+    wrap.appendChild(recapPanel);
+  }
+
+  var board = el('<div class="board"></div>');
+  state.results.slice().reverse().forEach(function(d){
+    var posClass = d.pos===1?'p1':d.pos===2?'p2':d.pos===3?'p3':'';
+    board.appendChild(el(
+      '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'" style="animation:none;opacity:1;">'+
+        '<div class="pos '+posClass+'">'+d.pos+'</div>'+
+        '<div class="row-main"><div class="row-driver">'+d.nome+'</div><div class="row-team">'+d.team+'</div></div>'+
+        '<div class="row-gap">'+d.gap+'</div>'+
+        '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
+      '</div>'
+    ));
+  });
+  wrap.appendChild(board);
+
+  if(seasonActive){
+    var standWrap = el('<div class="panel"></div>');
+    standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação do campeonato</div>'+titleRivalCalloutHtml()+standingsHtml(state.season.standings);
+    wrap.appendChild(standWrap);
+  }
+
+  var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
+  if(seasonActive){
+    if(state.season.trackIndex < state.season.tracks.length-1){
+      var next = el('<button class="btn">Próxima corrida</button>');
+      next.addEventListener('click', function(){ state.season.trackIndex++; state.screen='prerace'; render(); });
+      actions.appendChild(next);
+    } else {
+      var finish = el('<button class="btn">Ver resultado do campeonato</button>');
+      finish.addEventListener('click', function(){ state.screen='champion'; render(); });
+      actions.appendChild(finish);
+    }
+    var quit = el('<button class="btn ghost">Abandonar temporada</button>');
+    quit.addEventListener('click', function(){ resetState(); render(); });
+    actions.appendChild(quit);
+  } else {
+    var again = el('<button class="btn">Nova corrida (mesma equipe)</button>');
+    again.addEventListener('click', function(){ startRace(); });
+    var redraft = el('<button class="btn ghost">Recomeçar (nova equipe)</button>');
+    redraft.addEventListener('click', function(){ resetState(); render(); });
+    actions.appendChild(again);
+    actions.appendChild(redraft);
+  }
+  wrap.appendChild(actions);
+
+  return wrap;
+}
+
+function renderChampion(){
+  var wrap = el('<div></div>');
+  var standings = state.season.standings;
+  var myPos = standings.map(function(s){return s.mine;}).indexOf(true) + 1;
+  var myPts = standings.filter(function(s){return s.mine;})[0].points;
+  var isChamp = myPos===1;
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Fim de temporada</div>'+
+      '<h1>'+(isChamp? '🏆 Campeão da Temporada!' : 'Temporada encerrada')+'</h1>'+
+      '<div class="subtitle">'+(isChamp
+        ? state.teamName+' terminou em 1º lugar depois de '+state.season.tracks.length+' corridas!'
+        : state.teamName+' terminou em '+myPos+'º lugar depois de '+state.season.tracks.length+' corridas.')+
+      '</div>'+
+    '</div>'
+  ));
+
+  var panel = el('<div class="panel hero-result"></div>');
+  panel.innerHTML = '<div class="num">'+(isChamp?'🏆':'P'+myPos)+'</div><div class="lbl">'+myPts+' pontos na temporada</div>';
+  wrap.appendChild(panel);
+
+  var rivalOutcome = titleRivalOutcomeHtml();
+  if(rivalOutcome) wrap.appendChild(el(rivalOutcome));
+
+  var standWrap = el('<div class="panel"></div>');
+  standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+standingsHtml(standings);
+  wrap.appendChild(standWrap);
+
+  var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
+  var recapBtn = el('<button class="btn ghost">Ver retrospectiva da temporada</button>');
+  recapBtn.addEventListener('click', function(){ state.screen='recap'; render(); });
+  var restart = el('<button class="btn">Nova temporada</button>');
+  restart.addEventListener('click', function(){ resetState(); render(); });
+  actions.appendChild(recapBtn);
+  actions.appendChild(restart);
+  wrap.appendChild(actions);
+
+  return wrap;
+}
+
+function renderRecap(){
+  var wrap = el('<div></div>');
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Temporada completa</div>'+
+      '<h1>Retrospectiva</h1>'+
+      '<div class="subtitle">Reveja os melhores momentos de todas as corridas.</div>'+
+    '</div>'
+  ));
+
+  state.season.history.forEach(function(h, i){
+    var podium = h.results.slice(0,3).map(function(d,j){ return (j+1)+'º '+shortName(d.driverName)+' ('+d.team+')'; }).join(' · ');
+    var panel = el('<div class="panel"></div>');
+    panel.innerHTML =
+      '<div class="lineup-role">Corrida '+(i+1)+' de '+state.season.tracks.length+' — '+h.track.flag+' '+h.track.name+'</div>'+
+      '<div class="card-desc" style="margin:6px 0 10px;">Pódio: '+podium+'</div>'+
+      '<div class="hl-board">'+highlightsHtml(h.highlights)+'</div>';
+    wrap.appendChild(panel);
+  });
+
+  var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
+  var back = el('<button class="btn ghost">Voltar</button>');
+  back.addEventListener('click', function(){ state.screen='champion'; render(); });
+  var restart = el('<button class="btn">Nova temporada</button>');
+  restart.addEventListener('click', function(){ resetState(); render(); });
+  actions.appendChild(back);
+  actions.appendChild(restart);
+  wrap.appendChild(actions);
+
+  return wrap;
+}
+
+function resetState(){
+  clearRaceTimers();
+  clearTimeout(state.revealTimer);
+  clearQuickSeasonTimer();
+  state.screen='mode';
+  state.mode=null;
+  state.almanac=false;
+  state.raceStyle=null;
+  state.tab='chefe';
+  state.teamName='';
+  state.chefe=null;
+  state.pilotos=[];
+  state.motor=null;
+  state.results=null;
+  state.revealIndex=-1;
+  state.season=null;
+  state.highlights=[];
+  state.highlightIndex=0;
+  state.raceTrack=null;
+  state.longRace=null;
+  state.pools=generatePools();
+  state.draftRefreshUsed=false;
+}
+
+TRACKS.forEach(function(t){ t.trackData = buildTrackData(t.anchors); });
+buildAllCards();
+state.pools = generatePools();
+render();
+loadExternalData();
+})();
+</script>
