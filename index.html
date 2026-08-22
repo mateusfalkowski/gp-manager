@@ -402,7 +402,7 @@ var DEFAULT_DATA = {
 };
 
 var RAW_DATA = DEFAULT_DATA; // sobrescrito por data.json se o fetch funcionar
-var ALL_CARDS = {chefes:[], pilotos:[], motores:[]};
+var ALL_CARDS = {chefes:[], pilotos:[], motores:[], aero:[]};
 
 function flagFor(nat){
   var map = {AUT:'🇦🇹',GBR:'🇬🇧',ITA:'🇮🇹',JPN:'🇯🇵',BRA:'🇧🇷',ARG:'🇦🇷',ESP:'🇪🇸',BGR:'🇧🇬',BUL:'🇧🇬',POL:'🇵🇱',PRT:'🇵🇹',FRA:'🇫🇷',DEU:'🇩🇪',USA:'🇺🇸',AUS:'🇦🇺',CAN:'🇨🇦',NLD:'🇳🇱',MEX:'🇲🇽',THA:'🇹🇭',FIN:'🇫🇮',MON:'🇲🇨',BEL:'🇧🇪'};
@@ -459,6 +459,8 @@ function buildAllCards(){
   } else {
     ALL_CARDS.motores = MOTORES.slice(); // fallback: fabricantes reais de 2026
   }
+
+  ALL_CARDS.aero = AERO_PACOTES.slice(); // não existe esse dado no data.json — sempre usa a lista fixa
 }
 
 function traitTags(pos, neg){
@@ -495,6 +497,41 @@ var MOTORES = [
   {id:'audi', nome:'Audi', fabricante:'Audi Formula Racing', pot:82, confiab:68, desc:'Estreante em 2026 após assumir a base da Sauber — ainda construindo histórico na F1.'}
 ];
 
+// pacotes aerodinâmicos: carros/eras reais conhecidos por um perfil claro de reta ou curva —
+// não vem do data.json (não existe esse dado ali), é uma lista fixa como o fallback de MOTORES
+var AERO_PACOTES = [
+  {id:'mclaren-mp4-4', nome:'McLaren MP4/4', fabricante:'Era 1988', retas:70, curvas:78, vmax:66,
+    desc:'Chassi baixíssimo arrasto do Honda-McLaren dominante — sobrava em qualquer curva, mas não era o mais veloz em reta.',
+    traitsPos:['Tração de Saída de Curva'], traitsNeg:['Velocidade Máxima Limitada']},
+  {id:'williams-fw14b', nome:'Williams FW14B', fabricante:'Era 1992', retas:74, curvas:88, vmax:70,
+    desc:'Suspensão ativa que redefiniu o que um carro conseguia fazer em curva — o resto do grid parecia parado.',
+    traitsPos:['Curva de Alta Velocidade Absurda'], traitsNeg:['Reta Apenas Mediana']},
+  {id:'ferrari-f2004', nome:'Ferrari F2004', fabricante:'Era 2004', retas:88, curvas:82, vmax:84,
+    desc:'Equilíbrio quase perfeito entre carga e baixo arrasto — um dos carros mais completos da história.',
+    traitsPos:['Sem Ponto Fraco Claro'], traitsNeg:['Pacote Caro de Manter']},
+  {id:'redbull-rb19', nome:'Red Bull RB19', fabricante:'Era 2023', retas:80, curvas:90, vmax:76,
+    desc:'Efeito solo levado ao extremo — carga absurda em curva sem punir tanto assim a reta.',
+    traitsPos:['Downforce em Efeito Solo'], traitsNeg:['Sensível a Solavancos']},
+  {id:'brawn-bgp001', nome:'Brawn BGP 001', fabricante:'Era 2009', retas:82, curvas:72, vmax:80,
+    desc:'Difusor duplo que surpreendeu o grid inteiro — reta forte com carga suficiente pra não sofrer em curva.',
+    traitsPos:['Vantagem de Regulamento'], traitsNeg:['Pouco Refinamento em Curvas Lentas']},
+  {id:'lotus-79', nome:'Lotus 79', fabricante:'Era 1978', retas:60, curvas:84, vmax:56,
+    desc:'Pioneiro do efeito solo — colava a curva de um jeito que ninguém mais conseguia, mas era lento em reta.',
+    traitsPos:['Efeito Solo Pioneiro'], traitsNeg:['Reta Fraca']},
+  {id:'mercedes-w11', nome:'Mercedes W11', fabricante:'Era 2020', retas:86, curvas:80, vmax:88,
+    desc:'DAS e um motor forte davam uma velocidade máxima rara sem abrir mão de carga em curva.',
+    traitsPos:['Velocidade Máxima de Ponta'], traitsNeg:['Curva Lenta Apenas Boa']},
+  {id:'tyrrell-p34', nome:'Tyrrell P34', fabricante:'Era 1976', retas:52, curvas:75, vmax:48,
+    desc:'Seis rodas e mais área de contato em curva — um experimento e tanto, mas nunca foi rápido em reta.',
+    traitsPos:['Tração em Curva Lenta'], traitsNeg:['Velocidade Máxima Baixa']},
+  {id:'red-bull-x2010', nome:'Conceito Baixo Arrasto', fabricante:'Filosofia Power Track', retas:90, curvas:60, vmax:92,
+    desc:'Pacote extremo de baixo arrasto, pensado só pra reta — em curva técnica sofre visivelmente.',
+    traitsPos:['Reta Devastadora'], traitsNeg:['Curva Técnica é Fraqueza']},
+  {id:'lancia-d50', nome:'Filosofia Alta Carga', fabricante:'Foco em Curva Técnica', retas:55, curvas:92, vmax:50,
+    desc:'Tudo pensado pra curva — sacrifica quase toda a velocidade máxima em troca de carga aerodinâmica.',
+    traitsPos:['Curva Técnica é Reinado'], traitsNeg:['Reta é Fraqueza']}
+];
+
 // reserva genérica: só usada pra completar o grid se o banco de pilotos não tiver gente suficiente
 var FILLER_NOMES = [
   ['Théo Marchand','McLaren'],['Ines Halvorsen','Mercedes'],
@@ -507,7 +544,7 @@ var FILLER_NOMES = [
 
 /* ---------- temporada: 5 corridas em 5 países, cada uma com um traçado próprio ---------- */
 var TRACKS = [
-  {id:'bra', flag:'🇧🇷', country:'Brasil', name:'GP do Brasil', laps:7, longLaps:20, flavor:'chuva imprevisível e ultrapassagens na reta oposta',
+  {id:'bra', flag:'🇧🇷', country:'Brasil', name:'GP do Brasil', laps:7, longLaps:20, flavor:'chuva imprevisível e ultrapassagens na reta oposta', aeroBias:55,
     anchors:[
       [90,220],[260,220],
       [320,205],[350,170],
@@ -519,7 +556,7 @@ var TRACKS = [
       [330,255],[280,280],[230,255],
       [185,280],[145,255],[105,235]
     ]},
-  {id:'ita', flag:'🇮🇹', country:'Itália', name:'GP da Itália', laps:8, longLaps:22, flavor:'retas longas e disputas de esteira',
+  {id:'ita', flag:'🇮🇹', country:'Itália', name:'GP da Itália', laps:8, longLaps:22, flavor:'retas longas e disputas de esteira', aeroBias:92,
     anchors:[
       [80,230],[290,232],
       [330,228],[350,210],[365,225],
@@ -530,7 +567,7 @@ var TRACKS = [
       [80,90],[95,110],[75,125],[90,145],
       [65,170],[55,200]
     ]},
-  {id:'mco', flag:'🇲🇨', country:'Mônaco', name:'GP de Mônaco', laps:6, longLaps:18, flavor:'pista estreita, onde a estratégia de box vale ouro',
+  {id:'mco', flag:'🇲🇨', country:'Mônaco', name:'GP de Mônaco', laps:6, longLaps:18, flavor:'pista estreita, onde a estratégia de box vale ouro', aeroBias:8,
     anchors:[
       [90,230],[220,230],
       [260,210],[290,160],
@@ -546,7 +583,7 @@ var TRACKS = [
       [240,250],[255,275],[210,260],
       [165,245],[125,235]
     ]},
-  {id:'jpn', flag:'🇯🇵', country:'Japão', name:'GP do Japão', laps:7, longLaps:20, flavor:'curvas técnicas que exigem precisão total',
+  {id:'jpn', flag:'🇯🇵', country:'Japão', name:'GP do Japão', laps:7, longLaps:20, flavor:'curvas técnicas que exigem precisão total', aeroBias:25,
     anchors:[
       [280,150],
       [240,120],[260,90],[220,80],[180,95],[200,120],[160,110],
@@ -559,7 +596,7 @@ var TRACKS = [
       [450,190],[400,215],[340,200],
       [300,180]
     ]},
-  {id:'gbr', flag:'🇬🇧', country:'Reino Unido', name:'GP da Grã-Bretanha', laps:7, longLaps:20, flavor:'curvas rápidas em sequência e clima instável',
+  {id:'gbr', flag:'🇬🇧', country:'Reino Unido', name:'GP da Grã-Bretanha', laps:7, longLaps:20, flavor:'curvas rápidas em sequência e clima instável', aeroBias:35,
     anchors:[
       [100,150],
       [140,120],[180,100],
@@ -572,7 +609,7 @@ var TRACKS = [
       [210,235],[170,220],[190,200],[150,210],
       [120,190],[100,170]
     ]},
-  {id:'usa', flag:'🇺🇸', country:'Estados Unidos', name:'GP dos Estados Unidos', laps:8, longLaps:22, flavor:'uma sequência de esses técnicos seguida de retas longas',
+  {id:'usa', flag:'🇺🇸', country:'Estados Unidos', name:'GP dos Estados Unidos', laps:8, longLaps:22, flavor:'uma sequência de esses técnicos seguida de retas longas', aeroBias:52,
     anchors:[
       [90,240],[280,240],
       [320,215],[300,180],
@@ -583,7 +620,7 @@ var TRACKS = [
       [400,235],[320,255],
       [220,258],[140,250],[100,248]
     ]},
-  {id:'aus', flag:'🇦🇺', country:'Austrália', name:'GP da Austrália', laps:8, longLaps:22, flavor:'um traçado fluido à beira do lago, com uma chicane apertada no meio',
+  {id:'aus', flag:'🇦🇺', country:'Austrália', name:'GP da Austrália', laps:8, longLaps:22, flavor:'um traçado fluido à beira do lago, com uma chicane apertada no meio', aeroBias:45,
     anchors:[
       [100,150],[130,110],[170,90],
       [220,100],[210,130],[250,120],
@@ -593,7 +630,7 @@ var TRACKS = [
       [300,260],[230,250],[170,255],
       [120,230],[90,190]
     ]},
-  {id:'can', flag:'🇨🇦', country:'Canadá', name:'GP do Canadá', laps:7, longLaps:21, flavor:'retas compridas terminando em freadas fortes e uma chicane final decisiva',
+  {id:'can', flag:'🇨🇦', country:'Canadá', name:'GP do Canadá', laps:7, longLaps:21, flavor:'retas compridas terminando em freadas fortes e uma chicane final decisiva', aeroBias:80,
     anchors:[
       [90,150],[90,100],[130,70],
       [190,65],[250,75],[300,60],
@@ -948,12 +985,13 @@ function generatePools(){
     chefe: pickRandomDistinctPersons(ALL_CARDS.chefes, Math.min(3, ALL_CARDS.chefes.length)),
     piloto1: pickRandomDistinctPersons(ALL_CARDS.pilotos, Math.min(3, ALL_CARDS.pilotos.length)),
     piloto2: [], // só é sorteado depois que o piloto 1 é escolhido, pra excluir quem já foi contratado
-    motor: pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length))
+    motor: pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length)),
+    aero: pickRandomDistinctPersons(ALL_CARDS.aero, Math.min(3, ALL_CARDS.aero.length))
   };
 }
 
 // sorteia de novo as opções da etapa atual do draft — só pode ser usado 1x em todo o draft
-// (chefe, piloto 1, piloto 2 ou motor), qualquer que seja a etapa escolhida
+// (chefe, piloto 1, piloto 2, motor ou aero), qualquer que seja a etapa escolhida
 function rerollCurrentDraftPool(){
   if(state.draftRefreshUsed) return;
   state.draftRefreshUsed = true;
@@ -967,6 +1005,8 @@ function rerollCurrentDraftPool(){
     state.pools.piloto2 = pickRandomDistinctPersons(candidates, Math.min(3, candidates.length));
   } else if(state.tab==='motor'){
     state.pools.motor = pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length));
+  } else if(state.tab==='aero'){
+    state.pools.aero = pickRandomDistinctPersons(ALL_CARDS.aero, Math.min(3, ALL_CARDS.aero.length));
   }
   render();
 }
@@ -980,6 +1020,7 @@ var state = {
   chefe:null,
   pilotos:[],
   motor:null,
+  aero:null,
   results:null,
   revealIndex:-1,
   revealTimer:null,
@@ -995,8 +1036,9 @@ var state = {
   raceSpeed:1, // 1x/2x/4x — controla a velocidade de reprodução das simulações ao vivo
   qsTimer:null, // timer do cascateamento de resultados da Temporada Expressa
   almanac:false, // modo Almanaque: draft sem mostrar atributos/traços — escolha pelo conhecimento do jogador
-  rivalDifficulty:'normal', // 'facil' | 'normal' | 'dificil' — ajusta o teto de força do grid rival
-  pickedTrackIds:null // ids das 5 pistas escolhidas pra temporada (null = ainda não escolheu)
+  rivalDifficulty:null, // 'facil' | 'normal' | 'dificil' — ajusta o teto de força do grid rival; começa sem escolha pra obrigar o jogador a decidir
+  pickedTrackIds:null, // ids das 5 pistas escolhidas pra temporada (null = ainda não escolheu)
+  raceOptionsTab:'dificuldade' // 'dificuldade' | 'pistas' — sub-etapa atual da tela de opções da corrida
 };
 
 function speedControlHtml(){
@@ -1090,7 +1132,7 @@ function renderModeSelect(){
       '<div class="card-desc">As mesmas 5 corridas da Temporada, mas sem simulação ao vivo — o resultado de cada corrida vai aparecendo abaixo, uma de cada vez, mostrando o top 5 (e a posição da sua equipe, se ela ficar fora dele).</div>'+
     '</div>'
   );
-  quick.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.screen='raceoptions'; render(); });
+  quick.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(quick);
 
   var almanac = el(
@@ -1099,7 +1141,7 @@ function renderModeSelect(){
       '<div class="card-desc">A mesma Temporada Expressa, mas no draft você não vê os atributos nem os traços de quem está contratando — só nome, equipe e ano. Os números continuam existindo e valendo pra corrida, você só escolhe no escuro, confiando no que sabe sobre cada um.</div>'+
     '</div>'
   );
-  almanac.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.screen='raceoptions'; render(); });
+  almanac.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(almanac);
 
   wrap.appendChild(grid);
@@ -1127,7 +1169,7 @@ function renderRaceStyle(){
       '<div class="card-desc">'+(state.mode==='season' ? 'Em cada corrida, escolha entre assistir a simulação ao vivo ou ver direto os melhores momentos.' : 'Assista a corrida com simulação animada na pista, luzes de largada e tudo mais.')+'</div>'+
     '</div>'
   );
-  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.screen='raceoptions'; render(); });
+  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(rapida);
 
   var longa = el(
@@ -1136,7 +1178,7 @@ function renderRaceStyle(){
       '<div class="card-desc">Veja a previsão do tempo, escolha os pneus e reaja a safety cars, VSC e mudanças de clima ao vivo — suas decisões afetam o resultado.</div>'+
     '</div>'
   );
-  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.screen='raceoptions'; render(); });
+  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(longa);
 
   wrap.appendChild(grid);
@@ -1151,8 +1193,11 @@ function needsTrackPick(){
 
 function renderRaceOptions(){
   var wrap = el('<div></div>');
+  var onTracksTab = needsTrackPick() && state.raceOptionsTab==='pistas';
+
   var back = el('<button class="btn ghost back-btn">← Voltar</button>');
   back.addEventListener('click', function(){
+    if(onTracksTab){ state.raceOptionsTab='dificuldade'; render(); return; }
     if(state.mode==='quickseason'){ state.mode=null; state.screen='mode'; }
     else { state.raceStyle=null; state.screen='racestyle'; }
     render();
@@ -1163,68 +1208,96 @@ function renderRaceOptions(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>Opções da corrida</h1>'+
-      '<div class="subtitle">Ajuste a dificuldade dos rivais'+(needsTrackPick() ? ' e escolha as pistas da temporada' : '')+' antes de montar sua equipe.</div>'+
+      '<div class="subtitle">'+(onTracksTab ? 'Sorteie as pistas da temporada.' : 'Ajuste a dificuldade dos rivais antes de montar sua equipe.')+'</div>'+
     '</div>'
   ));
 
-  var diffBox = el('<div class="season-box"></div>');
-  diffBox.innerHTML = '<div class="season-label">Dificuldade dos rivais</div>';
-  var diffBtns = el('<div class="season-btns"></div>');
-  ['facil','normal','dificil'].forEach(function(key){
-    var d = RIVAL_DIFFICULTY[key];
-    var b = el('<div class="season-btn'+(state.rivalDifficulty===key?' active':'')+'">'+d.label+'</div>');
-    b.addEventListener('click', function(){ state.rivalDifficulty = key; render(); });
-    diffBtns.appendChild(b);
-  });
-  diffBox.appendChild(diffBtns);
-  wrap.appendChild(diffBox);
-  wrap.appendChild(el('<div class="footer-info" style="margin:-6px 0 16px;">'+RIVAL_DIFFICULTY[state.rivalDifficulty].desc+'</div>'));
+  if(needsTrackPick()){
+    var tabs = el('<div class="tabs"></div>');
+    var tabDefs = [
+      {id:'dificuldade', label:'Dificuldade', done: !!state.rivalDifficulty, unlocked:true},
+      {id:'pistas', label:'Pistas', done: state.pickedTrackIds && state.pickedTrackIds.length===SEASON_LENGTH, unlocked: !!state.rivalDifficulty}
+    ];
+    tabDefs.forEach(function(t){
+      var b = el('<div class="tab'+(state.raceOptionsTab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+t.label+'</div>');
+      if(t.unlocked){
+        b.addEventListener('click', function(){ state.raceOptionsTab=t.id; render(); });
+      }
+      tabs.appendChild(b);
+    });
+    wrap.appendChild(tabs);
+  }
 
   var canContinue = true;
-  if(needsTrackPick()){
-    // só preenche com o padrão na primeira vez que a tela abre (pickedTrackIds ainda null) — se o
-    // jogador desmarcar tudo de propósito pra remontar a lista do zero, isso não pode ser
-    // confundido com "ainda não escolheu" e resetar pro padrão de novo no meio do caminho
-    if(!state.pickedTrackIds){
-      state.pickedTrackIds = TRACKS.slice(0, SEASON_LENGTH).map(function(t){ return t.id; });
-    }
-    wrap.appendChild(el('<div class="season-label" style="margin-bottom:8px;">Pistas da temporada ('+state.pickedTrackIds.length+'/'+SEASON_LENGTH+')</div>'));
 
-    var randomBtn = el('<button class="btn ghost" style="margin-bottom:12px;">🎲 Sortear '+SEASON_LENGTH+' pistas</button>');
+  if(!onTracksTab){
+    var diffBox = el('<div class="season-box"></div>');
+    diffBox.innerHTML = '<div class="season-label">Dificuldade dos rivais</div>';
+    var diffBtns = el('<div class="season-btns"></div>');
+    ['facil','normal','dificil'].forEach(function(key){
+      var d = RIVAL_DIFFICULTY[key];
+      var b = el('<div class="season-btn'+(state.rivalDifficulty===key?' active':'')+'">'+d.label+'</div>');
+      b.addEventListener('click', function(){ state.rivalDifficulty = key; render(); });
+      diffBtns.appendChild(b);
+    });
+    diffBox.appendChild(diffBtns);
+    wrap.appendChild(diffBox);
+    var diffDesc = state.rivalDifficulty ? RIVAL_DIFFICULTY[state.rivalDifficulty].desc : 'Escolha uma dificuldade acima pra continuar.';
+    wrap.appendChild(el('<div class="footer-info" style="margin:-6px 0 16px;">'+diffDesc+'</div>'));
+
+    canContinue = !!state.rivalDifficulty; // trava o avanço até o jogador escolher, não passa direto no padrão
+  } else {
+    var pickedCount = state.pickedTrackIds ? state.pickedTrackIds.length : 0;
+    wrap.appendChild(el('<div class="season-label" style="margin-bottom:8px;">Pistas da temporada ('+pickedCount+'/'+SEASON_LENGTH+')</div>'));
+
+    var randomBtn = el('<button class="btn'+(pickedCount===0?'':' ghost')+'" style="margin-bottom:12px;">🎲 Sortear '+SEASON_LENGTH+' pistas</button>');
     randomBtn.addEventListener('click', function(){ state.pickedTrackIds = pickRandom(TRACKS, SEASON_LENGTH).map(function(t){ return t.id; }); render(); });
     wrap.appendChild(randomBtn);
 
-    var grid = el('<div class="cardgrid"></div>');
-    TRACKS.forEach(function(t){
-      var selected = state.pickedTrackIds.indexOf(t.id)>=0;
-      var disabled = !selected && state.pickedTrackIds.length>=SEASON_LENGTH;
-      var card = el(
-        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
-          (selected?'<div class="check">&#10003;</div>':'')+
-          '<div class="card-top"><div><div class="card-name">'+t.flag+' '+t.name+'</div><div class="card-role">'+t.country+'</div></div></div>'+
-          '<div class="card-desc">Pista conhecida por '+t.flavor+'.</div>'+
-        '</div>'
-      );
-      card.addEventListener('click', function(){
-        var idx = state.pickedTrackIds.indexOf(t.id);
-        if(idx>=0) state.pickedTrackIds.splice(idx,1);
-        else if(state.pickedTrackIds.length<SEASON_LENGTH) state.pickedTrackIds.push(t.id);
-        render();
+    if(pickedCount===0){
+      wrap.appendChild(el('<div class="footer-info" style="margin-bottom:16px;">Clique em "Sortear pistas" pra ver as pistas da temporada.</div>'));
+    } else {
+      var grid = el('<div class="cardgrid"></div>');
+      TRACKS.forEach(function(t){
+        var selected = state.pickedTrackIds.indexOf(t.id)>=0;
+        var disabled = !selected && state.pickedTrackIds.length>=SEASON_LENGTH;
+        var card = el(
+          '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+            (selected?'<div class="check">&#10003;</div>':'')+
+            '<div class="card-top"><div><div class="card-name">'+t.flag+' '+t.name+'</div><div class="card-role">'+t.country+'</div></div></div>'+
+            '<div class="card-desc">Pista conhecida por '+t.flavor+'.</div>'+
+          '</div>'
+        );
+        card.addEventListener('click', function(){
+          var idx = state.pickedTrackIds.indexOf(t.id);
+          if(idx>=0) state.pickedTrackIds.splice(idx,1);
+          else if(state.pickedTrackIds.length<SEASON_LENGTH) state.pickedTrackIds.push(t.id);
+          render();
+        });
+        grid.appendChild(card);
       });
-      grid.appendChild(card);
-    });
-    wrap.appendChild(grid);
+      wrap.appendChild(grid);
+    }
 
-    canContinue = state.pickedTrackIds.length===SEASON_LENGTH;
+    canContinue = pickedCount===SEASON_LENGTH;
   }
 
+  var isNextTabBtn = !onTracksTab && needsTrackPick();
+  var footerMsg = canContinue
+    ? (isNextTabBtn ? 'Dificuldade escolhida — agora sorteie as pistas.' : 'Tudo pronto — pode montar sua equipe.')
+    : (onTracksTab ? 'Escolha exatamente '+SEASON_LENGTH+' pistas pra continuar.' : 'Escolha uma dificuldade pra continuar.');
   var footer = el(
     '<div class="footerbar">'+
-      '<div class="footer-info">'+(canContinue ? 'Tudo pronto — pode montar sua equipe.' : 'Escolha exatamente '+SEASON_LENGTH+' pistas pra continuar.')+'</div>'+
+      '<div class="footer-info">'+footerMsg+'</div>'+
     '</div>'
   );
-  var goBtn = el('<button class="btn"'+(canContinue?'':' disabled')+'>Continuar</button>');
+  var goBtn = el('<button class="btn"'+(canContinue?'':' disabled')+'>'+(isNextTabBtn ? 'Sortear pistas →' : 'Continuar')+'</button>');
   goBtn.addEventListener('click', function(){
+    if(!onTracksTab && needsTrackPick()){
+      state.raceOptionsTab='pistas';
+      render();
+      return;
+    }
     if(!canContinue) return;
     state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe';
     render();
@@ -1238,7 +1311,7 @@ function renderRaceOptions(){
 function renderDraft(){
   var wrap = el('<div></div>');
 
-  if(!state.chefe && state.pilotos.length===0 && !state.motor){
+  if(!state.chefe && state.pilotos.length===0 && !state.motor && !state.aero){
     var back = el('<button class="btn ghost back-btn">← Voltar</button>');
     back.addEventListener('click', function(){ state.screen='raceoptions'; render(); });
     wrap.appendChild(back);
@@ -1248,7 +1321,7 @@ function renderDraft(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>Monte sua equipe</h1>'+
-      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos e 1 motor. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b>'+
+      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos, 1 motor e 1 pacote aerodinâmico. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b>'+
         (state.almanac ? ' <b style="color:var(--accent-2);">Modo Almanaque:</b> os atributos e traços estão ocultos — escolha só pelo nome, equipe e ano.' : '')+
       '</div>'+
       '<input class="teamname" placeholder="Nome da sua equipe" value="'+state.teamName+'" />'+
@@ -1261,7 +1334,8 @@ function renderDraft(){
     {id:'chefe', label:'Chefe', count: state.chefe?'1/1':'0/1', done: !!state.chefe, unlocked:true},
     {id:'piloto1', label:'Piloto 1', count: (state.pilotos.length>=1?'1/1':'0/1'), done: state.pilotos.length>=1, unlocked: !!state.chefe},
     {id:'piloto2', label:'Piloto 2', count: (state.pilotos.length>=2?'1/1':'0/1'), done: state.pilotos.length>=2, unlocked: state.pilotos.length>=1},
-    {id:'motor', label:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: state.pilotos.length===2}
+    {id:'motor', label:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: state.pilotos.length===2},
+    {id:'aero', label:'Aerodinâmica', count: state.aero?'1/1':'0/1', done: !!state.aero, unlocked: !!state.motor}
   ];
   tabDefs.forEach(function(t){
     var b = el('<div class="tab'+(state.tab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+t.label+'<span class="count">'+t.count+'</span></div>');
@@ -1273,9 +1347,9 @@ function renderDraft(){
   wrap.appendChild(tabs);
 
   // sorteia de novo as 3 opções da etapa atual — só pode ser usado uma vez em todo o draft,
-  // não importa em qual etapa (chefe, piloto 1, piloto 2 ou motor) o jogador decide gastar
+  // não importa em qual etapa (chefe, piloto 1, piloto 2, motor ou aero) o jogador decide gastar
   var currentStepDone = (state.tab==='chefe' && !!state.chefe) || (state.tab==='piloto1' && state.pilotos.length>=1) ||
-    (state.tab==='piloto2' && state.pilotos.length>=2) || (state.tab==='motor' && !!state.motor);
+    (state.tab==='piloto2' && state.pilotos.length>=2) || (state.tab==='motor' && !!state.motor) || (state.tab==='aero' && !!state.aero);
   if(!state.draftRefreshUsed && !currentStepDone){
     var refreshBtn = el('<button class="btn ghost" style="margin-bottom:14px;">🔄 Sortear novamente (1x por draft)</button>');
     refreshBtn.addEventListener('click', function(){ rerollCurrentDraftPool(); });
@@ -1387,6 +1461,45 @@ function renderDraft(){
       if(!disabled && !selected){
         card.addEventListener('click', function(){
           state.motor = m;
+          render();
+          setTimeout(function(){ state.tab='aero'; render(); }, 450);
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  if(state.tab==='aero'){
+    // pra temporada/temporada expressa as pistas já foram escolhidas na tela anterior — dá pra
+    // mostrar de antemão pra onde o pacote aerodinâmico vai precisar se encaixar
+    if(needsTrackPick() && state.pickedTrackIds && state.pickedTrackIds.length){
+      var previewTracks = state.pickedTrackIds.map(function(id){ return TRACKS.filter(function(t){ return t.id===id; })[0]; }).filter(Boolean);
+      var previewHtml = previewTracks.map(function(t){
+        var tag = t.aeroBias>=65 ? '🏎️ reta' : (t.aeroBias<=35 ? '🌀 curva' : '⚖️ equilíbrio');
+        return t.flag+' '+t.country+' ('+tag+')';
+      }).join(' · ');
+      wrap.appendChild(el('<div class="footer-info" style="margin-bottom:12px;">Pistas da temporada: '+previewHtml+'</div>'));
+    }
+    state.pools.aero.forEach(function(a){
+      var selected = state.aero && state.aero.id===a.id;
+      var locked = !!state.aero;
+      var disabled = locked && !selected;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top">'+
+            '<div><div class="card-name">'+a.nome+'</div><div class="card-role">'+a.fabricante+'</div></div>'+
+          '</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Retas',a.retas)+statBar('Curvas',a.curvas)+statBar('Velocidade Máxima',a.vmax)+'</div>'))+
+          (state.almanac
+            ? (selected?'<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">CONTRATADO</b></div>':'')
+            : ('<div class="card-desc" style="margin-top:8px;">'+a.desc+(selected?' <b style="color:var(--good);">— CONTRATADO</b>':'')+'</div>'))+
+          (state.almanac ? '' : traitTags(a.traitsPos, a.traitsNeg))+
+        '</div>'
+      );
+      if(!disabled && !selected){
+        card.addEventListener('click', function(){
+          state.aero = a;
           render();
           setTimeout(function(){
             if(!state.teamName.trim()) state.teamName = 'Equipe Sem Nome';
@@ -1526,7 +1639,8 @@ function renderPrerace(){
     state.pilotos.map(function(p){
       return '<div class="lineup-row"><div><div class="lineup-role">Piloto</div><div class="lineup-name">'+p.pais+' '+p.nome+' '+p.apelido+'</div></div></div>';
     }).join('')+
-    '<div class="lineup-row"><div><div class="lineup-role">Motor</div><div class="lineup-name">'+state.motor.nome+' ('+state.motor.fabricante+')</div></div></div>';
+    '<div class="lineup-row"><div><div class="lineup-role">Motor</div><div class="lineup-name">'+state.motor.nome+' ('+state.motor.fabricante+')</div></div></div>'+
+    '<div class="lineup-row"><div><div class="lineup-role">Aerodinâmica</div><div class="lineup-name">'+state.aero.nome+' ('+state.aero.fabricante+')</div></div></div>';
   wrap.appendChild(panel);
 
   if(seasonActive && state.season.trackIndex>0){
@@ -1652,9 +1766,21 @@ function buildRivalPool(n, excludePersonIds){
   return rivals.slice(0, n);
 }
 
+// quanto o pacote aerodinâmico escolhido combina com o perfil da pista atual — pistas com
+// aeroBias alto favorecem reta/vmáx, aeroBias baixo favorece curva. Pacote equilibrado (todas
+// as stats ~50) fica sempre neutro (1x); um pacote bem encaixado rende até +6%, mal encaixado até -6%
+function aeroFitMult(aero, track){
+  if(!aero || !track || track.aeroBias==null) return 1;
+  var bias = track.aeroBias/100;
+  var straightScore = (aero.retas*0.6 + aero.vmax*0.4)/100;
+  var cornerScore = aero.curvas/100;
+  var fit = straightScore*bias + cornerScore*(1-bias);
+  return 0.94 + Math.max(0,Math.min(1,fit))*0.12;
+}
+
 function computeScore(driver){
   var base = driver.vel*0.35 + driver.agr*0.15 + driver.cons*0.15 + driver.pot*0.25 + driver.confiab*0.10;
-  base = base * (driver.scoreMult||1);
+  base = base * (driver.scoreMult||1) * (driver.aeroMult||1);
   var varianceRange = (100-driver.cons)*0.4 * (driver.varMult||1);
   var noisy = base + (Math.random()*2-1)*varianceRange*0.3;
   return noisy;
@@ -1662,12 +1788,14 @@ function computeScore(driver){
 
 function buildFieldBase(rivals){
   var field = [];
+  var track = getActiveTrack();
+  var myAeroMult = aeroFitMult(state.aero, track);
   state.pilotos.forEach(function(p){
     field.push({
       nome:p.pais+' '+p.nome+' '+p.apelido, driverName:p.nome, year:p.year, team:state.teamName, mine:true,
       vel:p.vel, cons:p.cons, agr:p.agr,
       pot:state.motor.pot, confiab:state.motor.confiab,
-      scoreMult:state.chefe.scoreMult, varMult:state.chefe.varMult
+      scoreMult:state.chefe.scoreMult, varMult:state.chefe.varMult, aeroMult:myAeroMult
     });
   });
   var rivalMult = (RIVAL_DIFFICULTY[state.rivalDifficulty] || RIVAL_DIFFICULTY.normal).mult;
@@ -1675,7 +1803,7 @@ function buildFieldBase(rivals){
     field.push({
       nome:(r.pais?r.pais+' ':'')+r.nome, driverName:r.nome, year:r.year, team:r.team, personId:r.personId, teamKey:r.teamKey, pairKey:r.pairKey, mine:false,
       vel:r.vel, cons:r.cons, agr:r.agr, pot:r.pot, confiab:r.confiab,
-      scoreMult:rivalMult, varMult:1
+      scoreMult:rivalMult, varMult:1, aeroMult:1
     });
   });
   return field;
@@ -3577,6 +3705,7 @@ function resetState(){
   state.chefe=null;
   state.pilotos=[];
   state.motor=null;
+  state.aero=null;
   state.results=null;
   state.revealIndex=-1;
   state.season=null;
@@ -3586,6 +3715,9 @@ function resetState(){
   state.longRace=null;
   state.pools=generatePools();
   state.draftRefreshUsed=false;
+  state.rivalDifficulty=null;
+  state.pickedTrackIds=null;
+  state.raceOptionsTab='dificuldade';
 }
 
 TRACKS.forEach(function(t){ t.trackData = buildTrackData(t.anchors); });
