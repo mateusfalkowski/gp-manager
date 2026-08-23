@@ -88,7 +88,8 @@
   background:var(--surface);border:1px solid var(--border);border-radius:10px;
   padding:13px 14px;cursor:pointer;transition:all .15s ease;position:relative;
 }
-#gpm .card:hover:not(.disabled){border-color:var(--accent);background:var(--surface-hover);}
+#gpm .card:hover:not(.disabled):not(.locked){border-color:var(--accent);background:var(--surface-hover);}
+#gpm .card.locked{cursor:default;}
 #gpm .card.selected{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.12),var(--surface));box-shadow:0 0 0 1px var(--accent) inset;}
 #gpm .card.disabled{opacity:.4;cursor:not-allowed;}
 #gpm .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
@@ -509,9 +510,9 @@ var AERO_PACOTES = [
   {id:'ferrari-f2004', nome:'Ferrari F2004', fabricante:'Era 2004', retas:88, curvas:82, vmax:84,
     desc:'Equilíbrio quase perfeito entre carga e baixo arrasto — um dos carros mais completos da história.',
     traitsPos:['Sem Ponto Fraco Claro'], traitsNeg:['Pacote Caro de Manter']},
-  {id:'redbull-rb19', nome:'Red Bull RB19', fabricante:'Era 2023', retas:80, curvas:90, vmax:76,
-    desc:'Efeito solo levado ao extremo — carga absurda em curva sem punir tanto assim a reta.',
-    traitsPos:['Downforce em Efeito Solo'], traitsNeg:['Sensível a Solavancos']},
+  {id:'redbull-rb19', nome:'Red Bull RB19', fabricante:'Era 2023', retas:88, curvas:96, vmax:86,
+    desc:'21 vitórias em 22 corridas — efeito solo levado ao extremo, sem ponto fraco de verdade em curva nem em reta.',
+    traitsPos:['Dominância Quase Total'], traitsNeg:['Sensível a Solavancos']},
   {id:'brawn-bgp001', nome:'Brawn BGP 001', fabricante:'Era 2009', retas:82, curvas:72, vmax:80,
     desc:'Difusor duplo que surpreendeu o grid inteiro — reta forte com carga suficiente pra não sofrer em curva.',
     traitsPos:['Vantagem de Regulamento'], traitsNeg:['Pouco Refinamento em Curvas Lentas']},
@@ -1257,23 +1258,19 @@ function renderRaceOptions(){
     if(pickedCount===0){
       wrap.appendChild(el('<div class="footer-info" style="margin-bottom:16px;">Clique em "Sortear pistas" pra ver as pistas da temporada.</div>'));
     } else {
+      // as 5 pistas sorteadas ficam travadas — só dá pra trocar sorteando de novo, não clicando
+      // numa pista escolhida pra tirá-la e abrir espaço pra outra
+      wrap.appendChild(el('<div class="footer-info" style="margin-bottom:12px;">Pistas sorteadas e travadas — clique em "Sortear '+SEASON_LENGTH+' pistas" de novo pra trocar.</div>'));
       var grid = el('<div class="cardgrid"></div>');
       TRACKS.forEach(function(t){
         var selected = state.pickedTrackIds.indexOf(t.id)>=0;
-        var disabled = !selected && state.pickedTrackIds.length>=SEASON_LENGTH;
         var card = el(
-          '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          '<div class="card locked'+(selected?' selected':' disabled')+'">'+
             (selected?'<div class="check">&#10003;</div>':'')+
             '<div class="card-top"><div><div class="card-name">'+t.flag+' '+t.name+'</div><div class="card-role">'+t.country+'</div></div></div>'+
             '<div class="card-desc">Pista conhecida por '+t.flavor+'.</div>'+
           '</div>'
         );
-        card.addEventListener('click', function(){
-          var idx = state.pickedTrackIds.indexOf(t.id);
-          if(idx>=0) state.pickedTrackIds.splice(idx,1);
-          else if(state.pickedTrackIds.length<SEASON_LENGTH) state.pickedTrackIds.push(t.id);
-          render();
-        });
         grid.appendChild(card);
       });
       wrap.appendChild(grid);
@@ -1583,7 +1580,7 @@ function standingsHtml(standings){
 
 // linha de destaque com a rival de título e a diferença de pontos atual — usada em toda tela que
 // já mostra a classificação, pra dar um fio narrativo à temporada em vez de só uma tabela
-function titleRivalCalloutHtml(){
+function titleRivalCalloutHtml(final){
   var seas = state.season;
   if(!seas || !seas.titleRivalKey) return '';
   var mine = seas.standings.filter(function(s){ return s.mine; })[0];
@@ -1591,7 +1588,28 @@ function titleRivalCalloutHtml(){
   if(!mine || !rival) return '';
   var diff = mine.points - rival.points;
   var cmp = diff===0 ? 'empatada em pontos com' : diff>0 ? ('com <b style="color:var(--good);">'+diff+' pts</b> de vantagem sobre') : ('<b style="color:var(--danger);">'+(-diff)+' pts</b> atrás de');
-  return '<div class="footer-info" style="margin-bottom:10px;">🎯 Sua rival de título é a <b style="color:var(--text);">'+rival.label+'</b> — você está '+cmp+' ela.</div>';
+  // temporada em andamento usa presente ("é"/"está"); temporada já encerrada usa passado
+  // ("foi"/"ficou") — sem isso, a tela de classificação final soava como se a corrida ainda tivesse rolando
+  var linkVerb = final ? 'foi' : 'é', stateVerb = final ? 'ficou' : 'está';
+  return '<div class="footer-info" style="margin-bottom:10px;">🎯 Sua rival de título '+linkVerb+' a <b style="color:var(--text);">'+rival.label+'</b> — você '+stateVerb+' '+cmp+' ela.</div>';
+}
+
+// anúncio da rival de título logo no início da temporada, antes da 1ª corrida (quando ainda não
+// tem classificação nenhuma pra comparar pontos, então é só a apresentação de quem é a ameaça)
+function titleRivalIntroHtml(){
+  var seas = state.season;
+  if(!seas || !seas.titleRivalKey) return '';
+  var rival = seas.standings.filter(function(s){ return s.key===seas.titleRivalKey; })[0];
+  if(!rival) return '';
+  return '<div class="footer-info" style="margin:0;">🎯 Sua rival de título nesta temporada é a <b style="color:var(--danger);">'+rival.label+'</b> — de olho nela até o final. Os pilotos dela aparecem em vermelho nos resultados.</div>';
+}
+
+// nome do piloto em vermelho quando ele é da equipe rival de título, pra ficar visível de cara
+// em qualquer lista de resultados (não só na tabela de classificação)
+function rivalNameHtml(name, teamKey){
+  var rivalKey = state.season ? state.season.titleRivalKey : null;
+  if(teamKey && rivalKey && teamKey===rivalKey) return '<span style="color:var(--danger);">'+name+'</span>';
+  return name;
 }
 
 // mensagem de fechamento pra tela de campeão: como terminou a disputa com a rival de título
@@ -1643,9 +1661,11 @@ function renderPrerace(){
     '<div class="lineup-row"><div><div class="lineup-role">Aerodinâmica</div><div class="lineup-name">'+state.aero.nome+' ('+state.aero.fabricante+')</div></div></div>';
   wrap.appendChild(panel);
 
-  if(seasonActive && state.season.trackIndex>0){
+  if(seasonActive){
     var standWrap = el('<div class="panel"></div>');
-    standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação atual do campeonato</div>'+titleRivalCalloutHtml()+standingsHtml(state.season.standings);
+    standWrap.innerHTML = state.season.trackIndex>0
+      ? ('<div class="timing-title" style="padding:0 0 8px;">Classificação atual do campeonato</div>'+titleRivalCalloutHtml()+standingsHtml(state.season.standings))
+      : titleRivalIntroHtml();
     wrap.appendChild(standWrap);
   }
 
@@ -1959,7 +1979,7 @@ function quickRaceRowHtml(d){
   var posClass = d.pos===1?'p1':d.pos===2?'p2':d.pos===3?'p3':'';
   return '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'" style="animation:none;opacity:1;">'+
     '<div class="pos '+posClass+'">'+d.pos+'</div>'+
-    '<div class="row-main"><div class="row-driver">'+shortName(d.driverName)+'</div><div class="row-team">'+d.team+'</div></div>'+
+    '<div class="row-main"><div class="row-driver">'+rivalNameHtml(shortName(d.driverName), d.teamKey)+'</div><div class="row-team">'+d.team+'</div></div>'+
     '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
   '</div>';
 }
@@ -2058,7 +2078,7 @@ function finishQuickSeasonUI(){
   actionsSlot.innerHTML = '';
 
   var standWrap = el('<div class="panel"></div>');
-  standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+titleRivalCalloutHtml()+standingsHtml(seas.standings);
+  standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+titleRivalCalloutHtml(true)+standingsHtml(seas.standings);
   actionsSlot.appendChild(standWrap);
 
   var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
@@ -2082,6 +2102,9 @@ function renderQuickSeason(){
       '<div class="subtitle">Os resultados vão aparecendo piloto por piloto. Cada corrida fecha sozinha ao terminar — clique nela pra reabrir e rever.</div>'+
     '</div>'
   ));
+
+  var introHtml = titleRivalIntroHtml();
+  if(introHtml) wrap.appendChild(el('<div class="panel">'+introHtml+'</div>'));
 
   wrap.appendChild(el('<div id="gpm-qs-board"></div>'));
   wrap.appendChild(el('<div id="gpm-qs-actions"></div>'));
@@ -3532,7 +3555,7 @@ function revealNext(){
   var row = el(
     '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'">'+
       '<div class="pos '+posClass+'">'+d.pos+'</div>'+
-      '<div class="row-main"><div class="row-driver">'+d.nome+'</div><div class="row-team">'+d.team+'</div></div>'+
+      '<div class="row-main"><div class="row-driver">'+rivalNameHtml(d.nome, d.teamKey)+'</div><div class="row-team">'+d.team+'</div></div>'+
       '<div class="row-gap">'+d.gap+'</div>'+
       '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
     '</div>'
@@ -3578,7 +3601,7 @@ function renderResults(){
     board.appendChild(el(
       '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'" style="animation:none;opacity:1;">'+
         '<div class="pos '+posClass+'">'+d.pos+'</div>'+
-        '<div class="row-main"><div class="row-driver">'+d.nome+'</div><div class="row-team">'+d.team+'</div></div>'+
+        '<div class="row-main"><div class="row-driver">'+rivalNameHtml(d.nome, d.teamKey)+'</div><div class="row-team">'+d.team+'</div></div>'+
         '<div class="row-gap">'+d.gap+'</div>'+
         '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
       '</div>'
@@ -3671,7 +3694,7 @@ function renderRecap(){
   ));
 
   state.season.history.forEach(function(h, i){
-    var podium = h.results.slice(0,3).map(function(d,j){ return (j+1)+'º '+shortName(d.driverName)+' ('+d.team+')'; }).join(' · ');
+    var podium = h.results.slice(0,3).map(function(d,j){ return (j+1)+'º '+rivalNameHtml(shortName(d.driverName), d.teamKey)+' ('+d.team+')'; }).join(' · ');
     var panel = el('<div class="panel"></div>');
     panel.innerHTML =
       '<div class="lineup-role">Corrida '+(i+1)+' de '+state.season.tracks.length+' — '+h.track.flag+' '+h.track.name+'</div>'+
