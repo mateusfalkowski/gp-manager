@@ -2614,6 +2614,587 @@
           ]
         }
       ]
+    },
+    {
+      "id": "drv_41",
+      "name": "Jacques Laffite",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Ligier",
+          "teammate": "Didier Pironi",
+          "overall": 78,
+          "pace": 79,
+          "consistency": 82,
+          "aggression": 70,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_42",
+      "name": "Didier Pironi",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 1981,
+          "team": "Ligier",
+          "teammate": "Jacques Laffite",
+          "overall": 83,
+          "pace": 87,
+          "consistency": 76,
+          "aggression": 92,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_43",
+      "name": "René Arnoux",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 1982,
+          "team": "Renault",
+          "teammate": "Alain Prost",
+          "overall": 82,
+          "pace": 88,
+          "consistency": 74,
+          "aggression": 90,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_44",
+      "name": "Niki Lauda",
+      "nationality": "AUT",
+      "seasons": [
+        {
+          "year": 1984,
+          "team": "McLaren",
+          "teammate": "Alain Prost",
+          "overall": 89,
+          "pace": 85,
+          "consistency": 93,
+          "aggression": 75,
+          "positive_traits": [
+            "Leitura de Corrida da Cabine"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_45",
+      "name": "Riccardo Patrese",
+      "nationality": "ITA",
+      "seasons": [
+        {
+          "year": 1989,
+          "team": "Williams",
+          "teammate": "Thierry Boutsen",
+          "overall": 80,
+          "pace": 82,
+          "consistency": 85,
+          "aggression": 70,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Dificuldade em Largadas"
+          ]
+        },
+        {
+          "year": 1992,
+          "team": "Williams",
+          "teammate": "Nigel Mansell",
+          "overall": 85,
+          "pace": 84,
+          "consistency": 88,
+          "aggression": 72,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_46",
+      "name": "Thierry Boutsen",
+      "nationality": "BEL",
+      "seasons": [
+        {
+          "year": 1989,
+          "team": "Williams",
+          "teammate": "Riccardo Patrese",
+          "overall": 77,
+          "pace": 78,
+          "consistency": 80,
+          "aggression": 65,
+          "positive_traits": [
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Falta de Ousadia em Ultrapassagens"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_47",
+      "name": "Jos Verstappen",
+      "nationality": "NED",
+      "seasons": [
+        {
+          "year": 1994,
+          "team": "Benetton",
+          "teammate": "Michael Schumacher",
+          "overall": 74,
+          "pace": 80,
+          "consistency": 65,
+          "aggression": 90,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_48",
+      "name": "Johnny Herbert",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1995,
+          "team": "Benetton",
+          "teammate": "Michael Schumacher",
+          "overall": 76,
+          "pace": 75,
+          "consistency": 80,
+          "aggression": 68,
+          "positive_traits": [
+            "Zero Erros Não Forçados"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_49",
+      "name": "Heinz-Harald Frentzen",
+      "nationality": "DEU",
+      "seasons": [
+        {
+          "year": 1997,
+          "team": "Williams",
+          "teammate": "Jacques Villeneuve",
+          "overall": 80,
+          "pace": 86,
+          "consistency": 72,
+          "aggression": 78,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_50",
+      "name": "Mika Häkkinen",
+      "nationality": "FIN",
+      "seasons": [
+        {
+          "year": 1998,
+          "team": "McLaren",
+          "teammate": "David Coulthard",
+          "overall": 93,
+          "pace": 95,
+          "consistency": 90,
+          "aggression": 85,
+          "positive_traits": [
+            "Frieza em Disputas Roda a Roda"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_51",
+      "name": "David Coulthard",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 1998,
+          "team": "McLaren",
+          "teammate": "Mika Häkkinen",
+          "overall": 85,
+          "pace": 86,
+          "consistency": 88,
+          "aggression": 75,
+          "positive_traits": [
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_52",
+      "name": "Sebastian Vettel",
+      "nationality": "DEU",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "Toro Rosso",
+          "teammate": "Sébastien Bourdais",
+          "overall": 78,
+          "pace": 85,
+          "consistency": 70,
+          "aggression": 88,
+          "positive_traits": [
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2010,
+          "team": "Red Bull Racing",
+          "teammate": "Mark Webber",
+          "overall": 94,
+          "pace": 93,
+          "consistency": 88,
+          "aggression": 90,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_53",
+      "name": "Sébastien Bourdais",
+      "nationality": "FRA",
+      "seasons": [
+        {
+          "year": 2008,
+          "team": "Toro Rosso",
+          "teammate": "Sebastian Vettel",
+          "overall": 68,
+          "pace": 75,
+          "consistency": 65,
+          "aggression": 60,
+          "positive_traits": [
+            "Ritmo de Volta Rápida Consistente"
+          ],
+          "negative_traits": [
+            "Adaptação Difícil à Categoria"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_54",
+      "name": "Mark Webber",
+      "nationality": "AUS",
+      "seasons": [
+        {
+          "year": 2010,
+          "team": "Red Bull Racing",
+          "teammate": "Sebastian Vettel",
+          "overall": 86,
+          "pace": 87,
+          "consistency": 82,
+          "aggression": 85,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Choques com Companheiro de Equipe"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_55",
+      "name": "Nico Hülkenberg",
+      "nationality": "DEU",
+      "seasons": [
+        {
+          "year": 2012,
+          "team": "Force India",
+          "teammate": "Paul di Resta",
+          "overall": 79,
+          "pace": 85,
+          "consistency": 74,
+          "aggression": 76,
+          "positive_traits": [
+            "Pole Positions Surpreendentes"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2016,
+          "team": "Force India",
+          "teammate": "Sergio Pérez",
+          "overall": 81,
+          "pace": 82,
+          "consistency": 85,
+          "aggression": 74,
+          "positive_traits": [
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Poucas Ultrapassagens Ousadas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_56",
+      "name": "Paul di Resta",
+      "nationality": "GBR",
+      "seasons": [
+        {
+          "year": 2012,
+          "team": "Force India",
+          "teammate": "Nico Hülkenberg",
+          "overall": 74,
+          "pace": 76,
+          "consistency": 78,
+          "aggression": 68,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_57",
+      "name": "Felipe Massa",
+      "nationality": "BRA",
+      "seasons": [
+        {
+          "year": 2015,
+          "team": "Williams",
+          "teammate": "Valtteri Bottas",
+          "overall": 80,
+          "pace": 81,
+          "consistency": 83,
+          "aggression": 72,
+          "positive_traits": [
+            "Gestão de Pneus Impecável"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_58",
+      "name": "Daniil Kvyat",
+      "nationality": "RUS",
+      "seasons": [
+        {
+          "year": 2019,
+          "team": "Toro Rosso",
+          "teammate": "Alexander Albon",
+          "overall": 75,
+          "pace": 80,
+          "consistency": 68,
+          "aggression": 82,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_59",
+      "name": "Alexander Albon",
+      "nationality": "THA",
+      "seasons": [
+        {
+          "year": 2019,
+          "team": "Toro Rosso",
+          "teammate": "Daniil Kvyat",
+          "overall": 78,
+          "pace": 82,
+          "consistency": 75,
+          "aggression": 78,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2023,
+          "team": "Williams",
+          "teammate": "Logan Sargeant",
+          "overall": 82,
+          "pace": 84,
+          "consistency": 80,
+          "aggression": 74,
+          "positive_traits": [
+            "Execução Técnica Precisa"
+          ],
+          "negative_traits": [
+            "Ritmo Abaixo da Média"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_60",
+      "name": "Lance Stroll",
+      "nationality": "CAN",
+      "seasons": [
+        {
+          "year": 2020,
+          "team": "Racing Point",
+          "teammate": "Sergio Pérez",
+          "overall": 76,
+          "pace": 79,
+          "consistency": 70,
+          "aggression": 75,
+          "positive_traits": [
+            "Excelente em Condições Mistas"
+          ],
+          "negative_traits": [
+            "Ainda Inconsistente sob Pressão"
+          ]
+        },
+        {
+          "year": 2025,
+          "team": "Aston Martin",
+          "teammate": "Fernando Alonso",
+          "overall": 74,
+          "pace": 76,
+          "consistency": 74,
+          "aggression": 68,
+          "positive_traits": [
+            "Consistência de Pontuação"
+          ],
+          "negative_traits": [
+            "Qualifying Abaixo do Potencial"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_61",
+      "name": "Kevin Magnussen",
+      "nationality": "DNK",
+      "seasons": [
+        {
+          "year": 2022,
+          "team": "Haas",
+          "teammate": "Mick Schumacher",
+          "overall": 78,
+          "pace": 80,
+          "consistency": 72,
+          "aggression": 93,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Penalidades por Contato"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_62",
+      "name": "Mick Schumacher",
+      "nationality": "DEU",
+      "seasons": [
+        {
+          "year": 2022,
+          "team": "Haas",
+          "teammate": "Kevin Magnussen",
+          "overall": 68,
+          "pace": 73,
+          "consistency": 60,
+          "aggression": 75,
+          "positive_traits": [
+            "Curva de Aprendizado Rápida"
+          ],
+          "negative_traits": [
+            "Erros sob Pressão"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drv_63",
+      "name": "Yuki Tsunoda",
+      "nationality": "JPN",
+      "seasons": [
+        {
+          "year": 2024,
+          "team": "RB",
+          "teammate": "Daniel Ricciardo",
+          "overall": 76,
+          "pace": 82,
+          "consistency": 70,
+          "aggression": 88,
+          "positive_traits": [
+            "Largadas Explosivas"
+          ],
+          "negative_traits": [
+            "Excesso de Confiança em Disputas"
+          ]
+        }
+      ]
     }
   ],
   "motores": [
