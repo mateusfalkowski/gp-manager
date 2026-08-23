@@ -1075,6 +1075,30 @@ function rerollCurrentDraftPool(){
   render();
 }
 
+/* ---------- conquistas: salvas no localStorage, sobrevivem entre partidas/recarregamentos ---------- */
+var ACHIEVEMENTS = [
+  {id:'first_win', icon:'🥇', nome:'Primeira Vitória', desc:'Vença sua primeira corrida.'},
+  {id:'beat_rival', icon:'🎯', nome:'Vingança', desc:'Termine a temporada à frente da sua rival de título.'},
+  {id:'perfect_season', icon:'💯', nome:'Temporada Perfeita', desc:'Vença as 5 corridas de uma única temporada.'},
+  {id:'champion', icon:'🏆', nome:'Campeão', desc:'Vença o campeonato da temporada.'}
+];
+
+function loadBadges(){
+  try { return JSON.parse(localStorage.getItem('gpm_badges')||'{}'); } catch(e){ return {}; }
+}
+function saveBadges(b){
+  try { localStorage.setItem('gpm_badges', JSON.stringify(b)); } catch(e){}
+}
+// desbloqueia 1 conquista se ainda não tinha sido conquistada — retorna true só quando é nova,
+// pra dar pra avisar o jogador só na hora que ele realmente ganhou, não toda vez que já tinha
+function unlockBadge(id){
+  var badges = loadBadges();
+  if(badges[id]) return false;
+  badges[id] = new Date().toISOString();
+  saveBadges(badges);
+  return true;
+}
+
 var state = {
   screen:'mode', // mode | draft | prerace | race | highlights | reveal | results | champion | quickseason
   mode:null, // 'single' | 'season' | 'quickseason'
@@ -1160,6 +1184,7 @@ function render(){
   else if(state.screen==='recap') root.appendChild(renderRecap());
   else if(state.screen==='quickseason') root.appendChild(renderQuickSeason());
   else if(state.screen==='almanacreveal') root.appendChild(renderAlmanacReveal());
+  else if(state.screen==='badges') root.appendChild(renderBadges());
 }
 
 function renderModeSelect(){
@@ -1212,6 +1237,45 @@ function renderModeSelect(){
   grid.appendChild(almanac);
 
   wrap.appendChild(grid);
+
+  var badges = loadBadges();
+  var badgeCount = Object.keys(badges).length;
+  var badgesBtn = el('<button class="btn ghost" style="margin-top:14px;">🎖️ Conquistas ('+badgeCount+'/'+ACHIEVEMENTS.length+')</button>');
+  badgesBtn.addEventListener('click', function(){ state.screen='badges'; render(); });
+  wrap.appendChild(badgesBtn);
+
+  return wrap;
+}
+
+function renderBadges(){
+  var wrap = el('<div></div>');
+  var back = el('<button class="btn ghost back-btn">← Voltar</button>');
+  back.addEventListener('click', function(){ state.screen='mode'; render(); });
+  wrap.appendChild(back);
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">Grand Prix Manager</div>'+
+      '<h1>🎖️ Conquistas</h1>'+
+      '<div class="subtitle">Salvas neste navegador — continuam valendo mesmo depois de fechar o jogo.</div>'+
+    '</div>'
+  ));
+
+  var badges = loadBadges();
+  var grid = el('<div class="cardgrid"></div>');
+  ACHIEVEMENTS.forEach(function(a){
+    var earned = badges[a.id];
+    var dateStr = earned ? new Date(earned).toLocaleDateString('pt-BR') : null;
+    grid.appendChild(el(
+      '<div class="card'+(earned?' selected':' disabled')+'">'+
+        '<div class="card-top"><div><div class="card-name">'+a.icon+' '+a.nome+'</div></div></div>'+
+        '<div class="card-desc" style="margin-top:8px;">'+a.desc+'</div>'+
+        (earned ? '<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">Conquistado em '+dateStr+'</b></div>' : '<div class="card-desc" style="margin-top:8px;">🔒 Ainda não desbloqueada</div>')+
+      '</div>'
+    ));
+  });
+  wrap.appendChild(grid);
+
   return wrap;
 }
 
@@ -2091,12 +2155,63 @@ function clearQuickSeasonTimer(){
   if(state.qsTimer){ clearTimeout(state.qsTimer); state.qsTimer = null; }
 }
 
+// manchete curta pro resultado da corrida, tipo capa de jornal esportivo — olha pro campo já
+// ordenado e escolhe o fato mais chamativo (checados em ordem de prioridade: zebra grande antes
+// de resultado morno), sempre citando pista/piloto/equipe reais daquela corrida específica
+function generateHeadline(field, track, seas){
+  var pais = track.country;
+  var mine = field.filter(function(d){ return d.mine; });
+  var mineFinished = mine.filter(function(d){ return !d.dnf; }).sort(function(a,b){ return a.pos-b.pos; });
+  var winner = field.filter(function(d){ return d.pos===1; })[0];
+  var rivalKey = seas ? seas.titleRivalKey : null;
+  var dnfs = field.filter(function(d){ return d.dnf; });
+
+  if(mineFinished.length>=2 && mineFinished[0].pos===1 && mineFinished[1].pos===2){
+    return '🏆 Dobradinha da '+state.teamName+' em '+pais+'!';
+  }
+  var rivalDnf = dnfs.filter(function(d){ return d.teamKey===rivalKey; })[0];
+  if(rivalDnf){
+    return '🎯 Zebra pra rival! '+shortName(rivalDnf.driverName)+' ('+rivalDnf.team+') abandona em '+pais+'.';
+  }
+  var favoriteDnf = dnfs.filter(function(d){ return d.vel>=90; }).sort(function(a,b){ return b.vel-a.vel; })[0];
+  if(favoriteDnf){
+    return '😱 Zebra em '+pais+': favorito '+shortName(favoriteDnf.driverName)+' abandona de vez.';
+  }
+  if(dnfs.length>=3){
+    return '💥 Caos em '+pais+': '+dnfs.length+' abandonos na corrida.';
+  }
+  if(winner && winner.vel<70){
+    return '🐴 Zebra! '+shortName(winner.driverName)+' ('+winner.team+') surpreende e vence em '+pais+'.';
+  }
+  if(mineFinished.length && mineFinished[0].pos===1){
+    var second = field.filter(function(d){ return d.pos===2; })[0];
+    var gapNum = second ? parseFloat((second.gap||'').replace(/[^0-9.]/g,'')) : null;
+    if(gapNum!=null && gapNum<1){
+      return '📸 Vitória apertadíssima da '+state.teamName+' em '+pais+'!';
+    }
+    return '🚀 Domínio da '+state.teamName+' em '+pais+' — vitória tranquila.';
+  }
+  if(mine.length && mine.every(function(d){ return d.dnf; })){
+    return '💀 Corrida pra esquecer: a '+state.teamName+' não termina em '+pais+'.';
+  }
+  if(rivalKey){
+    var rivalFinished = field.filter(function(d){ return d.teamKey===rivalKey && !d.dnf; }).sort(function(a,b){ return a.pos-b.pos; })[0];
+    if(rivalFinished && rivalFinished.pos===1){
+      return '🎯 Rival na ponta: '+shortName(rivalFinished.driverName)+' vence em '+pais+'.';
+    }
+  }
+  return '🏁 '+shortName(winner.driverName)+' vence em '+pais+' pela '+winner.team+'.';
+}
+
 function resolveOneQuickRace(){
   var seas = state.season;
   var track = seas.tracks[seas.trackIndex];
   var field = resolveRace(buildFieldBase(seas.rivals), track.laps);
   applyStandings(field);
-  seas.history.push({track:track, results:field.slice(), highlights:buildHighlights(field, track)});
+  var headline = generateHeadline(field, track, seas);
+  var newBadges = [];
+  if(field.some(function(d){ return d.mine && d.pos===1; }) && unlockBadge('first_win')) newBadges.push('first_win');
+  seas.history.push({track:track, results:field.slice(), highlights:buildHighlights(field, track), headline:headline, newBadges:newBadges});
   seas.trackIndex++;
 }
 
@@ -2134,9 +2249,15 @@ function startNextQuickRace(){
   var idx = seas.history.length-1;
   var entry = seas.history[idx];
 
+  var newBadgesHtml = (entry.newBadges||[]).map(function(id){
+    var a = ACHIEVEMENTS.filter(function(x){ return x.id===id; })[0];
+    return a ? '<div class="footer-info" style="margin:4px 0;"><b style="color:var(--accent-2);">🎖️ Conquista desbloqueada: '+a.icon+' '+a.nome+'</b></div>' : '';
+  }).join('');
   var det = el(
     '<details class="panel" open id="gpm-qs-race-'+idx+'">'+
       '<summary>Corrida '+(idx+1)+' de '+seas.tracks.length+' — '+entry.track.flag+' '+entry.track.name+'</summary>'+
+      '<div class="footer-info" style="margin:8px 0;font-style:italic;">📰 '+entry.headline+'</div>'+
+      newBadgesHtml+
       '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;" id="gpm-qs-rows-'+idx+'"></div>'+
     '</details>'
   );
@@ -3906,6 +4027,17 @@ function renderChampion(){
   var myPts = standings.filter(function(s){return s.mine;})[0].points;
   var isChamp = myPos===1;
 
+  // checa as conquistas de fim de temporada — unlockBadge só retorna true na primeira vez de
+  // verdade (persistido no navegador), então isso não repete o aviso em visitas futuras a esta tela
+  var rival = state.season.titleRivalKey ? standings.filter(function(s){ return s.key===state.season.titleRivalKey; })[0] : null;
+  var newBadges = [];
+  if(isChamp && unlockBadge('champion')) newBadges.push('champion');
+  if(rival && myPts>rival.points && unlockBadge('beat_rival')) newBadges.push('beat_rival');
+  var wonAllRaces = state.season.history.length>0 && state.season.history.every(function(h){
+    return h.results.some(function(d){ return d.mine && d.pos===1; });
+  });
+  if(wonAllRaces && unlockBadge('perfect_season')) newBadges.push('perfect_season');
+
   wrap.appendChild(el(
     '<div class="header">'+
       '<div class="eyebrow">Fim de temporada</div>'+
@@ -3923,6 +4055,15 @@ function renderChampion(){
 
   var rivalOutcome = titleRivalOutcomeHtml();
   if(rivalOutcome) wrap.appendChild(el(rivalOutcome));
+
+  if(newBadges.length){
+    var badgesPanel = el('<div class="panel" style="text-align:center;"></div>');
+    badgesPanel.innerHTML = newBadges.map(function(id){
+      var a = ACHIEVEMENTS.filter(function(x){ return x.id===id; })[0];
+      return '<div class="footer-info" style="margin:4px 0;"><b style="color:var(--accent-2);">🎖️ Conquista desbloqueada: '+a.icon+' '+a.nome+'</b></div>';
+    }).join('');
+    wrap.appendChild(badgesPanel);
+  }
 
   var standWrap = el('<div class="panel"></div>');
   standWrap.innerHTML = '<div class="timing-title" style="padding:0 0 8px;">Classificação final</div>'+standingsHtml(standings);
@@ -4038,6 +4179,7 @@ function renderRecap(){
     var panel = el('<div class="panel"></div>');
     panel.innerHTML =
       '<div class="lineup-role">Corrida '+(i+1)+' de '+state.season.tracks.length+' — '+h.track.flag+' '+h.track.name+'</div>'+
+      (h.headline ? '<div class="card-desc" style="margin-top:6px;font-style:italic;">📰 '+h.headline+'</div>' : '')+
       '<div class="card-desc" style="margin:6px 0 10px;">Pódio: '+podium+'</div>'+
       '<div class="hl-board">'+highlightsHtml(h.highlights)+'</div>';
     wrap.appendChild(panel);
