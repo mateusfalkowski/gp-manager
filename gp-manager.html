@@ -1086,7 +1086,13 @@ var ACHIEVEMENTS = [
   {id:'first_win', icon:'🥇', nome:'Primeira Vitória', desc:'Vença sua primeira corrida.'},
   {id:'beat_rival', icon:'🎯', nome:'Vingança', desc:'Termine a temporada à frente da sua rival de título.'},
   {id:'perfect_season', icon:'💯', nome:'Temporada Perfeita', desc:'Vença as 5 corridas de uma única temporada.'},
-  {id:'champion', icon:'🏆', nome:'Campeão', desc:'Vença o campeonato da temporada.'}
+  {id:'champion', icon:'🏆', nome:'Campeão', desc:'Vença o campeonato da temporada.'},
+  {id:'podium_lockout', icon:'🥈', nome:'Dobradinha', desc:'Termine 1º e 2º com seus dois pilotos numa mesma corrida.'},
+  {id:'no_dnf_season', icon:'🧹', nome:'Temporada Limpa', desc:'Complete uma temporada inteira sem nenhum abandono da sua equipe.'},
+  {id:'hard_mode_champion', icon:'😈', nome:'Sem Dó', desc:'Vença o campeonato na dificuldade Difícil.'},
+  {id:'almanac_champion', icon:'📖', nome:'Mestre do Almanaque', desc:'Vença o campeonato no modo Almanaque, escolhendo no escuro.'},
+  {id:'crush_rival', icon:'💪', nome:'Humilhação', desc:'Termine a temporada com 100 pontos ou mais de vantagem sobre sua rival de título.'},
+  {id:'veteran', icon:'🔄', nome:'Veterano', desc:'Complete 5 temporadas, ganhando ou perdendo.'}
 ];
 
 var firebaseConfig = {
@@ -1135,6 +1141,20 @@ function unlockBadge(id){
   return true;
 }
 
+// contador simples de temporadas concluídas (só local — não precisa sincronizar entre
+// aparelhos), usado pela conquista "Veterano". Incrementa 1x por temporada de verdade, no
+// momento exato em que ela termina (finishQuickSeasonUI), não toda vez que a tela de campeão renderiza
+function bumpSeasonsCompleted(){
+  var n = 0;
+  try { n = parseInt(localStorage.getItem('gpm_seasons_completed')||'0', 10) || 0; } catch(e){}
+  n++;
+  try { localStorage.setItem('gpm_seasons_completed', String(n)); } catch(e){}
+  return n;
+}
+function getSeasonsCompleted(){
+  try { return parseInt(localStorage.getItem('gpm_seasons_completed')||'0', 10) || 0; } catch(e){ return 0; }
+}
+
 // une as conquistas da nuvem com as locais (a data mais antiga de cada uma vence) e sobe pra
 // nuvem qualquer conquista que só existia local — cobre tanto "jogou em outro aparelho antes"
 // quanto "jogou offline neste aparelho antes de logar"
@@ -1157,27 +1177,50 @@ function mergeCloudBadges(cloudData){
 
 function loginWithGoogle(){
   if(!fbAuth) return;
-  fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){
+  // aplica o usuário direto aqui, assim que o popup resolve — não depende só do listener
+  // onAuthStateChanged (cuja timing com o debounce do render() já causou tela desatualizada até
+  // navegar pra outra aba e voltar); ainda tem o listener e o poll de segurança como reforço
+  fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(function(result){
+    applyAuthUser(result.user);
+  }).catch(function(e){
     alert('Não foi possível entrar: '+e.message);
   });
 }
 function logout(){
-  if(fbAuth) fbAuth.signOut();
+  if(!fbAuth) return;
+  fbAuth.signOut().then(function(){
+    state.user = null;
+    render(true);
+  });
 }
+// aplica o usuário do Firebase Auth no state, buscando/mesclando as conquistas da nuvem —
+// compartilhado entre o listener onAuthStateChanged e a checagem de segurança abaixo, pra não
+// duplicar essa lógica em dois lugares
+function applyAuthUser(user){
+  if(user){
+    state.user = {uid:user.uid, name:user.displayName, photo:user.photoURL};
+    fbDb.collection('badges').doc(user.uid).get().then(function(doc){
+      mergeCloudBadges(doc.exists ? doc.data() : {});
+      render(true);
+    }).catch(function(){ render(true); });
+  } else {
+    state.user = null;
+    render(true);
+  }
+}
+
 function initAuth(){
   if(!fbAuth) return;
-  fbAuth.onAuthStateChanged(function(user){
-    if(user){
-      state.user = {uid:user.uid, name:user.displayName, photo:user.photoURL};
-      fbDb.collection('badges').doc(user.uid).get().then(function(doc){
-        mergeCloudBadges(doc.exists ? doc.data() : {});
-        render(true);
-      }).catch(function(){ render(true); });
-    } else {
-      state.user = null;
-      render(true);
-    }
-  });
+  fbAuth.onAuthStateChanged(applyAuthUser);
+  // rede de segurança: confere a cada 1.5s se o usuário logado no SDK bate com o que a tela tá
+  // mostrando — cobre qualquer caso em que o listener acima (ou o .then() do popup de login)
+  // não dispare um re-render por algum motivo, sem depender só de um único caminho
+  setInterval(function(){
+    var cur = fbAuth.currentUser;
+    var curUid = cur ? cur.uid : null;
+    var shownUid = state.user ? state.user.uid : null;
+    if(curUid !== shownUid) applyAuthUser(cur);
+  }, 1500);
 }
 
 var state = {
@@ -2321,6 +2364,8 @@ function resolveOneQuickRace(){
   var headline = generateHeadline(field, track, seas);
   var newBadges = [];
   if(field.some(function(d){ return d.mine && d.pos===1; }) && unlockBadge('first_win')) newBadges.push('first_win');
+  var mineFinishedForBadge = field.filter(function(d){ return d.mine && !d.dnf; }).sort(function(a,b){ return a.pos-b.pos; });
+  if(mineFinishedForBadge.length>=2 && mineFinishedForBadge[0].pos===1 && mineFinishedForBadge[1].pos===2 && unlockBadge('podium_lockout')) newBadges.push('podium_lockout');
   seas.history.push({track:track, results:field.slice(), highlights:buildHighlights(field, track), headline:headline, newBadges:newBadges});
   seas.trackIndex++;
 }
@@ -2427,6 +2472,7 @@ function skipQuickSeason(){
 
 function finishQuickSeasonUI(){
   var seas = state.season;
+  bumpSeasonsCompleted();
   var skipbar = document.getElementById('gpm-qs-skipbar');
   if(skipbar) skipbar.style.display = 'none';
   var actionsSlot = document.getElementById('gpm-qs-actions');
@@ -4147,6 +4193,14 @@ function renderChampion(){
     return h.results.some(function(d){ return d.mine && d.pos===1; });
   });
   if(wonAllRaces && unlockBadge('perfect_season')) newBadges.push('perfect_season');
+  var noDnf = state.season.history.length>0 && state.season.history.every(function(h){
+    return h.results.every(function(d){ return !d.mine || !d.dnf; });
+  });
+  if(noDnf && unlockBadge('no_dnf_season')) newBadges.push('no_dnf_season');
+  if(isChamp && state.rivalDifficulty==='dificil' && unlockBadge('hard_mode_champion')) newBadges.push('hard_mode_champion');
+  if(isChamp && state.almanac && unlockBadge('almanac_champion')) newBadges.push('almanac_champion');
+  if(rival && myPts-rival.points>=100 && unlockBadge('crush_rival')) newBadges.push('crush_rival');
+  if(getSeasonsCompleted()>=5 && unlockBadge('veteran')) newBadges.push('veteran');
 
   wrap.appendChild(el(
     '<div class="header">'+
