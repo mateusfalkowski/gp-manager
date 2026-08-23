@@ -516,15 +516,15 @@ var AERO_PACOTES = [
   {id:'brawn-bgp001', nome:'Brawn BGP 001', fabricante:'Era 2009', retas:82, curvas:72, vmax:80,
     desc:'Difusor duplo que surpreendeu o grid inteiro — reta forte com carga suficiente pra não sofrer em curva.',
     traitsPos:['Vantagem de Regulamento'], traitsNeg:['Pouco Refinamento em Curvas Lentas']},
-  {id:'lotus-79', nome:'Lotus 79', fabricante:'Era 1978', retas:60, curvas:84, vmax:56,
-    desc:'Pioneiro do efeito solo — colava a curva de um jeito que ninguém mais conseguia, mas era lento em reta.',
-    traitsPos:['Efeito Solo Pioneiro'], traitsNeg:['Reta Fraca']},
+  {id:'brabham-bt49', nome:'Brabham BT49', fabricante:'Era 1981', retas:60, curvas:84, vmax:56,
+    desc:'Efeito solo leve e ágil, campeão em 1981 — colava a curva de um jeito que ninguém mais conseguia, mas era lento em reta.',
+    traitsPos:['Leveza em Curva'], traitsNeg:['Reta Fraca']},
   {id:'mercedes-w11', nome:'Mercedes W11', fabricante:'Era 2020', retas:86, curvas:80, vmax:88,
     desc:'DAS e um motor forte davam uma velocidade máxima rara sem abrir mão de carga em curva.',
     traitsPos:['Velocidade Máxima de Ponta'], traitsNeg:['Curva Lenta Apenas Boa']},
-  {id:'tyrrell-p34', nome:'Tyrrell P34', fabricante:'Era 1976', retas:52, curvas:75, vmax:48,
-    desc:'Seis rodas e mais área de contato em curva — um experimento e tanto, mas nunca foi rápido em reta.',
-    traitsPos:['Tração em Curva Lenta'], traitsNeg:['Velocidade Máxima Baixa']},
+  {id:'lotus-88', nome:'Lotus 88', fabricante:'Era 1981', retas:52, curvas:75, vmax:48,
+    desc:'Duplo chassi tão avançado que foi banido antes de correr de verdade — um experimento e tanto, mas nunca foi rápido em reta.',
+    traitsPos:['Conceito de Duplo Chassi'], traitsNeg:['Banido Antes de Correr']},
   {id:'red-bull-x2010', nome:'Conceito Baixo Arrasto', fabricante:'Filosofia Power Track', retas:90, curvas:60, vmax:92,
     desc:'Pacote extremo de baixo arrasto, pensado só pra reta — em curva técnica sofre visivelmente.',
     traitsPos:['Reta Devastadora'], traitsNeg:['Curva Técnica é Fraqueza']},
@@ -1095,6 +1095,7 @@ function render(){
   else if(state.screen==='champion') root.appendChild(renderChampion());
   else if(state.screen==='recap') root.appendChild(renderRecap());
   else if(state.screen==='quickseason') root.appendChild(renderQuickSeason());
+  else if(state.screen==='almanacreveal') root.appendChild(renderAlmanacReveal());
 }
 
 function renderModeSelect(){
@@ -1530,19 +1531,36 @@ function renderDraft(){
 function initSeason(){
   var myPersonIds = state.pilotos.map(function(p){ return p.personId; });
   var rivals = buildRivalPool(10, myPersonIds);
+
+  // agrupa por pairKey (as duplas de companheiro de equipe real que o buildRivalPool já formou),
+  // em vez de parear por índice cego — parear por índice separava duplas reais quando um piloto
+  // avulso (sem companheiro encontrado) ficava intercalado entre elas no array, e ainda juntava
+  // esse avulso com o início de outra dupla como se fossem companheiros de equipe
+  var groups = [], byKey = {};
+  rivals.forEach(function(r){
+    var key = r.pairKey || ('solo_'+r.personId);
+    if(!byKey[key]){ byKey[key] = []; groups.push(byKey[key]); }
+    byKey[key].push(r);
+  });
   // a equipe do jogador tem 2 pilotos com pontos somados — pra ser justo, os 10 rivais também
-  // formam 5 equipes de 2, senão a equipe do jogador sempre pontua em dobro contra pilotos sozinhos
-  var standings = [{key:'mine', label:state.teamName, mine:true, points:0}];
-  for(var i=0;i<rivals.length;i+=2){
-    var teamKey = 'rt_'+(i/2);
-    var partner = rivals[i+1];
-    var anchorLabel = rivals[i].team + (rivals[i].year ? ' '+rivals[i].year : '');
-    var partnerLabel = partner ? partner.team + (partner.year ? ' '+partner.year : '') : null;
-    var teamLabel = (partner && partner.team && partner.team!==rivals[i].team) ? anchorLabel+' / '+partnerLabel : anchorLabel;
-    rivals[i].teamKey = teamKey;
-    if(partner) partner.teamKey = teamKey;
-    standings.push({key:teamKey, label:teamLabel, mine:false, points:0});
+  // formam 5 "equipes" de 2. As duplas reais já vêm prontas do agrupamento acima; só falta
+  // combinar quem ficou sozinho (sem companheiro real), dois a dois
+  var teams = [], solos = [];
+  groups.forEach(function(g){ if(g.length>=2) teams.push(g); else solos.push(g[0]); });
+  for(var s=0;s<solos.length;s+=2){
+    teams.push(solos[s+1] ? [solos[s], solos[s+1]] : [solos[s]]);
   }
+
+  var standings = [{key:'mine', label:state.teamName, mine:true, points:0}];
+  teams.forEach(function(members, idx){
+    var teamKey = 'rt_'+idx;
+    var partner = members[1];
+    var anchorLabel = members[0].team + (members[0].year ? ' '+members[0].year : '');
+    var partnerLabel = partner ? partner.team + (partner.year ? ' '+partner.year : '') : null;
+    var teamLabel = (partner && partner.team && partner.team!==members[0].team) ? anchorLabel+' / '+partnerLabel : anchorLabel;
+    members.forEach(function(m){ m.teamKey = teamKey; });
+    standings.push({key:teamKey, label:teamLabel, mine:false, points:0});
+  });
   var tracks = (state.pickedTrackIds && state.pickedTrackIds.length===SEASON_LENGTH)
     ? state.pickedTrackIds.map(function(id){ return TRACKS.filter(function(t){ return t.id===id; })[0]; })
     : TRACKS.slice(0, SEASON_LENGTH);
@@ -3672,12 +3690,81 @@ function renderChampion(){
   wrap.appendChild(standWrap);
 
   var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
+  if(state.almanac){
+    var revealBtn = el('<button class="btn ghost">🔓 Revelar atributos ocultos</button>');
+    revealBtn.addEventListener('click', function(){ state.screen='almanacreveal'; render(); });
+    actions.appendChild(revealBtn);
+  }
   var recapBtn = el('<button class="btn ghost">Ver retrospectiva da temporada</button>');
   recapBtn.addEventListener('click', function(){ state.screen='recap'; render(); });
   var restart = el('<button class="btn">Nova temporada</button>');
   restart.addEventListener('click', function(){ resetState(); render(); });
   actions.appendChild(recapBtn);
   actions.appendChild(restart);
+  wrap.appendChild(actions);
+
+  return wrap;
+}
+
+// pós-temporada do modo Almanaque: mostra as mesmas cartas do draft, mas agora com os atributos
+// e traços que ficaram ocultos na hora de escolher — os números sempre existiram e valeram pra
+// corrida, isso só revela o que o jogador escolheu no escuro
+function renderAlmanacReveal(){
+  var wrap = el('<div></div>');
+  var back = el('<button class="btn ghost back-btn">← Voltar</button>');
+  back.addEventListener('click', function(){ state.screen='champion'; render(); });
+  wrap.appendChild(back);
+
+  wrap.appendChild(el(
+    '<div class="header">'+
+      '<div class="eyebrow">📖 Modo Almanaque</div>'+
+      '<h1>Atributos revelados</h1>'+
+      '<div class="subtitle">Era isso que você escolheu no escuro — os números sempre valeram pra corrida.</div>'+
+    '</div>'
+  ));
+
+  var grid = el('<div class="cardgrid"></div>');
+  var c = state.chefe;
+  grid.appendChild(el(
+    '<div class="card selected">'+
+      '<div class="card-top"><div><div class="card-name">'+c.pais+' '+c.nome+'</div><div class="card-role">Chefe de equipe — '+c.apelido+'</div></div></div>'+
+      '<div class="stats">'+statBar('Liderança',c.lideranca)+statBar('Estratégia',c.estrategia)+statBar('Desenvolvimento',c.desenvolvimento)+'</div>'+
+      traitTags(c.traitsPos, c.traitsNeg)+
+    '</div>'
+  ));
+  state.pilotos.forEach(function(p,i){
+    grid.appendChild(el(
+      '<div class="card selected">'+
+        '<div class="card-top"><div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">Piloto '+(i+1)+' — '+p.apelido+'</div></div></div>'+
+        '<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'+
+        traitTags(p.traitsPos, p.traitsNeg)+
+      '</div>'
+    ));
+  });
+  var m = state.motor;
+  grid.appendChild(el(
+    '<div class="card selected">'+
+      '<div class="card-top"><div><div class="card-name">'+m.nome+'</div><div class="card-role">Motor — '+m.fabricante+'</div></div></div>'+
+      '<div class="stats">'+statBar('Potência',m.pot)+statBar('Confiabilidade',m.confiab)+'</div>'+
+      '<div class="card-desc" style="margin-top:8px;">'+m.desc+'</div>'+
+      traitTags(m.traitsPos, m.traitsNeg)+
+    '</div>'
+  ));
+  var a = state.aero;
+  grid.appendChild(el(
+    '<div class="card selected">'+
+      '<div class="card-top"><div><div class="card-name">'+a.nome+'</div><div class="card-role">Aerodinâmica — '+a.fabricante+'</div></div></div>'+
+      '<div class="stats">'+statBar('Retas',a.retas)+statBar('Curvas',a.curvas)+statBar('Velocidade Máxima',a.vmax)+'</div>'+
+      '<div class="card-desc" style="margin-top:8px;">'+a.desc+'</div>'+
+      traitTags(a.traitsPos, a.traitsNeg)+
+    '</div>'
+  ));
+  wrap.appendChild(grid);
+
+  var actions = el('<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"></div>');
+  var backBtn = el('<button class="btn">Voltar ao resultado</button>');
+  backBtn.addEventListener('click', function(){ state.screen='champion'; render(); });
+  actions.appendChild(backBtn);
   wrap.appendChild(actions);
 
   return wrap;
