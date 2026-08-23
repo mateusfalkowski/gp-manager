@@ -1134,7 +1134,7 @@ function renderModeSelect(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>Como você quer jogar?</h1>'+
-      '<div class="subtitle">Escolha entre uma corrida única com simulação ao vivo, ou uma temporada completa em busca do título.</div>'+
+      '<div class="subtitle">Escolha como quer disputar a temporada.</div>'+
     '</div>'
   ));
 
@@ -1147,7 +1147,8 @@ function renderModeSelect(){
     '</div>'
   );
   single.addEventListener('click', function(){ state.mode='single'; state.almanac=false; state.screen='racestyle'; render(); });
-  grid.appendChild(single);
+  // ocultado por enquanto a pedido do usuário — foco em Temporada Expressa/Almanaque; a tela e a
+  // lógica continuam intactas, é só não anexar o card na grade de seleção de modo
 
   var season = el(
     '<div class="card">'+
@@ -1156,7 +1157,7 @@ function renderModeSelect(){
     '</div>'
   );
   season.addEventListener('click', function(){ state.mode='season'; state.almanac=false; state.screen='racestyle'; render(); });
-  grid.appendChild(season);
+  // ocultado por enquanto pelo mesmo motivo do card de Corrida Única acima
 
   var quick = el(
     '<div class="card">'+
