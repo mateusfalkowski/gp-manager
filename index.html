@@ -403,7 +403,7 @@ var DEFAULT_DATA = {
 };
 
 var RAW_DATA = DEFAULT_DATA; // sobrescrito por data.json se o fetch funcionar
-var ALL_CARDS = {chefes:[], pilotos:[], motores:[], aero:[]};
+var ALL_CARDS = {chefes:[], pilotos:[], motores:[], aero:[], pneus:[]};
 
 function flagFor(nat){
   var map = {AUT:'🇦🇹',GBR:'🇬🇧',ITA:'🇮🇹',JPN:'🇯🇵',BRA:'🇧🇷',ARG:'🇦🇷',ESP:'🇪🇸',BGR:'🇧🇬',BUL:'🇧🇬',POL:'🇵🇱',PRT:'🇵🇹',FRA:'🇫🇷',DEU:'🇩🇪',USA:'🇺🇸',AUS:'🇦🇺',CAN:'🇨🇦',NLD:'🇳🇱',MEX:'🇲🇽',THA:'🇹🇭',FIN:'🇫🇮',MON:'🇲🇨',BEL:'🇧🇪'};
@@ -462,6 +462,7 @@ function buildAllCards(){
   }
 
   ALL_CARDS.aero = AERO_PACOTES.slice(); // não existe esse dado no data.json — sempre usa a lista fixa
+  ALL_CARDS.pneus = PNEUS_FORNECEDORES.slice(); // idem — lista fixa de fornecedores por era
 }
 
 function traitTags(pos, neg){
@@ -561,6 +562,35 @@ var AERO_PACOTES = [
   {id:'redbull-rb7', nome:'Red Bull RB7', fabricante:'Era 2011', retas:76, curvas:92, vmax:72,
     desc:'Evolução do difusor soprado levada ao extremo — quase imbatível em qualquer curva de alta carga.',
     traitsPos:['Downforce de Curva Extrema'], traitsNeg:['Depende de Curva pra Render']}
+];
+
+// fornecedores de pneus reais por era — igual ao AERO_PACOTES, lista fixa (não vem do data.json).
+// aderencia pesa mais perto do grip puro, consistencia é quanto o composto aguenta sem degradar
+var PNEUS_FORNECEDORES = [
+  {id:'goodyear-1988', nome:'Goodyear', fabricante:'Era 1988', aderencia:82, consistencia:85,
+    desc:'Fornecedora única e madura no auge dos turbos — composto confiável que raramente surpreendia pela negativa.',
+    traitsPos:['Confiabilidade de Composto Único'], traitsNeg:['Pouca Margem pra Diferencial']},
+  {id:'goodyear-1996', nome:'Goodyear', fabricante:'Era 1996', aderencia:80, consistencia:82,
+    desc:'Fim de uma era de domínio quase total — pneu previsível que favorecia quem tinha o carro mais equilibrado.',
+    traitsPos:['Previsibilidade de Degradação'], traitsNeg:['Pico de Aderência Limitado']},
+  {id:'bridgestone-2004', nome:'Bridgestone', fabricante:'Era 2004', aderencia:88, consistencia:86,
+    desc:'Parceria quase exclusiva com a Ferrari dominante — composto desenvolvido em cima de dados de um único time no topo.',
+    traitsPos:['Parceria de Desenvolvimento Fechada'], traitsNeg:['Vantagem Concentrada em Poucos Times']},
+  {id:'michelin-2005', nome:'Michelin', fabricante:'Era 2005', aderencia:90, consistencia:80,
+    desc:'Auge da guerra de pneus — aderência recorde pra vencer a rival direto na pista, mesmo sacrificando um pouco de consistência.',
+    traitsPos:['Pico de Aderência da Guerra de Pneus'], traitsNeg:['Janela de Uso Mais Estreita']},
+  {id:'bridgestone-2008', nome:'Bridgestone', fabricante:'Era 2008', aderencia:78, consistencia:88,
+    desc:'De volta como fornecedora única — composto mais conservador, pensado pra durar a corrida inteira sem sustos.',
+    traitsPos:['Durabilidade de Fornecedor Único'], traitsNeg:['Aderência de Pico Discreta']},
+  {id:'pirelli-2013', nome:'Pirelli', fabricante:'Era 2013', aderencia:84, consistencia:62,
+    desc:'Composto pensado pra degradar rápido de propósito — gera estratégias malucas, mas também surpresas negativas.',
+    traitsPos:['Aderência de Pico Alta'], traitsNeg:['Degradação Acelerada de Propósito']},
+  {id:'pirelli-2019', nome:'Pirelli', fabricante:'Era 2019', aderencia:86, consistencia:76,
+    desc:'Evolução mais equilibrada da filosofia Pirelli — ainda degrada, mas de um jeito bem mais previsível que os primeiros anos.',
+    traitsPos:['Degradação Mais Previsível'], traitsNeg:['Ainda Sensível a Pista Quente']},
+  {id:'pirelli-2023', nome:'Pirelli', fabricante:'Era 2023', aderencia:88, consistencia:82,
+    desc:'Composto atual, o mais refinado da era Pirelli — aderência forte com uma janela de uso bem mais ampla que antes.',
+    traitsPos:['Composto Mais Refinado da Era'], traitsNeg:['Custo de Desenvolvimento Elevado']}
 ];
 
 // reserva genérica: só usada pra completar o grid se o banco de pilotos não tiver gente suficiente
@@ -1017,12 +1047,13 @@ function generatePools(){
     piloto1: pickRandomDistinctPersons(ALL_CARDS.pilotos, Math.min(3, ALL_CARDS.pilotos.length)),
     piloto2: [], // só é sorteado depois que o piloto 1 é escolhido, pra excluir quem já foi contratado
     motor: pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length)),
-    aero: pickRandomDistinctPersons(ALL_CARDS.aero, Math.min(3, ALL_CARDS.aero.length))
+    aero: pickRandomDistinctPersons(ALL_CARDS.aero, Math.min(3, ALL_CARDS.aero.length)),
+    pneus: pickRandomDistinctPersons(ALL_CARDS.pneus, Math.min(3, ALL_CARDS.pneus.length))
   };
 }
 
 // sorteia de novo as opções da etapa atual do draft — só pode ser usado 1x em todo o draft
-// (chefe, piloto 1, piloto 2, motor ou aero), qualquer que seja a etapa escolhida
+// (chefe, piloto 1, piloto 2, motor, aero ou pneus), qualquer que seja a etapa escolhida
 function rerollCurrentDraftPool(){
   if(state.draftRefreshUsed) return;
   state.draftRefreshUsed = true;
@@ -1038,6 +1069,8 @@ function rerollCurrentDraftPool(){
     state.pools.motor = pickRandomDistinctPersons(ALL_CARDS.motores, Math.min(3, ALL_CARDS.motores.length));
   } else if(state.tab==='aero'){
     state.pools.aero = pickRandomDistinctPersons(ALL_CARDS.aero, Math.min(3, ALL_CARDS.aero.length));
+  } else if(state.tab==='pneus'){
+    state.pools.pneus = pickRandomDistinctPersons(ALL_CARDS.pneus, Math.min(3, ALL_CARDS.pneus.length));
   }
   render();
 }
@@ -1052,6 +1085,7 @@ var state = {
   pilotos:[],
   motor:null,
   aero:null,
+  pneus:null,
   results:null,
   revealIndex:-1,
   revealTimer:null,
@@ -1340,7 +1374,7 @@ function renderRaceOptions(){
 function renderDraft(){
   var wrap = el('<div></div>');
 
-  if(!state.chefe && state.pilotos.length===0 && !state.motor && !state.aero){
+  if(!state.chefe && state.pilotos.length===0 && !state.motor && !state.aero && !state.pneus){
     var back = el('<button class="btn ghost back-btn">← Voltar</button>');
     back.addEventListener('click', function(){ state.screen='raceoptions'; render(); });
     wrap.appendChild(back);
@@ -1350,7 +1384,7 @@ function renderDraft(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>Monte sua equipe</h1>'+
-      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos, 1 motor e 1 pacote aerodinâmico. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b>'+
+      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos, 1 motor, 1 pacote aerodinâmico e 1 fornecedor de pneus. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b>'+
         (state.almanac ? ' <b style="color:var(--accent-2);">Modo Almanaque:</b> os atributos e traços estão ocultos — escolha só pelo nome, equipe e ano.' : '')+
       '</div>'+
       '<input class="teamname" placeholder="Nome da sua equipe" value="'+state.teamName+'" />'+
@@ -1364,7 +1398,8 @@ function renderDraft(){
     {id:'piloto1', label:'Piloto 1', count: (state.pilotos.length>=1?'1/1':'0/1'), done: state.pilotos.length>=1, unlocked: !!state.chefe},
     {id:'piloto2', label:'Piloto 2', count: (state.pilotos.length>=2?'1/1':'0/1'), done: state.pilotos.length>=2, unlocked: state.pilotos.length>=1},
     {id:'motor', label:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: state.pilotos.length===2},
-    {id:'aero', label:'Aerodinâmica', count: state.aero?'1/1':'0/1', done: !!state.aero, unlocked: !!state.motor}
+    {id:'aero', label:'Aerodinâmica', count: state.aero?'1/1':'0/1', done: !!state.aero, unlocked: !!state.motor},
+    {id:'pneus', label:'Pneus', count: state.pneus?'1/1':'0/1', done: !!state.pneus, unlocked: !!state.aero}
   ];
   tabDefs.forEach(function(t){
     var b = el('<div class="tab'+(state.tab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+t.label+'<span class="count">'+t.count+'</span></div>');
@@ -1376,9 +1411,10 @@ function renderDraft(){
   wrap.appendChild(tabs);
 
   // sorteia de novo as 3 opções da etapa atual — só pode ser usado uma vez em todo o draft,
-  // não importa em qual etapa (chefe, piloto 1, piloto 2, motor ou aero) o jogador decide gastar
+  // não importa em qual etapa (chefe, piloto 1, piloto 2, motor, aero ou pneus) o jogador decide gastar
   var currentStepDone = (state.tab==='chefe' && !!state.chefe) || (state.tab==='piloto1' && state.pilotos.length>=1) ||
-    (state.tab==='piloto2' && state.pilotos.length>=2) || (state.tab==='motor' && !!state.motor) || (state.tab==='aero' && !!state.aero);
+    (state.tab==='piloto2' && state.pilotos.length>=2) || (state.tab==='motor' && !!state.motor) || (state.tab==='aero' && !!state.aero) ||
+    (state.tab==='pneus' && !!state.pneus);
   if(!state.draftRefreshUsed && !currentStepDone){
     var refreshBtn = el('<button class="btn ghost" style="margin-bottom:14px;">🔄 Sortear novamente (1x por draft)</button>');
     refreshBtn.addEventListener('click', function(){ rerollCurrentDraftPool(); });
@@ -1529,6 +1565,35 @@ function renderDraft(){
       if(!disabled && !selected){
         card.addEventListener('click', function(){
           state.aero = a;
+          render();
+          setTimeout(function(){ state.tab='pneus'; render(); }, 450);
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  if(state.tab==='pneus'){
+    state.pools.pneus.forEach(function(t){
+      var selected = state.pneus && state.pneus.id===t.id;
+      var locked = !!state.pneus;
+      var disabled = locked && !selected;
+      var card = el(
+        '<div class="card'+(selected?' selected':'')+(disabled?' disabled':'')+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top">'+
+            '<div><div class="card-name">'+t.nome+'</div><div class="card-role">'+t.fabricante+'</div></div>'+
+          '</div>'+
+          (state.almanac ? '' : ('<div class="stats">'+statBar('Aderência',t.aderencia)+statBar('Consistência',t.consistencia)+'</div>'))+
+          (state.almanac
+            ? (selected?'<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">CONTRATADO</b></div>':'')
+            : ('<div class="card-desc" style="margin-top:8px;">'+t.desc+(selected?' <b style="color:var(--good);">— CONTRATADO</b>':'')+'</div>'))+
+          (state.almanac ? '' : traitTags(t.traitsPos, t.traitsNeg))+
+        '</div>'
+      );
+      if(!disabled && !selected){
+        card.addEventListener('click', function(){
+          state.pneus = t;
           render();
           setTimeout(function(){
             if(!state.teamName.trim()) state.teamName = 'Equipe Sem Nome';
@@ -1707,7 +1772,8 @@ function renderPrerace(){
       return '<div class="lineup-row"><div><div class="lineup-role">Piloto</div><div class="lineup-name">'+p.pais+' '+p.nome+' '+p.apelido+'</div></div></div>';
     }).join('')+
     '<div class="lineup-row"><div><div class="lineup-role">Motor</div><div class="lineup-name">'+state.motor.nome+' ('+state.motor.fabricante+')</div></div></div>'+
-    '<div class="lineup-row"><div><div class="lineup-role">Aerodinâmica</div><div class="lineup-name">'+state.aero.nome+' ('+state.aero.fabricante+')</div></div></div>';
+    '<div class="lineup-row"><div><div class="lineup-role">Aerodinâmica</div><div class="lineup-name">'+state.aero.nome+' ('+state.aero.fabricante+')</div></div></div>'+
+    '<div class="lineup-row"><div><div class="lineup-role">Pneus</div><div class="lineup-name">'+state.pneus.nome+' ('+state.pneus.fabricante+')</div></div></div>';
   wrap.appendChild(panel);
 
   if(seasonActive){
@@ -1847,9 +1913,18 @@ function aeroFitMult(aero, track){
   return 0.94 + Math.max(0,Math.min(1,fit))*0.12;
 }
 
+// qualidade do fornecedor de pneus escolhido — diferente do encaixe aero, não depende da pista,
+// é só o quanto o composto em si é bom (aderência + consistência), igual o motor. Fornecedor
+// mediano (~75 nas duas stats) fica perto de neutro; um bom fornecedor rende até +6%, um fraco até -6%
+function tireQualityMult(tires){
+  if(!tires) return 1;
+  var avg = (tires.aderencia + tires.consistencia)/200;
+  return 0.94 + Math.max(0,Math.min(1,avg))*0.12;
+}
+
 function computeScore(driver){
   var base = driver.vel*0.35 + driver.agr*0.15 + driver.cons*0.15 + driver.pot*0.25 + driver.confiab*0.10;
-  base = base * (driver.scoreMult||1) * (driver.aeroMult||1);
+  base = base * (driver.scoreMult||1) * (driver.aeroMult||1) * (driver.tireMult||1);
   var varianceRange = (100-driver.cons)*0.4 * (driver.varMult||1);
   var noisy = base + (Math.random()*2-1)*varianceRange*0.3;
   return noisy;
@@ -1859,12 +1934,13 @@ function buildFieldBase(rivals){
   var field = [];
   var track = getActiveTrack();
   var myAeroMult = aeroFitMult(state.aero, track);
+  var myTireMult = tireQualityMult(state.pneus);
   state.pilotos.forEach(function(p){
     field.push({
       nome:p.pais+' '+p.nome+' '+p.apelido, driverName:p.nome, year:p.year, team:state.teamName, mine:true,
       vel:p.vel, cons:p.cons, agr:p.agr,
       pot:state.motor.pot, confiab:state.motor.confiab,
-      scoreMult:state.chefe.scoreMult, varMult:state.chefe.varMult, aeroMult:myAeroMult
+      scoreMult:state.chefe.scoreMult, varMult:state.chefe.varMult, aeroMult:myAeroMult, tireMult:myTireMult
     });
   });
   var rivalMult = (RIVAL_DIFFICULTY[state.rivalDifficulty] || RIVAL_DIFFICULTY.normal).mult;
@@ -1872,7 +1948,7 @@ function buildFieldBase(rivals){
     field.push({
       nome:(r.pais?r.pais+' ':'')+r.nome, driverName:r.nome, year:r.year, team:r.team, personId:r.personId, teamKey:r.teamKey, pairKey:r.pairKey, mine:false,
       vel:r.vel, cons:r.cons, agr:r.agr, pot:r.pot, confiab:r.confiab,
-      scoreMult:rivalMult, varMult:1, aeroMult:1
+      scoreMult:rivalMult, varMult:1, aeroMult:1, tireMult:1
     });
   });
   return field;
@@ -3691,6 +3767,138 @@ function renderResults(){
   return wrap;
 }
 
+// chuva de confete rápida (~3.5s) numa canvas fixa por cima da tela, só quando o jogador vence
+// o campeonato — se remove sozinha no fim, não deixa nada preso no DOM
+function launchConfetti(){
+  var canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+  var colors = ['#ff7a29','#ffd23f','#3ddc84','#5aa9e6','#e6435a'];
+  var pieces = [];
+  for(var i=0;i<120;i++){
+    pieces.push({
+      x: Math.random()*canvas.width,
+      y: -20 - Math.random()*canvas.height*0.6,
+      w: 6+Math.random()*6,
+      h: 8+Math.random()*8,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      speedY: 2+Math.random()*3,
+      speedX: (Math.random()-0.5)*2,
+      rot: Math.random()*360,
+      rotSpeed: (Math.random()-0.5)*10
+    });
+  }
+  var start = Date.now();
+  function frame(){
+    var elapsed = Date.now()-start;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(function(p){
+      p.y += p.speedY; p.x += p.speedX; p.rot += p.rotSpeed;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    if(elapsed < 3500) requestAnimationFrame(frame);
+    else canvas.remove();
+  }
+  frame();
+}
+
+// quebra uma linha de texto em várias, centralizadas em (x,y), pra caber numa largura máxima
+function wrapTextCentered(ctx, text, x, y, maxWidth, lineHeight){
+  var words = text.split(' '), line = '', lines = [];
+  words.forEach(function(w){
+    var test = line + w + ' ';
+    if(ctx.measureText(test).width > maxWidth && line){ lines.push(line.trim()); line = w + ' '; }
+    else line = test;
+  });
+  lines.push(line.trim());
+  var startY = y - (lines.length-1)*lineHeight/2;
+  lines.forEach(function(l,i){ ctx.fillText(l, x, startY + i*lineHeight); });
+}
+
+// gera e baixa um card-resumo da temporada (canvas -> PNG), pra compartilhar com amigos sem
+// precisar de print de tela feio — usa as mesmas cores do tema do jogo
+function downloadSeasonCard(){
+  var standings = state.season.standings;
+  var myPos = standings.map(function(s){ return s.mine; }).indexOf(true)+1;
+  var mine = standings.filter(function(s){ return s.mine; })[0];
+  var isChamp = myPos===1;
+  var rival = state.season.titleRivalKey ? standings.filter(function(s){ return s.key===state.season.titleRivalKey; })[0] : null;
+
+  var W=900, H=1200;
+  var canvas = document.createElement('canvas');
+  canvas.width=W; canvas.height=H;
+  var ctx = canvas.getContext('2d');
+
+  var grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#181b22');
+  grad.addColorStop(1,'#12141a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#ff7a29';
+  ctx.fillRect(0,0,W,14);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#8f97a3';
+  ctx.font = '600 28px Arial';
+  ctx.fillText('GRAND PRIX MANAGER', W/2, 90);
+
+  ctx.fillStyle = isChamp ? '#ffd23f' : '#eef0f3';
+  ctx.font = '800 60px Arial';
+  ctx.fillText(isChamp ? '🏆 CAMPEÃO!' : 'P'+myPos+' NA TEMPORADA', W/2, 172);
+
+  ctx.fillStyle = '#eef0f3';
+  ctx.font = '700 44px Arial';
+  ctx.fillText(state.teamName, W/2, 248);
+
+  ctx.fillStyle = '#3ddc84';
+  ctx.font = '600 32px Arial';
+  ctx.fillText(mine.points+' pontos', W/2, 302);
+
+  if(rival){
+    var diff = mine.points - rival.points;
+    var line = diff>=0 ? ('Superou a rival '+rival.label+' por '+diff+' pts') : ('Rival '+rival.label+' terminou '+(-diff)+' pts à frente');
+    ctx.fillStyle = '#8f97a3';
+    ctx.font = '500 24px Arial';
+    wrapTextCentered(ctx, line, W/2, 355, W-160, 30);
+  }
+
+  var y = 460;
+  ctx.font = '600 22px Arial';
+  standings.slice(0,6).forEach(function(s,i){
+    var isRival = rival && s.key===rival.key;
+    ctx.fillStyle = s.mine ? '#ffd23f' : (isRival ? '#e6435a' : '#eef0f3');
+    ctx.textAlign = 'left';
+    ctx.fillText((i+1)+'. '+s.label, 100, y);
+    ctx.textAlign = 'right';
+    ctx.fillText(s.points+' pts', W-100, y);
+    y += 50;
+  });
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#4a4f5c';
+  ctx.font = '500 20px Arial';
+  ctx.fillText('mateusfalkowski.github.io/gp-manager', W/2, H-50);
+
+  canvas.toBlob(function(blob){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (state.teamName||'temporada').replace(/[^a-z0-9]+/gi,'_') + '_gp_manager.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  });
+}
+
 function renderChampion(){
   var wrap = el('<div></div>');
   var standings = state.season.standings;
@@ -3726,6 +3934,9 @@ function renderChampion(){
     revealBtn.addEventListener('click', function(){ state.screen='almanacreveal'; render(); });
     actions.appendChild(revealBtn);
   }
+  var cardBtn = el('<button class="btn ghost">📸 Baixar card da temporada</button>');
+  cardBtn.addEventListener('click', function(){ downloadSeasonCard(); });
+  actions.appendChild(cardBtn);
   var recapBtn = el('<button class="btn ghost">Ver retrospectiva da temporada</button>');
   recapBtn.addEventListener('click', function(){ state.screen='recap'; render(); });
   var restart = el('<button class="btn">Nova temporada</button>');
@@ -3733,6 +3944,8 @@ function renderChampion(){
   actions.appendChild(recapBtn);
   actions.appendChild(restart);
   wrap.appendChild(actions);
+
+  if(isChamp) setTimeout(launchConfetti, 150);
 
   return wrap;
 }
@@ -3788,6 +4001,15 @@ function renderAlmanacReveal(){
       '<div class="stats">'+statBar('Retas',a.retas)+statBar('Curvas',a.curvas)+statBar('Velocidade Máxima',a.vmax)+'</div>'+
       '<div class="card-desc" style="margin-top:8px;">'+a.desc+'</div>'+
       traitTags(a.traitsPos, a.traitsNeg)+
+    '</div>'
+  ));
+  var t = state.pneus;
+  grid.appendChild(el(
+    '<div class="card selected">'+
+      '<div class="card-top"><div><div class="card-name">'+t.nome+'</div><div class="card-role">Pneus — '+t.fabricante+'</div></div></div>'+
+      '<div class="stats">'+statBar('Aderência',t.aderencia)+statBar('Consistência',t.consistencia)+'</div>'+
+      '<div class="card-desc" style="margin-top:8px;">'+t.desc+'</div>'+
+      traitTags(t.traitsPos, t.traitsNeg)+
     '</div>'
   ));
   wrap.appendChild(grid);
@@ -3847,6 +4069,7 @@ function resetState(){
   state.pilotos=[];
   state.motor=null;
   state.aero=null;
+  state.pneus=null;
   state.results=null;
   state.revealIndex=-1;
   state.season=null;
