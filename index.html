@@ -326,6 +326,9 @@
   <div class="wrap" id="gpm-root"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 (function(){
 
@@ -1075,7 +1078,10 @@ function rerollCurrentDraftPool(){
   render();
 }
 
-/* ---------- conquistas: salvas no localStorage, sobrevivem entre partidas/recarregamentos ---------- */
+/* ---------- conquistas: salvas no localStorage sempre (funciona offline/sem login), e também
+   sincronizadas com o Firestore quando o jogador está logado — a leitura/escrita local continua
+   síncrona (nada nos call sites existentes precisou mudar), a nuvem é só um espelho em segundo
+   plano ---------- */
 var ACHIEVEMENTS = [
   {id:'first_win', icon:'🥇', nome:'Primeira Vitória', desc:'Vença sua primeira corrida.'},
   {id:'beat_rival', icon:'🎯', nome:'Vingança', desc:'Termine a temporada à frente da sua rival de título.'},
@@ -1083,23 +1089,99 @@ var ACHIEVEMENTS = [
   {id:'champion', icon:'🏆', nome:'Campeão', desc:'Vença o campeonato da temporada.'}
 ];
 
-function loadBadges(){
-  try { return JSON.parse(localStorage.getItem('gpm_badges')||'{}'); } catch(e){ return {}; }
+var firebaseConfig = {
+  apiKey: "AIzaSyDxo4wx4g-CZWjFI4O6FdoAz2i0wvQwH0Y",
+  authDomain: "gp-manager-cd677.firebaseapp.com",
+  projectId: "gp-manager-cd677",
+  storageBucket: "gp-manager-cd677.firebasestorage.app",
+  messagingSenderId: "56439766176",
+  appId: "1:56439766176:web:b79e6748a7d49d7162ddc5"
+};
+var fbAuth = null, fbDb = null;
+if(typeof firebase!=='undefined'){
+  try {
+    firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    fbDb = firebase.firestore();
+  } catch(e){ /* sem internet, bloqueado por adblock, etc — o jogo segue funcionando só local */ }
 }
-function saveBadges(b){
+
+var badgesCache = null;
+function loadBadges(){
+  if(badgesCache) return badgesCache;
+  try { badgesCache = JSON.parse(localStorage.getItem('gpm_badges')||'{}'); } catch(e){ badgesCache = {}; }
+  return badgesCache;
+}
+function saveBadgesLocal(b){
+  badgesCache = b;
   try { localStorage.setItem('gpm_badges', JSON.stringify(b)); } catch(e){}
+}
+// espelha 1 conquista pro Firestore, sem travar a UI esperando a resposta — se falhar (sem
+// internet no momento), a conquista já está salva local e sincroniza no próximo merge de login
+function syncBadgeToCloud(id, dateIso){
+  if(!fbDb || !state.user) return;
+  var patch = {}; patch[id] = dateIso;
+  fbDb.collection('badges').doc(state.user.uid).set(patch, {merge:true}).catch(function(){});
 }
 // desbloqueia 1 conquista se ainda não tinha sido conquistada — retorna true só quando é nova,
 // pra dar pra avisar o jogador só na hora que ele realmente ganhou, não toda vez que já tinha
 function unlockBadge(id){
   var badges = loadBadges();
   if(badges[id]) return false;
-  badges[id] = new Date().toISOString();
-  saveBadges(badges);
+  var dateIso = new Date().toISOString();
+  badges[id] = dateIso;
+  saveBadgesLocal(badges);
+  syncBadgeToCloud(id, dateIso);
   return true;
 }
 
+// une as conquistas da nuvem com as locais (a data mais antiga de cada uma vence) e sobe pra
+// nuvem qualquer conquista que só existia local — cobre tanto "jogou em outro aparelho antes"
+// quanto "jogou offline neste aparelho antes de logar"
+function mergeCloudBadges(cloudData){
+  var local = loadBadges();
+  var merged = {}, changedLocal = false, toPush = {};
+  var allIds = Object.keys(local).concat(Object.keys(cloudData||{}));
+  allIds.forEach(function(id){
+    var localDate = local[id], cloudDate = cloudData ? cloudData[id] : null;
+    if(localDate && cloudDate) merged[id] = localDate < cloudDate ? localDate : cloudDate;
+    else if(localDate) { merged[id] = localDate; toPush[id] = localDate; }
+    else merged[id] = cloudDate;
+    if(merged[id] !== local[id]) changedLocal = true;
+  });
+  if(changedLocal) saveBadgesLocal(merged);
+  if(Object.keys(toPush).length && fbDb && state.user){
+    fbDb.collection('badges').doc(state.user.uid).set(toPush, {merge:true}).catch(function(){});
+  }
+}
+
+function loginWithGoogle(){
+  if(!fbAuth) return;
+  fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){
+    alert('Não foi possível entrar: '+e.message);
+  });
+}
+function logout(){
+  if(fbAuth) fbAuth.signOut();
+}
+function initAuth(){
+  if(!fbAuth) return;
+  fbAuth.onAuthStateChanged(function(user){
+    if(user){
+      state.user = {uid:user.uid, name:user.displayName, photo:user.photoURL};
+      fbDb.collection('badges').doc(user.uid).get().then(function(doc){
+        mergeCloudBadges(doc.exists ? doc.data() : {});
+        render();
+      }).catch(function(){ render(); });
+    } else {
+      state.user = null;
+      render();
+    }
+  });
+}
+
 var state = {
+  user:null, // {uid, name, photo} quando logado com Google — null quando jogando só local
   screen:'mode', // mode | draft | prerace | race | highlights | reveal | results | champion | quickseason
   mode:null, // 'single' | 'season' | 'quickseason'
   raceStyle:null, // 'rapida' | 'longa'
@@ -1244,7 +1326,29 @@ function renderModeSelect(){
   badgesBtn.addEventListener('click', function(){ state.screen='badges'; render(); });
   wrap.appendChild(badgesBtn);
 
+  wrap.appendChild(buildAccountBar());
+
   return wrap;
+}
+
+// barra de conta reaproveitada na tela de modo e na de conquistas — mostra "Entrar com Google"
+// quando deslogado, ou o nome/foto de quem tá logado (e o botão de sair)
+function buildAccountBar(){
+  var bar = el('<div class="panel" style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;"></div>');
+  if(state.user){
+    bar.innerHTML = (state.user.photo ? '<img src="'+state.user.photo+'" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;">' : '')+
+      '<span style="color:var(--text-dim);">Logado como <b style="color:var(--text);">'+(state.user.name||'jogador')+'</b> — conquistas sincronizadas</span>';
+    var outBtn = el('<button class="btn ghost">Sair</button>');
+    outBtn.addEventListener('click', function(){ logout(); });
+    bar.appendChild(outBtn);
+  } else {
+    bar.innerHTML = '<span style="color:var(--text-dim);">Conquistas salvas só neste navegador.</span>';
+    var inBtn = el('<button class="btn ghost">🔑 Entrar com Google</button>');
+    inBtn.addEventListener('click', function(){ loginWithGoogle(); });
+    if(!fbAuth) inBtn.setAttribute('disabled','disabled');
+    bar.appendChild(inBtn);
+  }
+  return bar;
 }
 
 function renderBadges(){
@@ -1257,9 +1361,11 @@ function renderBadges(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>🎖️ Conquistas</h1>'+
-      '<div class="subtitle">Salvas neste navegador — continuam valendo mesmo depois de fechar o jogo.</div>'+
+      '<div class="subtitle">Salvas neste navegador — entre com Google pra sincronizar entre aparelhos.</div>'+
     '</div>'
   ));
+
+  wrap.appendChild(buildAccountBar());
 
   var badges = loadBadges();
   var grid = el('<div class="cardgrid"></div>');
@@ -4231,5 +4337,6 @@ buildAllCards();
 state.pools = generatePools();
 render();
 loadExternalData();
+initAuth();
 })();
 </script>
