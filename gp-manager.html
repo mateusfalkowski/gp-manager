@@ -486,7 +486,7 @@ function loadExternalData(){
       // só reaplica automaticamente se o jogador ainda não começou a escolher nada
       if(state.screen==='draft' && !state.chefe && state.pilotos.length===0 && !state.motor){
         state.pools = generatePools();
-        render();
+        render(true);
       }
     }
   }).catch(function(){
@@ -1171,11 +1171,11 @@ function initAuth(){
       state.user = {uid:user.uid, name:user.displayName, photo:user.photoURL};
       fbDb.collection('badges').doc(user.uid).get().then(function(doc){
         mergeCloudBadges(doc.exists ? doc.data() : {});
-        render();
-      }).catch(function(){ render(); });
+        render(true);
+      }).catch(function(){ render(true); });
     } else {
       state.user = null;
-      render();
+      render(true);
     }
   });
 }
@@ -1242,12 +1242,16 @@ function statBar(label,val){
 }
 
 var _lastRenderAt = 0;
-function render(){
+// force=true ignora o debounce abaixo — usado por callbacks assíncronos (login, fetch de dados)
+// que terminam bem depois de qualquer toque do jogador, então não têm relação com o "clique
+// fantasma" que o debounce existe pra filtrar; sem o bypass, esses re-renders podiam ser
+// silenciosamente descartados só por coincidirem em menos de 150ms com algum outro render
+function render(force){
   // no celular, trocar o conteúdo da tela durante o próprio evento de toque às vezes dispara um
   // segundo "clique fantasma" no elemento que aparece embaixo do dedo — isso ignora esse eco e
   // evita pular direto de uma tela pra duas telas à frente com um único toque
   var now = Date.now();
-  if(now - _lastRenderAt < 150) return;
+  if(!force && now - _lastRenderAt < 150) return;
   _lastRenderAt = now;
   var root = document.getElementById('gpm-root');
   root.innerHTML='';
