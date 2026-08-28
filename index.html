@@ -128,11 +128,15 @@
 }
 #gpm .season-btn.active{background:var(--accent-2);border-color:var(--accent-2);color:#241a00;}
 
-/* footer bar */
+/* footer bar — só fica grudada no fundo da tela (.sticky) quando carrega um botão de ação; a
+   versão puramente informativa fica no fluxo normal, senão "sticky" cobre o conteúdo de cima
+   mesmo sem o usuário ter rolado (o rodapé gruda na base da viewport assim que a tela é mais
+   alta que ela, não só depois de rolar até o fim) */
 #gpm .footerbar{
-  position:sticky;bottom:0;background:var(--bg-alt);border-top:1px solid var(--border);
-  padding:12px 16px;margin:0 -16px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:var(--bg-alt);border-top:1px solid var(--border);
+  padding:12px 16px;margin:24px -16px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;
 }
+#gpm .footerbar.sticky{position:sticky;bottom:0;}
 #gpm .footer-info{font-size:12px;color:var(--text-dim);line-height:1.4;}
 #gpm .footer-info b{color:var(--text);}
 #gpm .btn{
@@ -161,6 +165,11 @@
   animation:slideIn .45s ease forwards;
 }
 @keyframes slideIn{to{opacity:1;transform:translateX(0);}}
+
+/* transição de tela: toda troca de tela (render()) entra com um fade + leve deslize pra cima,
+   em vez de trocar seco — dura pouco de propósito, pra não virar mais uma espera */
+@keyframes gpmScreenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+#gpm .screen-enter{animation:gpmScreenIn .22s ease-out;}
 #gpm .row.mine{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.14),var(--surface));}
 #gpm .row.dnf{opacity:.55!important;animation:none;}
 #gpm .pos{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:19px;width:30px;color:var(--text-dim);}
@@ -1251,8 +1260,7 @@ var state = {
   qsTimer:null, // timer do cascateamento de resultados da Temporada Expressa
   almanac:false, // modo Almanaque: draft sem mostrar atributos/traços — escolha pelo conhecimento do jogador
   rivalDifficulty:null, // 'facil' | 'normal' | 'dificil' — ajusta o teto de força do grid rival; começa sem escolha pra obrigar o jogador a decidir
-  pickedTrackIds:null, // ids das 5 pistas escolhidas pra temporada (null = ainda não escolheu)
-  raceOptionsTab:'dificuldade' // 'dificuldade' | 'pistas' — sub-etapa atual da tela de opções da corrida
+  pickedTrackIds:null // ids das 5 pistas escolhidas pra temporada (null = ainda não escolheu)
 };
 
 function speedControlHtml(){
@@ -1298,22 +1306,29 @@ function render(force){
   _lastRenderAt = now;
   var root = document.getElementById('gpm-root');
   root.innerHTML='';
-  if(state.screen==='mode') root.appendChild(renderModeSelect());
-  else if(state.screen==='racestyle') root.appendChild(renderRaceStyle());
-  else if(state.screen==='raceoptions') root.appendChild(renderRaceOptions());
-  else if(state.screen==='draft') root.appendChild(renderDraft());
-  else if(state.screen==='prerace') root.appendChild(renderPrerace());
-  else if(state.screen==='strategy') root.appendChild(renderStrategy());
-  else if(state.screen==='longrace') root.appendChild(renderLongRace());
-  else if(state.screen==='race') root.appendChild(renderRace());
-  else if(state.screen==='highlights') root.appendChild(renderHighlights());
-  else if(state.screen==='reveal') root.appendChild(renderReveal());
-  else if(state.screen==='results') root.appendChild(renderResults());
-  else if(state.screen==='champion') root.appendChild(renderChampion());
-  else if(state.screen==='recap') root.appendChild(renderRecap());
-  else if(state.screen==='quickseason') root.appendChild(renderQuickSeason());
-  else if(state.screen==='almanacreveal') root.appendChild(renderAlmanacReveal());
-  else if(state.screen==='badges') root.appendChild(renderBadges());
+  var screenEl = null;
+  if(state.screen==='mode') screenEl = renderModeSelect();
+  else if(state.screen==='racestyle') screenEl = renderRaceStyle();
+  else if(state.screen==='raceoptions') screenEl = renderRaceOptions();
+  else if(state.screen==='draft') screenEl = renderDraft();
+  else if(state.screen==='prerace') screenEl = renderPrerace();
+  else if(state.screen==='strategy') screenEl = renderStrategy();
+  else if(state.screen==='longrace') screenEl = renderLongRace();
+  else if(state.screen==='race') screenEl = renderRace();
+  else if(state.screen==='highlights') screenEl = renderHighlights();
+  else if(state.screen==='reveal') screenEl = renderReveal();
+  else if(state.screen==='results') screenEl = renderResults();
+  else if(state.screen==='champion') screenEl = renderChampion();
+  else if(state.screen==='recap') screenEl = renderRecap();
+  else if(state.screen==='quickseason') screenEl = renderQuickSeason();
+  else if(state.screen==='almanacreveal') screenEl = renderAlmanacReveal();
+  else if(state.screen==='badges') screenEl = renderBadges();
+  if(screenEl){
+    // troca de tela entra com um fade/deslize suave em vez de aparecer seco — um só lugar,
+    // vale pra toda troca de tela do jogo automaticamente
+    screenEl.classList.add('screen-enter');
+    root.appendChild(screenEl);
+  }
 }
 
 function renderModeSelect(){
@@ -1353,7 +1368,7 @@ function renderModeSelect(){
       '<div class="card-desc">As mesmas 5 corridas da Temporada, mas sem simulação ao vivo — o resultado de cada corrida vai aparecendo abaixo, uma de cada vez, mostrando o top 5 (e a posição da sua equipe, se ela ficar fora dele).</div>'+
     '</div>'
   );
-  quick.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  quick.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(quick);
 
   var almanac = el(
@@ -1362,7 +1377,7 @@ function renderModeSelect(){
       '<div class="card-desc">A mesma Temporada Expressa, mas no draft você não vê os atributos nem os traços de quem está contratando — só nome, equipe e ano. Os números continuam existindo e valendo pra corrida, você só escolhe no escuro, confiando no que sabe sobre cada um.</div>'+
     '</div>'
   );
-  almanac.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  almanac.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(almanac);
 
   wrap.appendChild(grid);
@@ -1453,7 +1468,7 @@ function renderRaceStyle(){
       '<div class="card-desc">'+(state.mode==='season' ? 'Em cada corrida, escolha entre assistir a simulação ao vivo ou ver direto os melhores momentos.' : 'Assista a corrida com simulação animada na pista, luzes de largada e tudo mais.')+'</div>'+
     '</div>'
   );
-  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(rapida);
 
   var longa = el(
@@ -1462,7 +1477,7 @@ function renderRaceStyle(){
       '<div class="card-desc">Veja a previsão do tempo, escolha os pneus e reaja a safety cars, VSC e mudanças de clima ao vivo — suas decisões afetam o resultado.</div>'+
     '</div>'
   );
-  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.raceOptionsTab='dificuldade'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(longa);
 
   wrap.appendChild(grid);
@@ -1477,11 +1492,9 @@ function needsTrackPick(){
 
 function renderRaceOptions(){
   var wrap = el('<div></div>');
-  var onTracksTab = needsTrackPick() && state.raceOptionsTab==='pistas';
 
   var back = el('<button class="btn ghost back-btn">← Voltar</button>');
   back.addEventListener('click', function(){
-    if(onTracksTab){ state.raceOptionsTab='dificuldade'; render(); return; }
     if(state.mode==='quickseason'){ state.mode=null; state.screen='mode'; }
     else { state.raceStyle=null; state.screen='racestyle'; }
     render();
@@ -1492,45 +1505,29 @@ function renderRaceOptions(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>Opções da corrida</h1>'+
-      '<div class="subtitle">'+(onTracksTab ? 'Sorteie as pistas da temporada.' : 'Ajuste a dificuldade dos rivais antes de montar sua equipe.')+'</div>'+
+      '<div class="subtitle">Ajuste a dificuldade dos rivais'+(needsTrackPick() ? ' e sorteie as pistas da temporada' : '')+' antes de montar sua equipe.</div>'+
     '</div>'
   ));
 
+  // dificuldade e pistas ficam as duas na mesma tela, em vez de abas separadas — é uma decisão
+  // rápida cada uma, não precisa de uma navegação própria só pra elas
+  var diffBox = el('<div class="season-box"></div>');
+  diffBox.innerHTML = '<div class="season-label">Dificuldade dos rivais</div>';
+  var diffBtns = el('<div class="season-btns"></div>');
+  ['facil','normal','dificil'].forEach(function(key){
+    var d = RIVAL_DIFFICULTY[key];
+    var b = el('<div class="season-btn'+(state.rivalDifficulty===key?' active':'')+'">'+d.label+'</div>');
+    b.addEventListener('click', function(){ state.rivalDifficulty = key; render(); });
+    diffBtns.appendChild(b);
+  });
+  diffBox.appendChild(diffBtns);
+  wrap.appendChild(diffBox);
+  var diffDesc = state.rivalDifficulty ? RIVAL_DIFFICULTY[state.rivalDifficulty].desc : 'Escolha uma dificuldade acima.';
+  wrap.appendChild(el('<div class="footer-info" style="margin:-6px 0 18px;">'+diffDesc+'</div>'));
+
+  var canContinue = !!state.rivalDifficulty;
+
   if(needsTrackPick()){
-    var tabs = el('<div class="tabs"></div>');
-    var tabDefs = [
-      {id:'dificuldade', label:'Dificuldade', done: !!state.rivalDifficulty, unlocked:true},
-      {id:'pistas', label:'Pistas', done: state.pickedTrackIds && state.pickedTrackIds.length===SEASON_LENGTH, unlocked: !!state.rivalDifficulty}
-    ];
-    tabDefs.forEach(function(t){
-      var b = el('<div class="tab'+(state.raceOptionsTab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+t.label+'</div>');
-      if(t.unlocked){
-        b.addEventListener('click', function(){ state.raceOptionsTab=t.id; render(); });
-      }
-      tabs.appendChild(b);
-    });
-    wrap.appendChild(tabs);
-  }
-
-  var canContinue = true;
-
-  if(!onTracksTab){
-    var diffBox = el('<div class="season-box"></div>');
-    diffBox.innerHTML = '<div class="season-label">Dificuldade dos rivais</div>';
-    var diffBtns = el('<div class="season-btns"></div>');
-    ['facil','normal','dificil'].forEach(function(key){
-      var d = RIVAL_DIFFICULTY[key];
-      var b = el('<div class="season-btn'+(state.rivalDifficulty===key?' active':'')+'">'+d.label+'</div>');
-      b.addEventListener('click', function(){ state.rivalDifficulty = key; render(); });
-      diffBtns.appendChild(b);
-    });
-    diffBox.appendChild(diffBtns);
-    wrap.appendChild(diffBox);
-    var diffDesc = state.rivalDifficulty ? RIVAL_DIFFICULTY[state.rivalDifficulty].desc : 'Escolha uma dificuldade acima pra continuar.';
-    wrap.appendChild(el('<div class="footer-info" style="margin:-6px 0 16px;">'+diffDesc+'</div>'));
-
-    canContinue = !!state.rivalDifficulty; // trava o avanço até o jogador escolher, não passa direto no padrão
-  } else {
     var pickedCount = state.pickedTrackIds ? state.pickedTrackIds.length : 0;
     wrap.appendChild(el('<div class="season-label" style="margin-bottom:8px;">Pistas da temporada ('+pickedCount+'/'+SEASON_LENGTH+')</div>'));
 
@@ -1544,7 +1541,9 @@ function renderRaceOptions(){
       // as 5 pistas sorteadas ficam travadas — só dá pra trocar sorteando de novo, não clicando
       // numa pista escolhida pra tirá-la e abrir espaço pra outra
       wrap.appendChild(el('<div class="footer-info" style="margin-bottom:12px;">Pistas sorteadas e travadas — clique em "Sortear '+SEASON_LENGTH+' pistas" de novo pra trocar.</div>'));
-      var grid = el('<div class="cardgrid"></div>');
+      // a grade de 8 pistas costuma passar da altura da tela — reserva espaço em baixo do
+      // tamanho do rodapé fixo, senão ele gruda por cima do último card antes de rolar até o fim
+      var grid = el('<div class="cardgrid" style="margin-bottom:90px;"></div>');
       TRACKS.forEach(function(t){
         var selected = state.pickedTrackIds.indexOf(t.id)>=0;
         var card = el(
@@ -1559,25 +1558,19 @@ function renderRaceOptions(){
       wrap.appendChild(grid);
     }
 
-    canContinue = pickedCount===SEASON_LENGTH;
+    canContinue = canContinue && pickedCount===SEASON_LENGTH;
   }
 
-  var isNextTabBtn = !onTracksTab && needsTrackPick();
   var footerMsg = canContinue
-    ? (isNextTabBtn ? 'Dificuldade escolhida — agora sorteie as pistas.' : 'Tudo pronto — pode montar sua equipe.')
-    : (onTracksTab ? 'Escolha exatamente '+SEASON_LENGTH+' pistas pra continuar.' : 'Escolha uma dificuldade pra continuar.');
+    ? 'Tudo pronto — pode montar sua equipe.'
+    : (!state.rivalDifficulty ? 'Escolha uma dificuldade pra continuar.' : 'Escolha exatamente '+SEASON_LENGTH+' pistas pra continuar.');
   var footer = el(
-    '<div class="footerbar">'+
+    '<div class="footerbar sticky">'+
       '<div class="footer-info">'+footerMsg+'</div>'+
     '</div>'
   );
-  var goBtn = el('<button class="btn"'+(canContinue?'':' disabled')+'>'+(isNextTabBtn ? 'Sortear pistas →' : 'Continuar')+'</button>');
+  var goBtn = el('<button class="btn"'+(canContinue?'':' disabled')+'>Continuar</button>');
   goBtn.addEventListener('click', function(){
-    if(!onTracksTab && needsTrackPick()){
-      state.raceOptionsTab='pistas';
-      render();
-      return;
-    }
     if(!canContinue) return;
     state.screen='draft'; state.pools=generatePools(); state.draftRefreshUsed=false; state.tab='chefe';
     render();
@@ -1660,7 +1653,7 @@ function renderDraft(){
         card.addEventListener('click', function(){
           state.chefe = c;
           render();
-          setTimeout(function(){ state.tab='piloto1'; render(); }, 450);
+          setTimeout(function(){ state.tab='piloto1'; render(); }, 260);
         });
       }
       grid.appendChild(card);
@@ -1689,7 +1682,7 @@ function renderDraft(){
           var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludeIds.indexOf(c.personId)===-1; });
           state.pools.piloto2 = pickRandomDistinctPersons(candidates, Math.min(3, candidates.length));
           render();
-          setTimeout(function(){ state.tab='piloto2'; render(); }, 450);
+          setTimeout(function(){ state.tab='piloto2'; render(); }, 260);
         });
       }
       grid.appendChild(card);
@@ -1715,7 +1708,7 @@ function renderDraft(){
         card.addEventListener('click', function(){
           state.pilotos.push(p);
           render();
-          setTimeout(function(){ state.tab='motor'; render(); }, 450);
+          setTimeout(function(){ state.tab='motor'; render(); }, 260);
         });
       }
       grid.appendChild(card);
@@ -1744,7 +1737,7 @@ function renderDraft(){
         card.addEventListener('click', function(){
           state.motor = m;
           render();
-          setTimeout(function(){ state.tab='aero'; render(); }, 450);
+          setTimeout(function(){ state.tab='aero'; render(); }, 260);
         });
       }
       grid.appendChild(card);
@@ -1783,7 +1776,7 @@ function renderDraft(){
         card.addEventListener('click', function(){
           state.aero = a;
           render();
-          setTimeout(function(){ state.tab='pneus'; render(); }, 450);
+          setTimeout(function(){ state.tab='pneus'; render(); }, 260);
         });
       }
       grid.appendChild(card);
@@ -1822,7 +1815,7 @@ function renderDraft(){
               state.screen='prerace';
             }
             render();
-          }, 500);
+          }, 300);
         });
       }
       grid.appendChild(card);
@@ -4387,7 +4380,6 @@ function resetState(){
   state.draftRefreshUsed=false;
   state.rivalDifficulty=null;
   state.pickedTrackIds=null;
-  state.raceOptionsTab='dificuldade';
 }
 
 TRACKS.forEach(function(t){ t.trackData = buildTrackData(t.anchors); });
