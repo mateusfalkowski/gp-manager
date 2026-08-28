@@ -209,6 +209,13 @@
 @keyframes gpmCardFlipIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
 #gpm .card.flip-out{animation:gpmCardFlipOut .18s ease-in forwards;}
 #gpm .card.flip-in{animation:gpmCardFlipIn .22s ease-out both;}
+
+/* linha "fora do top 5" da temporada expressa/almanaque — entra com o mesmo fade+deslize dos
+   cards de melhores momentos (hlIn), pra não aparecer seca depois do top 5 animado */
+#gpm .qs-outside-line{opacity:0;transform:translateY(6px);animation:hlIn .3s ease forwards;}
+/* caixa da corrida (details) esmaece um instante antes de fechar sozinha — o <details> nativo
+   não anima abrir/fechar, então isso disfarça o fechamento seco (ver revealQuickRaceStep) */
+#gpm details.panel.qs-closing{transition:opacity .22s ease;opacity:.35;}
 #gpm .row.mine{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.14),var(--surface));}
 #gpm .row.dnf{opacity:.55!important;animation:none;}
 #gpm .pos{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:19px;width:30px;color:var(--text-dim);}
@@ -2528,7 +2535,7 @@ function resolveOneQuickRace(){
 
 function quickRaceRowHtml(d){
   var posClass = d.pos===1?'p1':d.pos===2?'p2':d.pos===3?'p3':'';
-  return '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'" style="animation:none;opacity:1;">'+
+  return '<div class="row'+(d.mine?' mine':'')+(d.dnf?' dnf':'')+'">'+
     '<div class="pos '+posClass+'">'+d.pos+'</div>'+
     '<div class="row-main"><div class="row-driver">'+rivalNameHtml(shortName(d.driverName), d.teamKey)+'</div><div class="row-team">'+d.team+'</div></div>'+
     '<div class="row-pts">'+(d.pts>0?'+'+d.pts:'')+'</div>'+
@@ -2541,7 +2548,7 @@ function quickRaceRevealItems(entry){
   var top5 = entry.results.slice(0, 5);
   var mineOutside = entry.results.filter(function(d){ return d.mine && d.pos>5; });
   return top5.map(function(d){ return quickRaceRowHtml(d); }).concat(mineOutside.map(function(d){
-    return '<div class="footer-info" style="margin-top:2px;">'+(d.dnf ? ('❌ '+shortName(d.driverName)+' abandonou') : ('📍 '+shortName(d.driverName)+': P'+d.pos))+'</div>';
+    return '<div class="footer-info qs-outside-line" style="margin-top:2px;">'+(d.dnf ? ('❌ '+shortName(d.driverName)+' abandonou') : ('📍 '+shortName(d.driverName)+': P'+d.pos))+'</div>';
   }));
 }
 
@@ -2586,12 +2593,18 @@ function revealQuickRaceStep(idx, items, i){
     rowsEl.appendChild(el(items[i]));
     state.qsTimer = setTimeout(function(){ revealQuickRaceStep(idx, items, i+1); }, QS_REVEAL_STEP_MS);
   } else {
-    // todos os pilotos já apareceram — espera um instante, fecha a caixa (só a setinha do
-    // summary continua clicável pra reabrir) e emenda na próxima corrida
+    // todos os pilotos já apareceram — espera um instante, esmaece a caixa (feedback visual de
+    // que ela tá prestes a fechar, já que o <details> nativo não anima isso sozinho), fecha (só
+    // a setinha do summary continua clicável pra reabrir) e emenda na próxima corrida
     state.qsTimer = setTimeout(function(){
       var det = document.getElementById('gpm-qs-race-'+idx);
-      if(det) det.open = false;
-      startNextQuickRace();
+      if(!det){ startNextQuickRace(); return; }
+      det.classList.add('qs-closing');
+      state.qsTimer = setTimeout(function(){
+        det.open = false;
+        det.classList.remove('qs-closing');
+        startNextQuickRace();
+      }, 220);
     }, QS_COLLAPSE_PAUSE_MS);
   }
 }
