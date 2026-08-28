@@ -81,6 +81,14 @@
 #gpm .tab.active .count{color:#1a1200cc;}
 #gpm .tab.done:not(.active){border-color:var(--good);color:var(--good);}
 #gpm .tab.locked{opacity:.35;cursor:not-allowed;}
+#gpm .tab-short{display:none;}
+/* em telas estreitas o draft tem 6 abas numa linha só — "Aerodinâmica" por extenso quebra
+   linha e aperta as vizinhas, então troca pro rótulo curto (ex: "Aero") abaixo desse ponto */
+@media (max-width:480px){
+  #gpm .tab-full{display:none;}
+  #gpm .tab-short{display:inline;}
+  #gpm .tab{padding:9px 3px;font-size:13px;}
+}
 
 /* cards */
 #gpm .cardgrid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px;}
@@ -89,6 +97,9 @@
   padding:13px 14px;cursor:pointer;transition:all .15s ease;position:relative;
 }
 #gpm .card:hover:not(.disabled):not(.locked){border-color:var(--accent);background:var(--surface-hover);}
+/* indicador de foco pra navegação por teclado — cards/abas/botões de dificuldade são <div>s
+   sem esse contorno nativo que um <button> teria de graça (ver makeCardActivatable) */
+#gpm [tabindex]:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;}
 #gpm .card.locked{cursor:default;}
 #gpm .card.selected{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.12),var(--surface));box-shadow:0 0 0 1px var(--accent) inset;}
 #gpm .card.disabled{opacity:.4;cursor:not-allowed;}
@@ -825,7 +836,7 @@ function buildTireCard(t, lapsToCompare, onClick){
       '<div class="trait-row"><span class="trait-tag '+badgeClass+'">'+badgeText+'</span></div>'+
     '</div>'
   );
-  card.addEventListener('click', onClick);
+  makeCardActivatable(card, onClick);
   return card;
 }
 
@@ -1286,6 +1297,21 @@ function el(html){
   return d.firstChild;
 }
 
+// deixa um elemento clicável (card, aba, botão de dificuldade — tudo <div> comum, sem suporte
+// nativo de teclado) navegável por Tab e ativável com Enter/Espaço, igual um <button> de verdade
+// teria de graça. Sem isso, o jogo inteiro só dava pra jogar com mouse/touch.
+function makeCardActivatable(elm, handler){
+  elm.tabIndex = 0;
+  elm.setAttribute('role','button');
+  elm.addEventListener('click', handler);
+  elm.addEventListener('keydown', function(e){
+    if(e.key==='Enter' || e.key===' ' || e.key==='Spacebar'){
+      e.preventDefault();
+      handler(e);
+    }
+  });
+}
+
 function statBar(label,val){
   var v = Math.round(val);
   var tier = v>=90?'elite':v>=80?'hi':v>=70?'mid':'lo';
@@ -1293,6 +1319,10 @@ function statBar(label,val){
 }
 
 var _lastRenderAt = 0;
+var _lastRenderedScreen = null; // pra só animar a entrada quando a TELA muda de verdade, não a
+// cada re-render dentro da mesma tela (ex: selecionar um card no draft chama render() de novo
+// pra mostrar "CONTRATADO" e outra vez pra trocar de aba — sem essa checagem, a tela inteira
+// piscava de novo a cada clique em vez de só a troca de tela real)
 // force=true ignora o debounce abaixo — usado por callbacks assíncronos (login, fetch de dados)
 // que terminam bem depois de qualquer toque do jogador, então não têm relação com o "clique
 // fantasma" que o debounce existe pra filtrar; sem o bypass, esses re-renders podiam ser
@@ -1325,10 +1355,13 @@ function render(force){
   else if(state.screen==='badges') screenEl = renderBadges();
   if(screenEl){
     // troca de tela entra com um fade/deslize suave em vez de aparecer seco — um só lugar,
-    // vale pra toda troca de tela do jogo automaticamente
-    screenEl.classList.add('screen-enter');
+    // vale pra toda troca de tela do jogo automaticamente. Só anima quando a TELA muda de
+    // verdade — um re-render dentro da mesma tela (ex: selecionar um card no draft) não deve
+    // fazer a tela inteira piscar de novo
+    if(state.screen !== _lastRenderedScreen) screenEl.classList.add('screen-enter');
     root.appendChild(screenEl);
   }
+  _lastRenderedScreen = state.screen;
 }
 
 function renderModeSelect(){
@@ -1349,7 +1382,7 @@ function renderModeSelect(){
       '<div class="card-desc">Monte sua equipe e dispute uma corrida com simulação animada na pista, luzes de largada e tudo mais.</div>'+
     '</div>'
   );
-  single.addEventListener('click', function(){ state.mode='single'; state.almanac=false; state.screen='racestyle'; render(); });
+  makeCardActivatable(single, function(){ state.mode='single'; state.almanac=false; state.screen='racestyle'; render(); });
   // ocultado por enquanto a pedido do usuário — foco em Temporada Expressa/Almanaque; a tela e a
   // lógica continuam intactas, é só não anexar o card na grade de seleção de modo
 
@@ -1359,7 +1392,7 @@ function renderModeSelect(){
       '<div class="card-desc">Monte sua equipe uma vez e dispute o campeonato em '+SEASON_LENGTH+' Grandes Prêmios — você escolhe quais, entre '+TRACKS.length+' pistas disponíveis. Cada corrida mostra os melhores momentos — largada, estratégia, abandonos, volta mais rápida e pódio — em vez da simulação completa, pra manter o ritmo.</div>'+
     '</div>'
   );
-  season.addEventListener('click', function(){ state.mode='season'; state.almanac=false; state.screen='racestyle'; render(); });
+  makeCardActivatable(season, function(){ state.mode='season'; state.almanac=false; state.screen='racestyle'; render(); });
   // ocultado por enquanto pelo mesmo motivo do card de Corrida Única acima
 
   var quick = el(
@@ -1368,7 +1401,7 @@ function renderModeSelect(){
       '<div class="card-desc">As mesmas 5 corridas da Temporada, mas sem simulação ao vivo — o resultado de cada corrida vai aparecendo abaixo, uma de cada vez, mostrando o top 5 (e a posição da sua equipe, se ela ficar fora dele).</div>'+
     '</div>'
   );
-  quick.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  makeCardActivatable(quick, function(){ state.mode='quickseason'; state.almanac=false; state.raceStyle=null; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(quick);
 
   var almanac = el(
@@ -1377,7 +1410,7 @@ function renderModeSelect(){
       '<div class="card-desc">A mesma Temporada Expressa, mas no draft você não vê os atributos nem os traços de quem está contratando — só nome, equipe e ano. Os números continuam existindo e valendo pra corrida, você só escolhe no escuro, confiando no que sabe sobre cada um.</div>'+
     '</div>'
   );
-  almanac.addEventListener('click', function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  makeCardActivatable(almanac, function(){ state.mode='quickseason'; state.almanac=true; state.raceStyle=null; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(almanac);
 
   wrap.appendChild(grid);
@@ -1468,7 +1501,7 @@ function renderRaceStyle(){
       '<div class="card-desc">'+(state.mode==='season' ? 'Em cada corrida, escolha entre assistir a simulação ao vivo ou ver direto os melhores momentos.' : 'Assista a corrida com simulação animada na pista, luzes de largada e tudo mais.')+'</div>'+
     '</div>'
   );
-  rapida.addEventListener('click', function(){ state.raceStyle='rapida'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  makeCardActivatable(rapida, function(){ state.raceStyle='rapida'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(rapida);
 
   var longa = el(
@@ -1477,7 +1510,7 @@ function renderRaceStyle(){
       '<div class="card-desc">Veja a previsão do tempo, escolha os pneus e reaja a safety cars, VSC e mudanças de clima ao vivo — suas decisões afetam o resultado.</div>'+
     '</div>'
   );
-  longa.addEventListener('click', function(){ state.raceStyle='longa'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
+  makeCardActivatable(longa, function(){ state.raceStyle='longa'; state.pickedTrackIds=null; state.rivalDifficulty=null; state.screen='raceoptions'; render(); });
   grid.appendChild(longa);
 
   wrap.appendChild(grid);
@@ -1517,7 +1550,7 @@ function renderRaceOptions(){
   ['facil','normal','dificil'].forEach(function(key){
     var d = RIVAL_DIFFICULTY[key];
     var b = el('<div class="season-btn'+(state.rivalDifficulty===key?' active':'')+'">'+d.label+'</div>');
-    b.addEventListener('click', function(){ state.rivalDifficulty = key; render(); });
+    makeCardActivatable(b, function(){ state.rivalDifficulty = key; render(); });
     diffBtns.appendChild(b);
   });
   diffBox.appendChild(diffBtns);
@@ -1594,7 +1627,7 @@ function renderDraft(){
     '<div class="header">'+
       '<div class="eyebrow">Grand Prix Manager</div>'+
       '<h1>Monte sua equipe</h1>'+
-      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos, 1 motor, 1 pacote aerodinâmico e 1 fornecedor de pneus. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança — <b style="color:var(--accent-2);">não dá pra voltar atrás.</b>'+
+      '<div class="subtitle">Escolha 1 chefe de equipe, 2 pilotos, 1 motor, 1 pacote aerodinâmico e 1 fornecedor de pneus. Cada opção vem de uma temporada diferente e aleatória (de 1981 até hoje). As opções mudam a cada rodada e, assim que você escolhe algo, o jogo já avança pra próxima etapa — <b style="color:var(--accent-2);">a escolha fica valendo, não dá pra trocar depois.</b>'+
         (state.almanac ? ' <b style="color:var(--accent-2);">Modo Almanaque:</b> os atributos e traços estão ocultos — escolha só pelo nome, equipe e ano.' : '')+
       '</div>'+
       '<input class="teamname" placeholder="Nome da sua equipe" value="'+state.teamName+'" />'+
@@ -1604,17 +1637,21 @@ function renderDraft(){
 
   var tabs = el('<div class="tabs"></div>');
   var tabDefs = [
-    {id:'chefe', label:'Chefe', count: state.chefe?'1/1':'0/1', done: !!state.chefe, unlocked:true},
-    {id:'piloto1', label:'Piloto 1', count: (state.pilotos.length>=1?'1/1':'0/1'), done: state.pilotos.length>=1, unlocked: !!state.chefe},
-    {id:'piloto2', label:'Piloto 2', count: (state.pilotos.length>=2?'1/1':'0/1'), done: state.pilotos.length>=2, unlocked: state.pilotos.length>=1},
-    {id:'motor', label:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: state.pilotos.length===2},
-    {id:'aero', label:'Aerodinâmica', count: state.aero?'1/1':'0/1', done: !!state.aero, unlocked: !!state.motor},
-    {id:'pneus', label:'Pneus', count: state.pneus?'1/1':'0/1', done: !!state.pneus, unlocked: !!state.aero}
+    {id:'chefe', label:'Chefe', short:'Chefe', count: state.chefe?'1/1':'0/1', done: !!state.chefe, unlocked:true},
+    {id:'piloto1', label:'Piloto 1', short:'P1', count: (state.pilotos.length>=1?'1/1':'0/1'), done: state.pilotos.length>=1, unlocked: !!state.chefe},
+    {id:'piloto2', label:'Piloto 2', short:'P2', count: (state.pilotos.length>=2?'1/1':'0/1'), done: state.pilotos.length>=2, unlocked: state.pilotos.length>=1},
+    {id:'motor', label:'Motor', short:'Motor', count: state.motor?'1/1':'0/1', done: !!state.motor, unlocked: state.pilotos.length===2},
+    {id:'aero', label:'Aerodinâmica', short:'Aero', count: state.aero?'1/1':'0/1', done: !!state.aero, unlocked: !!state.motor},
+    {id:'pneus', label:'Pneus', short:'Pneus', count: state.pneus?'1/1':'0/1', done: !!state.pneus, unlocked: !!state.aero}
   ];
   tabDefs.forEach(function(t){
-    var b = el('<div class="tab'+(state.tab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+t.label+'<span class="count">'+t.count+'</span></div>');
+    // rótulo curto entra em telas estreitas via CSS (ver .tab-full/.tab-short) — em 6 abas numa
+    // linha só, "Aerodinâmica" por extenso quebra e aperta as outras
+    var b = el('<div class="tab'+(state.tab===t.id?' active':'')+(t.done?' done':'')+(!t.unlocked?' locked':'')+'">'+
+      '<span class="tab-full">'+t.label+'</span><span class="tab-short">'+t.short+'</span>'+
+      '<span class="count">'+t.count+'</span></div>');
     if(t.unlocked){
-      b.addEventListener('click', function(){ state.tab=t.id; render(); });
+      makeCardActivatable(b, function(){ state.tab=t.id; render(); });
     }
     tabs.appendChild(b);
   });
@@ -1650,7 +1687,7 @@ function renderDraft(){
         '</div>'
       );
       if(!disabled && !selected){
-        card.addEventListener('click', function(){
+        makeCardActivatable(card, function(){
           state.chefe = c;
           render();
           setTimeout(function(){ state.tab='piloto1'; render(); }, 260);
@@ -1676,7 +1713,7 @@ function renderDraft(){
         '</div>'
       );
       if(!disabled && !selected){
-        card.addEventListener('click', function(){
+        makeCardActivatable(card, function(){
           state.pilotos.push(p);
           var excludeIds = [p.personId];
           var candidates = ALL_CARDS.pilotos.filter(function(c){ return excludeIds.indexOf(c.personId)===-1; });
@@ -1705,7 +1742,7 @@ function renderDraft(){
         '</div>'
       );
       if(!disabled && !selected){
-        card.addEventListener('click', function(){
+        makeCardActivatable(card, function(){
           state.pilotos.push(p);
           render();
           setTimeout(function(){ state.tab='motor'; render(); }, 260);
@@ -1734,7 +1771,7 @@ function renderDraft(){
         '</div>'
       );
       if(!disabled && !selected){
-        card.addEventListener('click', function(){
+        makeCardActivatable(card, function(){
           state.motor = m;
           render();
           setTimeout(function(){ state.tab='aero'; render(); }, 260);
@@ -1773,7 +1810,7 @@ function renderDraft(){
         '</div>'
       );
       if(!disabled && !selected){
-        card.addEventListener('click', function(){
+        makeCardActivatable(card, function(){
           state.aero = a;
           render();
           setTimeout(function(){ state.tab='pneus'; render(); }, 260);
@@ -1802,7 +1839,7 @@ function renderDraft(){
         '</div>'
       );
       if(!disabled && !selected){
-        card.addEventListener('click', function(){
+        makeCardActivatable(card, function(){
           state.pneus = t;
           render();
           setTimeout(function(){
