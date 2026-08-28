@@ -1778,7 +1778,8 @@ function renderDraft(){
           '</div>'+
           (state.almanac ? '' : ('<div class="stats">'+statBar('Liderança',c.lideranca)+statBar('Estratégia',c.estrategia)+statBar('Desenvolvimento',c.desenvolvimento)+'</div>'))+
           (selected?'<div class="card-desc" style="margin-top:8px;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
-          (state.almanac ? '' : traitTags(c.traitsPos, c.traitsNeg))+
+          // chefes são pessoas reais e nomeadas — só número de desempenho, sem traço de
+          // personalidade inventado sobre elas (ver conversa sobre risco de imagem/direitos)
         '</div>'
       );
       if(!disabled && !selected){
@@ -1803,7 +1804,8 @@ function renderDraft(){
             '<div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">'+p.apelido+'</div></div>'+
           '</div>'+
           (state.almanac ? '' : ('<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'))+
-          (state.almanac ? '' : traitTags(p.traitsPos, p.traitsNeg))+
+          // pilotos são pessoas reais e nomeadas — só número de desempenho, sem traço de
+          // personalidade inventado sobre elas
           (selected?'<div class="card-desc" style="margin-top:8px;margin-bottom:0;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
         '</div>'
       );
@@ -1832,7 +1834,8 @@ function renderDraft(){
             '<div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">'+p.apelido+'</div></div>'+
           '</div>'+
           (state.almanac ? '' : ('<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'))+
-          (state.almanac ? '' : traitTags(p.traitsPos, p.traitsNeg))+
+          // pilotos são pessoas reais e nomeadas — só número de desempenho, sem traço de
+          // personalidade inventado sobre elas
           (selected?'<div class="card-desc" style="margin-top:8px;margin-bottom:0;"><b style="color:var(--good);">CONTRATADO</b></div>':'')+
         '</div>'
       );
@@ -4403,7 +4406,7 @@ function renderAlmanacReveal(){
     '<div class="card selected">'+
       '<div class="card-top"><div><div class="card-name">'+c.pais+' '+c.nome+'</div><div class="card-role">Chefe de equipe — '+c.apelido+'</div></div></div>'+
       '<div class="stats">'+statBar('Liderança',c.lideranca)+statBar('Estratégia',c.estrategia)+statBar('Desenvolvimento',c.desenvolvimento)+'</div>'+
-      traitTags(c.traitsPos, c.traitsNeg)+
+      // chefe é pessoa real e nomeada — só número, sem traço de personalidade inventado
     '</div>'
   ));
   state.pilotos.forEach(function(p,i){
@@ -4411,7 +4414,7 @@ function renderAlmanacReveal(){
       '<div class="card selected">'+
         '<div class="card-top"><div><div class="card-name">'+p.pais+' '+p.nome+'</div><div class="card-role">Piloto '+(i+1)+' — '+p.apelido+'</div></div></div>'+
         '<div class="stats">'+statBar('Velocidade',p.vel)+statBar('Consistência',p.cons)+statBar('Agressividade',p.agr)+'</div>'+
-        traitTags(p.traitsPos, p.traitsNeg)+
+        // piloto é pessoa real e nomeada — só número, sem traço de personalidade inventado
       '</div>'
     ));
   });
