@@ -2,6 +2,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>GP Manager</title>
+<meta name="description" content="Monte sua equipe de F1 com chefe, pilotos, motor, aerodinâmica e pneus de qualquer temporada real desde 1981, e dispute o título em 5 corridas. Modo Expressa (rápido) ou Almanaque (escolha no escuro, só pelo conhecimento).">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏁</text></svg>">
+<meta name="theme-color" content="#12141a">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mateusfalkowski.github.io/gp-manager/">
+<meta property="og:site_name" content="GP Manager">
+<meta property="og:title" content="GP Manager — monte sua equipe de F1 e dispute o título">
+<meta property="og:description" content="Chefe, pilotos, motor, aerodinâmica e pneus de qualquer temporada real desde 1981. Modo Expressa (rápido) ou Almanaque (escolha no escuro).">
+<meta property="og:image" content="https://mateusfalkowski.github.io/gp-manager/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GP Manager — monte sua equipe de F1 e dispute o título">
+<meta name="twitter:description" content="Chefe, pilotos, motor, aerodinâmica e pneus de qualquer temporada real desde 1981. Modo Expressa (rápido) ou Almanaque (escolha no escuro).">
+<meta name="twitter:image" content="https://mateusfalkowski.github.io/gp-manager/og-image.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -4305,10 +4321,23 @@ function downloadSeasonCard(){
   ctx.fillText('mateusfalkowski.github.io/gp-manager', W/2, H-50);
 
   canvas.toBlob(function(blob){
+    var fileName = (state.teamName||'temporada').replace(/[^a-z0-9]+/gi,'_') + '_gp_manager.png';
+    var shareText = (isChamp ? '🏆 Fui campeão' : 'Terminei em P'+myPos) + ' no GP Manager! mateusfalkowski.github.io/gp-manager';
+
+    // no celular (a maioria de quem for ver isso), compartilhar direto pro WhatsApp/Instagram
+    // com a folha de compartilhamento nativa é bem mais provável de rolar do que baixar o
+    // arquivo e depois ter que anexar manualmente — mas nem todo navegador suporta compartilhar
+    // arquivo (ex: desktop), então cai pro download de sempre nesse caso
+    var file = (typeof File!=='undefined') ? new File([blob], fileName, {type:'image/png'}) : null;
+    if(file && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file], title:'GP Manager', text:shareText}).catch(function(){});
+      return;
+    }
+
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = (state.teamName||'temporada').replace(/[^a-z0-9]+/gi,'_') + '_gp_manager.png';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -4379,7 +4408,10 @@ function renderChampion(){
     revealBtn.addEventListener('click', function(){ state.screen='almanacreveal'; render(); });
     actions.appendChild(revealBtn);
   }
-  var cardBtn = el('<button class="btn ghost">📸 Baixar card da temporada</button>');
+  // navegadores com compartilhamento nativo de arquivo (celular, majoritariamente) mostram
+  // "compartilhar" já que é isso que downloadSeasonCard() vai fazer; o resto cai pro download
+  var canShareFiles = !!(navigator.canShare && typeof File!=='undefined');
+  var cardBtn = el('<button class="btn ghost">'+(canShareFiles ? '📤 Compartilhar card da temporada' : '📸 Baixar card da temporada')+'</button>');
   cardBtn.addEventListener('click', function(){ downloadSeasonCard(); });
   actions.appendChild(cardBtn);
   var recapBtn = el('<button class="btn ghost">Ver retrospectiva da temporada</button>');
