@@ -181,6 +181,18 @@
    em vez de trocar seco — dura pouco de propósito, pra não virar mais uma espera */
 @keyframes gpmScreenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 #gpm .screen-enter{animation:gpmScreenIn .22s ease-out;}
+
+/* "roleta" do sorteio de pistas — pulso sutil na grade toda enquanto os cards ficam trocando de
+   selecionado/travado a cada giro (ver spinTrackSortition) */
+@keyframes gpmSortitionPulse{0%{transform:scale(1);}100%{transform:scale(.985);}}
+#gpm .cardgrid.spinning{animation:gpmSortitionPulse .12s ease-in-out infinite alternate;}
+
+/* "sortear novamente" do draft — cartas saem encolhendo e as novas entram em seguida, como um
+   baralho sendo trocado (ver spinDraftReroll) */
+@keyframes gpmCardFlipOut{to{opacity:0;transform:scale(.85);}}
+@keyframes gpmCardFlipIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+#gpm .card.flip-out{animation:gpmCardFlipOut .18s ease-in forwards;}
+#gpm .card.flip-in{animation:gpmCardFlipIn .22s ease-out both;}
 #gpm .row.mine{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.14),var(--surface));}
 #gpm .row.dnf{opacity:.55!important;animation:none;}
 #gpm .pos{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:19px;width:30px;color:var(--text-dim);}
@@ -1098,6 +1110,39 @@ function rerollCurrentDraftPool(){
   render();
 }
 
+var _draftRerollSpinning = false;
+
+// mesma ideia do sorteio de pistas, adaptada pra "cara de baralho": as 3 cartas atuais saem
+// (encolhem/somem) e as 3 novas entram em seguida (com um leve atraso entre elas, tipo sendo
+// distribuídas uma a uma) — sem precisar duplicar os 6 templates de carta diferentes do draft,
+// só anima a troca em volta do rerollCurrentDraftPool() que já existe
+function spinDraftReroll(){
+  if(state.draftRefreshUsed || _draftRerollSpinning) return;
+  _draftRerollSpinning = true;
+
+  var btn = document.getElementById('gpm-draft-reroll-btn');
+  if(btn){ btn.disabled = true; btn.textContent = '🔄 Sorteando...'; }
+
+  var grid = document.querySelector('#gpm .cardgrid');
+  var cards = grid ? Array.from(grid.querySelectorAll('.card')) : [];
+  cards.forEach(function(c, i){
+    c.style.animationDelay = (i*50)+'ms';
+    c.classList.add('flip-out');
+  });
+
+  var waitMs = cards.length ? (180 + (cards.length-1)*50 + 40) : 0;
+  setTimeout(function(){
+    rerollCurrentDraftPool(); // já chama render() por dentro
+    var newGrid = document.querySelector('#gpm .cardgrid');
+    var newCards = newGrid ? Array.from(newGrid.querySelectorAll('.card')) : [];
+    newCards.forEach(function(c, i){
+      c.style.animationDelay = (i*60)+'ms';
+      c.classList.add('flip-in');
+    });
+    _draftRerollSpinning = false;
+  }, waitMs);
+}
+
 /* ---------- conquistas: salvas no localStorage sempre (funciona offline/sem login), e também
    sincronizadas com o Firestore quando o jogador está logado — a leitura/escrita local continua
    síncrona (nada nos call sites existentes precisou mudar), a nuvem é só um espelho em segundo
@@ -1523,6 +1568,54 @@ function needsTrackPick(){
   return state.mode==='season' || state.mode==='quickseason';
 }
 
+var _trackSortitionSpinning = false;
+
+// "roleta" do sorteio de pistas: em vez de trocar o resultado na hora, gira por umas 1.5s
+// mostrando conjuntos aleatórios de 5 pistas cada vez mais devagar (como uma roleta freando) até
+// travar no resultado sorteado de verdade. Mexe direto no DOM em cada giro (não chama render())
+// pra não recriar a grade inteira 11 vezes seguidas.
+function spinTrackSortition(){
+  if(_trackSortitionSpinning) return;
+  _trackSortitionSpinning = true;
+
+  var btn = document.getElementById('gpm-track-roll-btn');
+  var msg = document.getElementById('gpm-track-roll-msg');
+  var grid = document.getElementById('gpm-track-grid');
+  if(btn){ btn.disabled = true; btn.textContent = '🎲 Sorteando...'; }
+  if(msg) msg.textContent = 'Embaralhando as pistas...';
+  if(grid) grid.classList.add('spinning');
+
+  function applySelection(ids){
+    if(!grid) return;
+    grid.querySelectorAll('.card').forEach(function(cardEl){
+      var sel = ids.indexOf(cardEl.getAttribute('data-track-id'))>=0;
+      cardEl.classList.toggle('selected', sel);
+      cardEl.classList.toggle('disabled', !sel);
+      var check = cardEl.querySelector('.check');
+      if(sel && !check) cardEl.insertAdjacentHTML('afterbegin', '<div class="check">&#10003;</div>');
+      else if(!sel && check) check.remove();
+    });
+  }
+
+  var finalIds = pickRandom(TRACKS, SEASON_LENGTH).map(function(t){ return t.id; });
+  var tick = 0, totalTicks = 11, delay = 55;
+  function step(){
+    tick++;
+    var last = tick>=totalTicks;
+    applySelection(last ? finalIds : pickRandom(TRACKS, SEASON_LENGTH).map(function(t){ return t.id; }));
+    if(!last){
+      delay = Math.round(delay*1.18); // cada giro um pouco mais devagar que o anterior
+      setTimeout(step, delay);
+    } else {
+      state.pickedTrackIds = finalIds;
+      _trackSortitionSpinning = false;
+      if(grid) grid.classList.remove('spinning');
+      render();
+    }
+  }
+  step();
+}
+
 function renderRaceOptions(){
   var wrap = el('<div></div>');
 
@@ -1564,32 +1657,34 @@ function renderRaceOptions(){
     var pickedCount = state.pickedTrackIds ? state.pickedTrackIds.length : 0;
     wrap.appendChild(el('<div class="season-label" style="margin-bottom:8px;">Pistas da temporada ('+pickedCount+'/'+SEASON_LENGTH+')</div>'));
 
-    var randomBtn = el('<button class="btn'+(pickedCount===0?'':' ghost')+'" style="margin-bottom:12px;">🎲 Sortear '+SEASON_LENGTH+' pistas</button>');
-    randomBtn.addEventListener('click', function(){ state.pickedTrackIds = pickRandom(TRACKS, SEASON_LENGTH).map(function(t){ return t.id; }); render(); });
+    var randomBtn = el('<button class="btn'+(pickedCount===0?'':' ghost')+'" id="gpm-track-roll-btn" style="margin-bottom:12px;">🎲 Sortear '+SEASON_LENGTH+' pistas</button>');
+    randomBtn.addEventListener('click', spinTrackSortition);
     wrap.appendChild(randomBtn);
 
-    if(pickedCount===0){
-      wrap.appendChild(el('<div class="footer-info" style="margin-bottom:16px;">Clique em "Sortear pistas" pra ver as pistas da temporada.</div>'));
-    } else {
-      // as 5 pistas sorteadas ficam travadas — só dá pra trocar sorteando de novo, não clicando
-      // numa pista escolhida pra tirá-la e abrir espaço pra outra
-      wrap.appendChild(el('<div class="footer-info" style="margin-bottom:12px;">Pistas sorteadas e travadas — clique em "Sortear '+SEASON_LENGTH+' pistas" de novo pra trocar.</div>'));
-      // a grade de 8 pistas costuma passar da altura da tela — reserva espaço em baixo do
-      // tamanho do rodapé fixo, senão ele gruda por cima do último card antes de rolar até o fim
-      var grid = el('<div class="cardgrid" style="margin-bottom:90px;"></div>');
-      TRACKS.forEach(function(t){
-        var selected = state.pickedTrackIds.indexOf(t.id)>=0;
-        var card = el(
-          '<div class="card locked'+(selected?' selected':' disabled')+'">'+
-            (selected?'<div class="check">&#10003;</div>':'')+
-            '<div class="card-top"><div><div class="card-name">'+t.flag+' '+t.name+'</div><div class="card-role">'+t.country+'</div></div></div>'+
-            '<div class="card-desc">Pista conhecida por '+t.flavor+'.</div>'+
-          '</div>'
-        );
-        grid.appendChild(card);
-      });
-      wrap.appendChild(grid);
-    }
+    wrap.appendChild(el('<div class="footer-info" id="gpm-track-roll-msg" style="margin-bottom:12px;">'+
+      (pickedCount===0 ? 'Clique em "Sortear pistas" pra ver as pistas da temporada.' :
+        // as 5 pistas sorteadas ficam travadas — só dá pra trocar sorteando de novo, não clicando
+        // numa pista escolhida pra tirá-la e abrir espaço pra outra
+        'Pistas sorteadas e travadas — clique em "Sortear '+SEASON_LENGTH+' pistas" de novo pra trocar.')+
+    '</div>'));
+
+    // a grade fica sempre visível (mesmo antes do primeiro sorteio, só com tudo "travado" à
+    // espera) — assim o sorteio anima girando por cima dela em vez de precisar criá-la do zero.
+    // a grade de 8 pistas costuma passar da altura da tela — reserva espaço em baixo do tamanho
+    // do rodapé fixo, senão ele gruda por cima do último card antes de rolar até o fim
+    var grid = el('<div class="cardgrid" id="gpm-track-grid" style="margin-bottom:90px;"></div>');
+    TRACKS.forEach(function(t){
+      var selected = state.pickedTrackIds && state.pickedTrackIds.indexOf(t.id)>=0;
+      var card = el(
+        '<div class="card locked'+(selected?' selected':' disabled')+'" data-track-id="'+t.id+'">'+
+          (selected?'<div class="check">&#10003;</div>':'')+
+          '<div class="card-top"><div><div class="card-name">'+t.flag+' '+t.name+'</div><div class="card-role">'+t.country+'</div></div></div>'+
+          '<div class="card-desc">Pista conhecida por '+t.flavor+'.</div>'+
+        '</div>'
+      );
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
 
     canContinue = canContinue && pickedCount===SEASON_LENGTH;
   }
@@ -1663,8 +1758,8 @@ function renderDraft(){
     (state.tab==='piloto2' && state.pilotos.length>=2) || (state.tab==='motor' && !!state.motor) || (state.tab==='aero' && !!state.aero) ||
     (state.tab==='pneus' && !!state.pneus);
   if(!state.draftRefreshUsed && !currentStepDone){
-    var refreshBtn = el('<button class="btn ghost" style="margin-bottom:14px;">🔄 Sortear novamente (1x por draft)</button>');
-    refreshBtn.addEventListener('click', function(){ rerollCurrentDraftPool(); });
+    var refreshBtn = el('<button class="btn ghost" id="gpm-draft-reroll-btn" style="margin-bottom:14px;">🔄 Sortear novamente (1x por draft)</button>');
+    refreshBtn.addEventListener('click', spinDraftReroll);
     wrap.appendChild(refreshBtn);
   }
 
