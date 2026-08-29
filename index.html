@@ -121,6 +121,9 @@
 #gpm .card.disabled{opacity:.4;cursor:not-allowed;}
 #gpm .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
 #gpm .card-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:17px;line-height:1.15;}
+/* bandeira SVG (ver flagFor) — tamanho/alinhamento consistente ao lado do nome, com um contorno
+   sutil pra não sumir contra o fundo escuro quando a bandeira tem branco/cor clara */
+#gpm .flag-icon{display:inline-block;width:1.3em;height:0.87em;vertical-align:-0.12em;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.18) inset;flex-shrink:0;}
 #gpm .card-role{font-size:12px;color:var(--accent-2);font-weight:600;}
 #gpm .card-price{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;color:var(--accent-2);white-space:nowrap;}
 #gpm .card-desc{font-size:12px;color:var(--text-dim);margin-bottom:8px;line-height:1.4;}
@@ -463,9 +466,85 @@ var DEFAULT_DATA = {
 var RAW_DATA = DEFAULT_DATA; // sobrescrito por data.json se o fetch funcionar
 var ALL_CARDS = {chefes:[], pilotos:[], motores:[], aero:[], pneus:[]};
 
+// bandeiras como SVG desenhado na mão, em vez de emoji — o emoji de bandeira (par de "regional
+// indicator") depende da fonte do sistema pra virar uma bandeira de verdade; funciona bem no
+// celular (iOS/Android têm fonte própria de emoji), mas no Windows várias fontes não têm esse
+// glifo e mostram as duas letras soltas (ou um quadrado). SVG desenhado renderiza igual em
+// qualquer SO. Simplificado pra caber legível num ícone pequeno (sem brasão/detalhe fino).
+function flagStripesInner(dir, bands){
+  var w=24, h=16, total=0, i;
+  for(i=0;i<bands.length;i++) total += bands[i][1]||1;
+  var pos=0, out='';
+  for(i=0;i<bands.length;i++){
+    var wt = bands[i][1]||1, frac = wt/total;
+    if(dir==='h'){
+      var y=pos*h, bh=frac*h;
+      out += '<rect x="0" y="'+y.toFixed(2)+'" width="'+w+'" height="'+(bh+0.3).toFixed(2)+'" fill="'+bands[i][0]+'"/>';
+    } else {
+      var x=pos*w, bw=frac*w;
+      out += '<rect x="'+x.toFixed(2)+'" y="0" width="'+(bw+0.3).toFixed(2)+'" height="'+h+'" fill="'+bands[i][0]+'"/>';
+    }
+    pos += frac;
+  }
+  return out;
+}
+
+var FLAG_STRIPES = {
+  AUT:['h',[['#ed2939'],['#fff'],['#ed2939']]],
+  ITA:['v',[['#009246'],['#fff'],['#ce2b37']]],
+  ARG:['h',[['#75aadb'],['#fff'],['#75aadb']]],
+  ESP:['h',[['#aa151b'],['#f1bf00',2],['#aa151b']]],
+  BGR:['h',[['#fff'],['#00966e'],['#d62612']]],
+  POL:['h',[['#fff'],['#dc143c']]],
+  PRT:['v',[['#006600',2],['#ff0000',3]]],
+  FRA:['v',[['#0055a4'],['#fff'],['#ef4135']]],
+  DEU:['h',[['#000'],['#dd0000'],['#ffce00']]],
+  NLD:['h',[['#ae1c28'],['#fff'],['#21468b']]],
+  MEX:['v',[['#006847'],['#fff'],['#ce1126']]],
+  THA:['h',[['#a51931'],['#f4f5f8'],['#2d2a4a',2],['#f4f5f8'],['#a51931']]],
+  MON:['h',[['#ce1126'],['#fff']]],
+  BEL:['v',[['#000'],['#fae042'],['#ed2939']]],
+  IRL:['v',[['#169b62'],['#fff'],['#ff883e']]],
+  ROU:['v',[['#002b7f'],['#fcd116'],['#ce1126']]],
+  RUS:['h',[['#fff'],['#0039a6'],['#d52b1e']]],
+  VEN:['h',[['#ffcc00'],['#00247d'],['#cf142b']]]
+};
+
+// bandeiras que não são só faixas retas (cruz nórdica, círculo, estrelas...) — desenhadas à mão,
+// simplificadas pro tamanho de ícone pequeno
+var FLAG_SPECIAL = {
+  JPN:'<rect width="24" height="16" fill="#fff"/><circle cx="12" cy="8" r="4.4" fill="#bc002d"/>',
+  GBR:'<rect width="24" height="16" fill="#00247d"/>'+
+    '<path d="M0,0 L24,16 M24,0 L0,16" stroke="#fff" stroke-width="3.2"/>'+
+    '<path d="M0,0 L24,16 M24,0 L0,16" stroke="#cf142b" stroke-width="1.2"/>'+
+    '<path d="M12,0 V16 M0,8 H24" stroke="#fff" stroke-width="5.4"/>'+
+    '<path d="M12,0 V16 M0,8 H24" stroke="#cf142b" stroke-width="3"/>',
+  FIN:'<rect width="24" height="16" fill="#fff"/><rect x="8" width="3" height="16" fill="#002f6c"/><rect y="6.5" width="24" height="3" fill="#002f6c"/>',
+  DNK:'<rect width="24" height="16" fill="#c8102e"/><rect x="8" width="3" height="16" fill="#fff"/><rect y="6.5" width="24" height="3" fill="#fff"/>',
+  BRA:'<rect width="24" height="16" fill="#009739"/><polygon points="12,2.5 21.5,8 12,13.5 2.5,8" fill="#fedd00"/><circle cx="12" cy="8" r="3" fill="#012169"/>',
+  CAN:'<rect width="24" height="16" fill="#fff"/><rect width="6" height="16" fill="#d52b1e"/><rect x="18" width="6" height="16" fill="#d52b1e"/>'+
+    '<polygon points="12,3 13,7 16,6 14,9 17,11 13.5,11 12,14 10.5,11 7,11 10,9 8,6 11,7" fill="#d52b1e"/>',
+  USA:(function(){
+    var s='', i;
+    for(i=0;i<7;i++) s += '<rect x="0" y="'+(i*16/7).toFixed(2)+'" width="24" height="'+(16/7).toFixed(2)+'" fill="'+(i%2===0?'#b22234':'#fff')+'"/>';
+    return s+'<rect width="10" height="8.6" fill="#3c3b6e"/>';
+  })(),
+  AUS:'<rect width="24" height="16" fill="#00247d"/><g fill="#fff"><circle cx="18" cy="4" r="0.9"/><circle cx="20.5" cy="7.2" r="0.9"/><circle cx="19.3" cy="11" r="0.9"/><circle cx="16" cy="9.8" r="0.9"/><circle cx="17.2" cy="6.2" r="0.6"/></g>'+
+    '<rect width="10" height="8" fill="#00247d" stroke="#fff" stroke-width="0.5"/>',
+  MYS:(function(){
+    var s='', i;
+    for(i=0;i<7;i++) s += '<rect x="0" y="'+(i*16/7).toFixed(2)+'" width="24" height="'+(16/7).toFixed(2)+'" fill="'+(i%2===0?'#cc0001':'#fff')+'"/>';
+    return s+'<rect width="12" height="9" fill="#010066"/><circle cx="6" cy="4.5" r="2" fill="#ffcc00"/>';
+  })()
+};
+
+var FLAG_ALIAS = {BUL:'BGR', GER:'DEU', NED:'NLD'};
+
 function flagFor(nat){
-  var map = {AUT:'🇦🇹',GBR:'🇬🇧',ITA:'🇮🇹',JPN:'🇯🇵',BRA:'🇧🇷',ARG:'🇦🇷',ESP:'🇪🇸',BGR:'🇧🇬',BUL:'🇧🇬',POL:'🇵🇱',PRT:'🇵🇹',FRA:'🇫🇷',DEU:'🇩🇪',USA:'🇺🇸',AUS:'🇦🇺',CAN:'🇨🇦',NLD:'🇳🇱',MEX:'🇲🇽',THA:'🇹🇭',FIN:'🇫🇮',MON:'🇲🇨',BEL:'🇧🇪'};
-  return map[(nat||'').toUpperCase()] || '🏁';
+  var code = FLAG_ALIAS[(nat||'').toUpperCase()] || (nat||'').toUpperCase();
+  var inner = FLAG_SPECIAL[code] || (FLAG_STRIPES[code] && flagStripesInner(FLAG_STRIPES[code][0], FLAG_STRIPES[code][1]));
+  if(!inner) return '🏁'; // nacionalidade sem bandeira cadastrada — mantém o fallback antigo
+  return '<svg class="flag-icon" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
 }
 
 // achata "personagem + cada temporada dele" em cartas individuais, prontas pro sorteio do draft
