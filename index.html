@@ -119,6 +119,17 @@
 #gpm .card.locked{cursor:default;}
 #gpm .card.selected{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,122,41,.12),var(--surface));box-shadow:0 0 0 1px var(--accent) inset;}
 #gpm .card.disabled{opacity:.4;cursor:not-allowed;}
+/* pistas sorteadas: uma vez travadas elas são só referência (não tem mais decisão nenhuma ali),
+   então em vez de 8 cards inteiros empilhados (o maior vilão de rolagem no celular) viram chips
+   compactos que quebram linha — a mesma informação num terço da altura */
+#gpm .track-chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+#gpm .track-chip{
+  font-size:13px;font-weight:600;padding:7px 12px;border-radius:20px;white-space:nowrap;
+  background:var(--surface);border:1px solid var(--border);color:var(--text-dim);
+  display:flex;align-items:center;gap:5px;transition:all .15s ease;
+}
+#gpm .track-chip.selected{border-color:var(--accent);background:rgba(255,122,41,.14);color:var(--text);}
+#gpm .track-chip.disabled{opacity:.45;}
 #gpm .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
 #gpm .card-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:17px;line-height:1.15;}
 /* bandeira SVG (ver flagFor) — tamanho/alinhamento consistente ao lado do nome, com um contorno
@@ -1701,13 +1712,10 @@ function spinTrackSortition(){
 
   function applySelection(ids){
     if(!grid) return;
-    grid.querySelectorAll('.card').forEach(function(cardEl){
-      var sel = ids.indexOf(cardEl.getAttribute('data-track-id'))>=0;
-      cardEl.classList.toggle('selected', sel);
-      cardEl.classList.toggle('disabled', !sel);
-      var check = cardEl.querySelector('.check');
-      if(sel && !check) cardEl.insertAdjacentHTML('afterbegin', '<div class="check">&#10003;</div>');
-      else if(!sel && check) check.remove();
+    grid.querySelectorAll('.track-chip').forEach(function(chipEl){
+      var sel = ids.indexOf(chipEl.getAttribute('data-track-id'))>=0;
+      chipEl.classList.toggle('selected', sel);
+      chipEl.classList.toggle('disabled', !sel);
     });
   }
 
@@ -1784,19 +1792,18 @@ function renderRaceOptions(){
 
     // a grade fica sempre visível (mesmo antes do primeiro sorteio, só com tudo "travado" à
     // espera) — assim o sorteio anima girando por cima dela em vez de precisar criá-la do zero.
-    // a grade de 8 pistas costuma passar da altura da tela — reserva espaço em baixo do tamanho
-    // do rodapé fixo, senão ele gruda por cima do último card antes de rolar até o fim
-    var grid = el('<div class="cardgrid" id="gpm-track-grid" style="margin-bottom:90px;"></div>');
+    // chips compactos em vez de cards inteiros: uma vez travadas, as pistas são só referência
+    // (nenhuma decisão a mais ali), e 8 cards cheios empilhados era o maior vilão de rolagem no
+    // celular — em chips a mesma informação cabe num terço da altura
+    var grid = el('<div class="track-chip-grid" id="gpm-track-grid"></div>');
     TRACKS.forEach(function(t){
       var selected = state.pickedTrackIds && state.pickedTrackIds.indexOf(t.id)>=0;
-      var card = el(
-        '<div class="card locked'+(selected?' selected':' disabled')+'" data-track-id="'+t.id+'">'+
-          (selected?'<div class="check">&#10003;</div>':'')+
-          '<div class="card-top"><div><div class="card-name">'+t.flag+' '+t.name+'</div><div class="card-role">'+t.country+'</div></div></div>'+
-          '<div class="card-desc">Pista conhecida por '+t.flavor+'.</div>'+
+      var chip = el(
+        '<div class="track-chip locked'+(selected?' selected':' disabled')+'" data-track-id="'+t.id+'" title="Pista conhecida por '+t.flavor+'.">'+
+          t.flag+' '+t.country+
         '</div>'
       );
-      grid.appendChild(card);
+      grid.appendChild(chip);
     });
     wrap.appendChild(grid);
 
