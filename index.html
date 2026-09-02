@@ -1548,22 +1548,21 @@ function renderModeSelect(){
 
   var single = el(
     '<div class="card">'+
-      '<div class="card-top"><div><div class="card-name">🏁 Corrida Única</div><div class="card-role">Modo rápido</div></div></div>'+
-      '<div class="card-desc">Monte sua equipe e dispute uma corrida com simulação animada na pista, luzes de largada e tudo mais.</div>'+
+      '<div class="card-top"><div><div class="card-name">🏁 Corrida Única</div><div class="card-role">1 corrida</div></div></div>'+
+      '<div class="card-desc">Monte sua equipe (chefe, pilotos, motor, aerodinâmica e pneus) e dispute uma corrida só. Escolha entre simulação animada rápida ou a Corrida Longa — previsão do tempo, escolha de pneu, safety car e pit stop cronometrado, com suas decisões mudando o resultado de verdade.</div>'+
     '</div>'
   );
   makeCardActivatable(single, function(){ state.mode='single'; state.almanac=false; state.screen='racestyle'; render(); });
-  // ocultado por enquanto a pedido do usuário — foco em Temporada Expressa/Almanaque; a tela e a
-  // lógica continuam intactas, é só não anexar o card na grade de seleção de modo
+  grid.appendChild(single);
 
   var season = el(
     '<div class="card">'+
       '<div class="card-top"><div><div class="card-name">🏆 Temporada</div><div class="card-role">5 corridas · 5 países</div></div></div>'+
-      '<div class="card-desc">Monte sua equipe uma vez e dispute o campeonato em '+SEASON_LENGTH+' Grandes Prêmios — você escolhe quais, entre '+TRACKS.length+' pistas disponíveis. Cada corrida mostra os melhores momentos — largada, estratégia, abandonos, volta mais rápida e pódio — em vez da simulação completa, pra manter o ritmo.</div>'+
+      '<div class="card-desc">Monte sua equipe uma vez e dispute o campeonato em '+SEASON_LENGTH+' Grandes Prêmios — você escolhe quais, entre '+TRACKS.length+' pistas disponíveis. Também escolhe o ritmo pra temporada inteira: melhores momentos (rápido) ou Corrida Longa completa, com estratégia de pneus e clima.</div>'+
     '</div>'
   );
   makeCardActivatable(season, function(){ state.mode='season'; state.almanac=false; state.screen='racestyle'; render(); });
-  // ocultado por enquanto pelo mesmo motivo do card de Corrida Única acima
+  grid.appendChild(season);
 
   var quick = el(
     '<div class="card">'+
