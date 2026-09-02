@@ -288,6 +288,10 @@
   background:var(--surface);border:1px solid var(--border);border-radius:12px;
   padding:8px;display:flex;flex-direction:column;gap:4px;
 }
+/* com até 12 carros, a lista inteira sem limite de altura era o maior vilão de rolagem da
+   corrida longa (empurrava tudo que vinha depois pra muito mais longe na página) — o título
+   fica sempre visível, só a lista de carros rola internamente */
+#gpm #gpm-lr-timing-rows{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding-right:2px;}
 #gpm .timing-title{
   font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;
   letter-spacing:.08em;color:var(--text-dim);padding:4px 6px 6px;
@@ -336,8 +340,11 @@
 #gpm .stand-pts{font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--good);white-space:nowrap;}
 
 /* corrida longa */
-#gpm .wx-timeline{display:flex;gap:6px;flex-wrap:wrap;}
-#gpm .wx-seg{flex:1;min-width:54px;text-align:center;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px;padding:8px 4px;}
+/* uma corrida longa pode ter até 11 segmentos de previsão — em vez de quebrar linha (e empilhar
+   altura na tela toda, o principal motivo de precisar ficar rolando na corrida longa), fica numa
+   linha só que rola de lado; a pista/ação ao vivo continua sempre perto do topo */
+#gpm .wx-timeline{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;}
+#gpm .wx-seg{flex:0 0 54px;text-align:center;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px;padding:8px 4px;}
 #gpm .wx-seg-now{border-color:var(--accent-2);background:linear-gradient(135deg,rgba(255,210,63,.14),var(--bg-alt));}
 #gpm .lr-sc-banner{
   text-align:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.03em;
@@ -1096,6 +1103,12 @@ function weatherTimelineHtml(lr){
     return '<div class="wx-seg'+(i===curSegIdx?' wx-seg-now':'')+'"><div class="wx-seg-lap">'+segmentLapLabel(i,laps)+'</div><div class="wx-seg-icon">'+WEATHER_COND_ICON[c]+'</div><div class="wx-seg-pct">'+live.wet[i]+'%</div></div>';
   }).join('');
   return '<div class="timing-title" style="padding:0 0 8px;">Previsão a cada 2 voltas</div><div class="wx-timeline">'+segHtml+'</div>';
+}
+
+// clima atual, junto com a previsão no mesmo painel — antes era um painel "lr-status" à parte só
+// pra essa linha, mais uma parada na rolagem da tela da corrida longa
+function weatherNowStatHtml(lr){
+  return '<div class="lr-stat" style="margin-bottom:10px;"><div class="lr-stat-label">Clima agora</div><div class="lr-stat-val" id="gpm-lr-weather">'+weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow)+'</div></div>';
 }
 
 // mostra onde os carros do jogador estão na hora de uma decisão (posição e gap) — sem isso, o
@@ -3064,16 +3077,19 @@ function advanceRivalTiresOneLap(lr, lap){
 
 function refreshLongRaceStatus(){
   var lr = state.longRace;
-  var w = document.getElementById('gpm-lr-weather'); if(w) w.textContent = weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow);
+  // #gpm-lr-weather é reconstruído junto com o painel de previsão logo abaixo (via
+  // weatherNowStatHtml), não precisa atualizar separado aqui
   lr.mineField.forEach(function(d,i){
     var t = document.getElementById('gpm-lr-tire-'+i); if(t) t.textContent = tireName(d._tireCompound);
     var tl = document.getElementById('gpm-lr-tirelaps-'+i); if(tl) tl.textContent = Math.floor(d._tireLaps);
     var ps = document.getElementById('gpm-lr-pitstops-'+i); if(ps) ps.textContent = d._pitStops||0;
   });
   // o popup de previsão fica aberto entre voltas — se não atualizar aqui, ele trava mostrando
-  // o clima da volta em que foi aberto mesmo enquanto o resto da tela já avançou
+  // o clima da volta em que foi aberto mesmo enquanto o resto da tela já avançou. Reconstrói o
+  // painel inteiro (clima agora + previsão), não só a previsão, senão o "clima agora" some no
+  // primeiro refresh
   var wp = document.getElementById('gpm-lr-weather-popup');
-  if(wp) wp.innerHTML = weatherTimelineHtml(lr);
+  if(wp) wp.innerHTML = weatherNowStatHtml(lr)+weatherTimelineHtml(lr);
   var histCount = document.getElementById('gpm-lr-hist-count');
   if(histCount) histCount.textContent = lr.history.length;
   refreshPitButtonVisibility();
@@ -3742,9 +3758,10 @@ function renderLongRace(){
   wrap.appendChild(controls);
   wireSpeedControl(controls);
 
-  // previsão do tempo fica sempre visível, sem precisar abrir/fechar
+  // previsão do tempo fica sempre visível, sem precisar abrir/fechar — o clima atual mora no
+  // mesmo painel (era uma tile à parte antes, um painel a mais pra rolar até)
   var weatherPopup = el('<div class="panel" id="gpm-lr-weather-popup"></div>');
-  weatherPopup.innerHTML = weatherTimelineHtml(lr);
+  weatherPopup.innerHTML = weatherNowStatHtml(lr)+weatherTimelineHtml(lr);
   wrap.appendChild(weatherPopup);
 
   var layout = el('<div class="race-layout"></div>');
@@ -3783,14 +3800,14 @@ function renderLongRace(){
 
   wrap.appendChild(layout);
 
+  // pneu + voltas no pneu + pit stops de cada piloto num bloco só (era 3 tiles separadas por
+  // piloto antes) — a mesma informação, bem menos altura empilhada
   var status = el('<div class="panel lr-status"></div>');
-  status.innerHTML =
-    '<div class="lr-stat"><div class="lr-stat-label">Clima</div><div class="lr-stat-val" id="gpm-lr-weather">'+weatherStatusLabel(lr.weatherCondNow, lr.wetnessNow)+'</div></div>'+
-    lr.mineField.map(function(d,i){
-      return '<div class="lr-stat"><div class="lr-stat-label">'+shortName(d.driverName)+' — pneu</div><div class="lr-stat-val" id="gpm-lr-tire-'+i+'">'+tireName(d._tireCompound)+'</div></div>'+
-        '<div class="lr-stat"><div class="lr-stat-label">'+shortName(d.driverName)+' — voltas no pneu</div><div class="lr-stat-val" id="gpm-lr-tirelaps-'+i+'">'+Math.floor(d._tireLaps)+'</div></div>'+
-        '<div class="lr-stat"><div class="lr-stat-label">'+shortName(d.driverName)+' — pit stops</div><div class="lr-stat-val" id="gpm-lr-pitstops-'+i+'">'+(d._pitStops||0)+'</div></div>';
-    }).join('');
+  status.innerHTML = lr.mineField.map(function(d,i){
+    return '<div class="lr-stat"><div class="lr-stat-label">'+shortName(d.driverName)+' — pneu</div>'+
+      '<div class="lr-stat-val" id="gpm-lr-tire-'+i+'">'+tireName(d._tireCompound)+'</div>'+
+      '<div class="footer-info" style="margin-top:2px;"><span id="gpm-lr-tirelaps-'+i+'">'+Math.floor(d._tireLaps)+'</span> voltas no pneu · <span id="gpm-lr-pitstops-'+i+'">'+(d._pitStops||0)+'</span> pit(s)</div></div>';
+  }).join('');
   wrap.appendChild(status);
 
   // cada piloto pode estar numa fase diferente do pit (ou fora dele) — mostra um card por piloto
